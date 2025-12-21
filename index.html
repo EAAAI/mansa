@@ -249,8 +249,28 @@
                 </button>
             </div>
             
+            <!-- Quiz Start Screen -->
+            <div class="quiz-start-screen" id="quizStartScreen">
+                <div class="start-screen-content">
+                    <div class="start-icon">📝</div>
+                    <h3>امتحان <span id="selectedSubjectName">فيزياء 2</span></h3>
+                    <p>15 سؤال اختياري - اختبر معلوماتك!</p>
+                    <div class="quiz-name-input">
+                        <label for="quizUserName">
+                            <i class="fas fa-user"></i>
+                            أدخل اسمك للبدء
+                        </label>
+                        <input type="text" id="quizUserName" placeholder="اسمك هنا..." maxlength="30">
+                        <button class="btn btn-primary start-quiz-btn" onclick="startQuizWithName()">
+                            <i class="fas fa-play"></i>
+                            ابدأ الامتحان
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Quiz Container -->
-            <div class="quiz-container" id="quizContainer">
+            <div class="quiz-container" id="quizContainer" style="display: none;">
                 <div class="quiz-header">
                     <div class="quiz-info">
                         <span id="currentSubject">فيزياء 2</span>

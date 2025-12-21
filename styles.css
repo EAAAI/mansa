@@ -320,6 +320,88 @@ body {
     font-size: 1.5rem;
 }
 
+/* Quiz Start Screen */
+.quiz-start-screen {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 50px 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 25px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    text-align: center;
+}
+
+.start-screen-content .start-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
+
+.start-screen-content h3 {
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.start-screen-content p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 30px;
+}
+
+.quiz-name-input {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.quiz-name-input label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quiz-name-input input {
+    width: 100%;
+    max-width: 300px;
+    padding: 15px 20px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 1.1rem;
+    font-family: 'Cairo', sans-serif;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.quiz-name-input input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.quiz-name-input input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.start-quiz-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    font-weight: 700;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.start-quiz-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
 .quiz-container {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 25px;

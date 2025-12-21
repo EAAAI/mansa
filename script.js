@@ -575,7 +575,12 @@ let currentQuiz = {
 // تهيئة الامتحان
 function initQuiz(subject) {
     currentQuiz.subject = subject;
-    currentQuiz.questions = [...questionsBank[subject]];
+    
+    // خلط الأسئلة واختيار 15 سؤال عشوائي
+    const allQuestions = [...questionsBank[subject]];
+    const shuffled = allQuestions.sort(() => Math.random() - 0.5);
+    currentQuiz.questions = shuffled.slice(0, Math.min(15, shuffled.length));
+    
     currentQuiz.currentIndex = 0;
     currentQuiz.answers = new Array(currentQuiz.questions.length).fill(null);
     
@@ -736,6 +741,10 @@ function submitQuiz() {
     document.getElementById('resultMessage').textContent = message;
 }
 
+// متغير لحفظ اسم المستخدم في الامتحان
+let quizUserName = '';
+let selectedQuizSubject = 'physics2';
+
 // تهيئة أزرار الامتحان
 function initQuizButtons() {
     // أزرار اختيار المادة
@@ -743,7 +752,23 @@ function initQuizButtons() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.quiz-subject-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            initQuiz(btn.dataset.quizSubject);
+            selectedQuizSubject = btn.dataset.quizSubject;
+            
+            // تحديث اسم المادة في شاشة البداية
+            const subjectNames = {
+                physics: 'فيزياء 1',
+                physics2: 'فيزياء 2',
+                math1: 'رياضة 1',
+                math0: 'رياضة 0',
+                it: 'IT',
+                electronics: 'إلكترونيات'
+            };
+            document.getElementById('selectedSubjectName').textContent = subjectNames[selectedQuizSubject];
+            
+            // إظهار شاشة البداية وإخفاء الامتحان
+            document.getElementById('quizStartScreen').style.display = 'block';
+            document.getElementById('quizContainer').style.display = 'none';
+            document.getElementById('quizResult').style.display = 'none';
         });
     });
     
@@ -758,8 +783,27 @@ function initQuizButtons() {
     
     // زر إعادة الامتحان
     document.getElementById('retryQuiz').addEventListener('click', () => {
-        initQuiz(currentQuiz.subject);
+        // العودة لشاشة البداية
+        document.getElementById('quizStartScreen').style.display = 'block';
+        document.getElementById('quizResult').style.display = 'none';
+        document.getElementById('quizContainer').style.display = 'none';
     });
+}
+
+// بدء الامتحان مع الاسم
+function startQuizWithName() {
+    const nameInput = document.getElementById('quizUserName');
+    quizUserName = nameInput.value.trim();
+    
+    if (!quizUserName) {
+        alert('من فضلك أدخل اسمك للبدء!');
+        nameInput.focus();
+        return;
+    }
+    
+    // إخفاء شاشة البداية وبدء الامتحان
+    document.getElementById('quizStartScreen').style.display = 'none';
+    initQuiz(selectedQuizSubject);
 }
 
 // ==========================================
