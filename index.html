@@ -26,6 +26,39 @@
         </div>
     </nav>
 
+    <!-- AI Chat Bot Button -->
+    <div class="chat-bot-btn" id="chatBotBtn" onclick="toggleChatBot()">
+        <i class="fas fa-robot"></i>
+        <span class="bot-tooltip">مساعد إبراهيم الذكي</span>
+    </div>
+
+    <!-- AI Chat Bot Container -->
+    <div class="chat-bot-container" id="chatBotContainer">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="bot-info">
+                    <h3>مساعد إبراهيم الذكي</h3>
+                    <span class="bot-status"><i class="fas fa-circle"></i> متصل</span>
+                </div>
+            </div>
+            <button class="close-chat" onclick="toggleChatBot()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be added here -->
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
+            <button class="send-btn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">

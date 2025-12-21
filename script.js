@@ -8,6 +8,186 @@ const API_CONFIG = {
 };
 
 // ==========================================
+// AI Chat Bot - مساعد إبراهيم الذكي
+// ==========================================
+let chatHistory = [];
+let userName = '';
+let isFirstMessage = true;
+
+// فتح/إغلاق البوت
+function toggleChatBot() {
+    const container = document.getElementById('chatBotContainer');
+    container.classList.toggle('active');
+    
+    // إرسال رسالة الترحيب عند أول فتح
+    if (container.classList.contains('active') && isFirstMessage) {
+        setTimeout(() => {
+            addBotMessage(`أهلاً وسهلاً بك! 👋
+
+أنا مساعد إبراهيم الذكي، نموذج لغوي طوره **إبراهيم محمد** - طالب معاكم بالكلية.
+
+أنا هنا لمساعدتك في:
+• شرح الأسئلة والمفاهيم الصعبة
+• حل المسائل الرياضية والفيزيائية
+• الإجابة على أي استفسار دراسي
+
+ممكن أعرف اسمك الكريم؟ 😊`);
+            isFirstMessage = false;
+        }, 500);
+    }
+}
+
+// إضافة رسالة من البوت
+function addBotMessage(message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-message bot';
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <i class="fas fa-robot"></i>
+            <span>مساعد إبراهيم</span>
+        </div>
+        <div class="message-text">${message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>
+    `;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// إضافة رسالة من المستخدم
+function addUserMessage(message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-message user';
+    messageDiv.textContent = message;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// إظهار مؤشر الكتابة
+function showTypingIndicator() {
+    const chatMessages = document.getElementById('chatMessages');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// إخفاء مؤشر الكتابة
+function hideTypingIndicator() {
+    const typing = document.getElementById('typingIndicator');
+    if (typing) typing.remove();
+}
+
+// إرسال رسالة
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // إضافة رسالة المستخدم
+    addUserMessage(message);
+    input.value = '';
+    
+    // حفظ الاسم لو لسه مقالوش
+    if (!userName && chatHistory.length === 0) {
+        userName = message;
+        chatHistory.push({ role: 'user', content: message });
+        
+        setTimeout(() => {
+            addBotMessage(`أهلاً يا ${userName}! 🎉
+
+نورتني والله! أنا سعيد جداً إني أقدر أساعدك.
+
+اسألني أي سؤال في الفيزياء أو الرياضيات أو أي مادة تانية، وأنا هشرحلك بالتفصيل.
+
+إيه اللي محتاج مساعدة فيه؟ 📚`);
+            chatHistory.push({ 
+                role: 'assistant', 
+                content: `أهلاً يا ${userName}! نورتني والله! أنا سعيد جداً إني أقدر أساعدك. اسألني أي سؤال وأنا هشرحلك بالتفصيل.`
+            });
+        }, 800);
+        return;
+    }
+    
+    // إضافة للتاريخ
+    chatHistory.push({ role: 'user', content: message });
+    
+    // إظهار مؤشر الكتابة
+    showTypingIndicator();
+    
+    try {
+        const response = await getAIResponse(message);
+        hideTypingIndicator();
+        addBotMessage(response);
+        chatHistory.push({ role: 'assistant', content: response });
+    } catch (error) {
+        hideTypingIndicator();
+        addBotMessage('عذراً، حصل خطأ. ممكن تحاول تاني؟ 🙏');
+    }
+}
+
+// الحصول على رد من AI
+async function getAIResponse(userMessage) {
+    const systemPrompt = `أنت "مساعد إبراهيم الذكي"، نموذج لغوي ذكي طوره إبراهيم محمد - طالب بالكلية.
+
+شخصيتك:
+- ودود ومرح ومتحمس للمساعدة
+- تتكلم بالعربي الفصيح مع لمسة مصرية خفيفة
+- تستخدم الإيموجي بشكل معتدل
+- تشرح بطريقة بسيطة وواضحة
+
+مهامك:
+1. شرح الأسئلة والمفاهيم العلمية (فيزياء، رياضيات، إلكترونيات، IT)
+2. حل المسائل خطوة بخطوة
+3. تبسيط المفاهيم الصعبة
+4. تشجيع الطالب ومساعدته
+
+${userName ? `اسم الطالب الذي تتحدث معه: ${userName}` : ''}
+
+قواعد مهمة:
+- لو سألك حد "مين عملك" أو "مين طورك"، قول إنك نموذج لغوي طوره إبراهيم محمد طالب بالكلية
+- خلي إجاباتك مختصرة ومفيدة
+- استخدم الأمثلة لتوضيح المفاهيم
+- شجع الطالب دائماً`;
+
+    const messages = [
+        { role: 'system', content: systemPrompt },
+        ...chatHistory.slice(-10), // آخر 10 رسائل فقط
+    ];
+
+    const response = await fetch(API_CONFIG.apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_CONFIG.apiKey}`
+        },
+        body: JSON.stringify({
+            model: API_CONFIG.model,
+            messages: messages,
+            max_tokens: 1024,
+            temperature: 0.7
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error('API Error');
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
+}
+
+// التعامل مع Enter
+function handleChatKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+
+// ==========================================
 // Quiz System - الامتحانات التفاعلية
 // ==========================================
 
@@ -285,239 +465,6 @@ function initQuizButtons() {
     document.getElementById('retryQuiz').addEventListener('click', () => {
         initQuiz(currentQuiz.subject);
     });
-}
-
-// ==========================================// Handle file selection
-function handleFile(file) {
-    if (!file.type.startsWith('image/')) {
-        alert('الرجاء اختيار ملف صورة فقط!');
-        return;
-    }
-    
-    if (file.size > 10 * 1024 * 1024) {
-        alert('حجم الصورة يجب أن يكون أقل من 10MB');
-        return;
-    }
-
-    selectedImage = file;
-    
-    // Convert to base64
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        base64Image = e.target.result;
-        imagePreview.src = base64Image;
-        previewContainer.style.display = 'block';
-        aiResponse.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-}
-
-// Analyze button click
-analyzeBtn.addEventListener('click', async () => {
-    if (!base64Image) {
-        alert('الرجاء اختيار صورة أولاً');
-        return;
-    }
-
-    // Show loading
-    aiResponse.style.display = 'block';
-    loading.style.display = 'block';
-    responseContent.style.display = 'none';
-
-    try {
-        const result = await analyzeImage(base64Image);
-        responseContent.textContent = result;
-        responseContent.style.display = 'block';
-    } catch (error) {
-        responseContent.textContent = 'حدث خطأ أثناء تحليل الصورة: ' + error.message;
-        responseContent.style.display = 'block';
-    } finally {
-        loading.style.display = 'none';
-    }
-});
-
-// Function to analyze image with AI
-async function analyzeImage(imageData) {
-    try {
-        // استخراج base64 بدون البادئة
-        const base64Data = imageData.split(',')[1];
-        const mimeType = imageData.split(';')[0].split(':')[1];
-
-        const response = await fetch(API_CONFIG.apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_CONFIG.apiKey}`
-            },
-            body: JSON.stringify({
-                model: API_CONFIG.model,
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'text',
-                                text: 'أنت مساعد تعليمي ذكي. حلل هذه الصورة واستخرج السؤال أو المسألة منها، ثم قدم الحل والإجابة بشكل مفصل وواضح باللغة العربية. إذا كانت مسألة رياضية، اشرح خطوات الحل.'
-                            },
-                            {
-                                type: 'image_url',
-                                image_url: {
-                                    url: `data:${mimeType};base64,${base64Data}`
-                                }
-                            }
-                        ]
-                    }
-                ],
-                max_tokens: 2048,
-                temperature: 0.7
-            })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.choices[0]?.message?.content || 'لم يتم الحصول على رد';
-    } catch (error) {
-        throw error;
-    }
-}
-
-// ==========================================
-// Essay Questions - AI Correction
-// ==========================================
-const correctBtn = document.getElementById('correctBtn');
-const essayQuestion = document.getElementById('essayQuestion');
-const modelAnswer = document.getElementById('modelAnswer');
-const studentAnswer = document.getElementById('studentAnswer');
-const maxScore = document.getElementById('maxScore');
-const correctionResult = document.getElementById('correctionResult');
-const correctionLoading = document.getElementById('correctionLoading');
-const scoreDisplay = document.getElementById('scoreDisplay');
-const strengthPoints = document.getElementById('strengthPoints');
-const weaknessPoints = document.getElementById('weaknessPoints');
-const recommendations = document.getElementById('recommendations');
-
-correctBtn.addEventListener('click', async () => {
-    const question = essayQuestion.value.trim();
-    const model = modelAnswer.value.trim();
-    const student = studentAnswer.value.trim();
-    const max = parseInt(maxScore.value) || 10;
-
-    if (!question) {
-        alert('الرجاء إدخال السؤال');
-        return;
-    }
-
-    if (!student) {
-        alert('الرجاء إدخال إجابة الطالب');
-        return;
-    }
-
-    // Show loading
-    correctionResult.style.display = 'block';
-    correctionLoading.style.display = 'block';
-    document.querySelector('.result-header').style.display = 'none';
-    document.querySelector('.result-details').style.display = 'none';
-
-    try {
-        const result = await correctEssay(question, model, student, max);
-        displayCorrectionResult(result, max);
-    } catch (error) {
-        alert('حدث خطأ أثناء التصحيح: ' + error.message);
-        correctionResult.style.display = 'none';
-    } finally {
-        correctionLoading.style.display = 'none';
-    }
-});
-
-async function correctEssay(question, modelAnswer, studentAnswer, maxScore) {
-    const prompt = `أنت مصحح امتحانات محترف. قم بتصحيح إجابة الطالب التالية:
-
-السؤال: ${question}
-
-${modelAnswer ? `الإجابة النموذجية: ${modelAnswer}` : ''}
-
-إجابة الطالب: ${studentAnswer}
-
-الدرجة الكاملة: ${maxScore}
-
-قم بالرد بصيغة JSON فقط (بدون أي نص إضافي) كالتالي:
-{
-    "score": [الدرجة التي يستحقها الطالب من ${maxScore}],
-    "strengths": "[نقاط القوة في الإجابة]",
-    "weaknesses": "[نقاط الضعف في الإجابة]",
-    "recommendations": "[ملاحظات وتوصيات للتحسين]"
-}`;
-
-    try {
-        const response = await fetch(API_CONFIG.apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_CONFIG.apiKey}`
-            },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_tokens: 1024,
-                temperature: 0.3
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        const content = data.choices[0]?.message?.content || '';
-        
-        // Parse JSON from response
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            return JSON.parse(jsonMatch[0]);
-        } else {
-            throw new Error('لم يتم الحصول على رد صحيح');
-        }
-    } catch (error) {
-        throw error;
-    }
-}
-
-function displayCorrectionResult(result, max) {
-    document.querySelector('.result-header').style.display = 'flex';
-    document.querySelector('.result-details').style.display = 'flex';
-    
-    // Update score
-    const scoreValue = document.querySelector('.score-value');
-    const scoreMax = document.querySelector('.score-max');
-    scoreValue.textContent = result.score;
-    scoreMax.textContent = `/${max}`;
-    
-    // Update score color based on percentage
-    const percentage = (result.score / max) * 100;
-    const scoreDisplayEl = document.querySelector('.score-display');
-    if (percentage >= 80) {
-        scoreDisplayEl.style.background = 'linear-gradient(135deg, #11998e, #38ef7d)';
-    } else if (percentage >= 60) {
-        scoreDisplayEl.style.background = 'linear-gradient(135deg, #f7971e, #ffd200)';
-    } else if (percentage >= 40) {
-        scoreDisplayEl.style.background = 'linear-gradient(135deg, #ff8008, #ffc837)';
-    } else {
-        scoreDisplayEl.style.background = 'linear-gradient(135deg, #cb2d3e, #ef473a)';
-    }
-    
-    // Update details
-    strengthPoints.textContent = result.strengths || 'لا توجد';
-    weaknessPoints.textContent = result.weaknesses || 'لا توجد';
-    recommendations.textContent = result.recommendations || 'لا توجد';
 }
 
 // ==========================================
@@ -1071,6 +1018,7 @@ function initBankTabs() {
 // عرض الأسئلة المقالية
 function displayEssayQuestions(subject) {
     const container = document.getElementById('essayQuestionsContainer');
+    if (!container) return;
     const essays = essayQuestionsData[subject] || [];
     
     if (essays.length === 0) {
