@@ -327,73 +327,232 @@ function openImagePreview(src) {
 // Quiz System - الامتحانات التفاعلية
 // ==========================================
 
-// بنك الأسئلة لكل مادة
+// بنك الأسئلة لكل مادة - أسئلة امتحانات السنوات السابقة
 const questionsBank = {
     physics: [],
     physics2: [
+        // ========== امتحان 2024 ==========
         {
-            question: "ما هي وحدة قياس القوة في النظام الدولي؟",
-            options: ["نيوتن", "جول", "واط", "باسكال"],
+            question: "In Young's double-slit experiment, constructive interference occurs when the path difference is...",
+            options: ["mλ", "(m+1/2)λ", "1/2 mλ", "Zero"],
             correct: 0
         },
         {
-            question: "ما هو قانون نيوتن الثاني للحركة؟",
-            options: ["F = ma", "F = mv", "F = m/a", "F = a/m"],
+            question: "In an interference pattern, the distance between two adjacent bright fringes is determined by...",
+            options: ["The wavelength of light and the slit separation", "The screen's distance from the slits only", "The intensity of the light", "The angle of incidence"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس الشغل؟",
-            options: ["جول", "نيوتن", "واط", "متر"],
+            question: "Which concept did Einstein challenge with his Special Theory of Relativity?",
+            options: ["Newtonian mechanics", "The laws of thermodynamics", "Quantum entanglement", "Electromagnetism"],
             correct: 0
         },
         {
-            question: "ما هو تسارع الجاذبية الأرضية تقريباً؟",
-            options: ["9.8 م/ث²", "10.8 م/ث²", "8.9 م/ث²", "11 م/ث²"],
+            question: "In a rectifier circuit, what is the purpose of the smoothing capacitor?",
+            options: ["To filter out the AC component and reduce ripple", "To amplify the signal", "To store data", "To generate light"],
             correct: 0
         },
         {
-            question: "أي مما يلي يعتبر كمية متجهة؟",
-            options: ["السرعة", "الكتلة", "الزمن", "درجة الحرارة"],
+            question: "What is the primary function of a p-n junction diode in a rectifier circuit?",
+            options: ["Convert AC voltage to DC voltage", "Amplify signals", "Generate light", "Store data"],
             correct: 0
         },
         {
-            question: "ما هي العلاقة بين الطاقة الحركية والسرعة؟",
-            options: ["تتناسب طردياً مع مربع السرعة", "تتناسب طردياً مع السرعة", "تتناسب عكسياً مع السرعة", "لا توجد علاقة"],
+            question: "What happens to a diode when it is reverse-biased?",
+            options: ["No current flows (or extremely small leakage)", "Current flows freely", "Electrons are emitted", "Voltage decreases"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس القدرة الكهربائية؟",
-            options: ["واط", "فولت", "أمبير", "أوم"],
+            question: "Which semiconductor material is commonly used to make diodes?",
+            options: ["Silicon", "Aluminum", "Copper", "Gold"],
             correct: 0
         },
         {
-            question: "ما هو قانون أوم؟",
-            options: ["V = IR", "V = I/R", "V = R/I", "I = VR"],
+            question: "In a half-wave rectifier circuit, how many diodes are used to convert AC to DC?",
+            options: ["One", "Two", "Three", "Four"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس المقاومة الكهربائية؟",
-            options: ["أوم", "فولت", "أمبير", "واط"],
+            question: "What is the voltage drop across a germanium diode when it is forward-biased?",
+            options: ["0.3 volts", "0 volts", "0.7 volts", "1 volt"],
             correct: 0
         },
         {
-            question: "ما هو نوع الطاقة المخزنة في النابض المضغوط؟",
-            options: ["طاقة وضع مرونية", "طاقة حركية", "طاقة حرارية", "طاقة كهربائية"],
+            question: "In reverse bias, the N region of a diode is connected to...",
+            options: ["Positive voltage", "Negative voltage", "Ground", "No voltage"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس الشحنة الكهربائية؟",
-            options: ["كولوم", "أمبير", "فولت", "أوم"],
+            question: "Semiconductors are typically characterized by atoms with...",
+            options: ["Four valence electrons", "Two valence electrons", "One valence electron", "Six valence electrons"],
             correct: 0
         },
         {
-            question: "ما هو قانون كولوم للقوة الكهربائية؟",
-            options: ["F = k(q1q2)/r²", "F = k(q1+q2)/r", "F = k(q1q2)r²", "F = k(q1-q2)/r²"],
+            question: "In time dilation, the moving clock observed from a stationary frame appears...",
+            options: ["Slower", "Faster", "Unaffected", "Random"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس المجال الكهربائي؟",
-            options: ["نيوتن/كولوم", "فولت", "أمبير", "جول"],
+            question: "Which of the following is NOT a source of a magnetic field?",
+            options: ["Stationary Electric charge", "Permanent magnets", "Electric charge in motion", "Ferromagnetic materials"],
+            correct: 0
+        },
+        {
+            question: "The Biot-Savart law describes the magnetic field due to...",
+            options: ["A current-carrying conductor", "A stationary charge", "A moving point charge", "A magnetic dipole"],
+            correct: 0
+        },
+        {
+            question: "In a magnetic field, the force on a charged particle is...",
+            options: ["Perpendicular to both velocity and magnetic field", "Opposite to the magnetic field direction", "Zero if the particle is moving", "Along the direction of the magnetic field"],
+            correct: 0
+        },
+        {
+            question: "What happens to polarized light when it passes through a second polarizer oriented perpendicular to the first one?",
+            options: ["The light is completely blocked", "The light becomes completely unpolarized", "The light becomes more colorful", "The light becomes brighter"],
+            correct: 0
+        },
+        {
+            question: "The magnetic force vector is _______ to the magnetic field.",
+            options: ["Perpendicular", "Parallel", "Helical", "Intersect"],
+            correct: 0
+        },
+        // ========== امتحان 2022-2023 ==========
+        {
+            question: "A semiconductor has generally ... valence electrons",
+            options: ["4", "5", "2", "8"],
+            correct: 0
+        },
+        {
+            question: "When a pentavalent impurity is added to a pure semiconductor, it becomes...",
+            options: ["n-type semiconductor", "an insulator", "an intrinsic semiconductor", "p-type semiconductor"],
+            correct: 0
+        },
+        {
+            question: "In double slit experiment we observe...",
+            options: ["Both interference and diffraction fringes", "Diffraction fringes only", "Interference fringes only", "Polarized fringes"],
+            correct: 0
+        },
+        {
+            question: "A reverse biased pn junction has",
+            options: ["almost no current", "very narrow depletion layer", "very low resistance", "large current flow"],
+            correct: 0
+        },
+        {
+            question: "Phenomenon proves that nature of light is transverse",
+            options: ["Polarization", "Diffraction", "Scattering", "Interference"],
+            correct: 0
+        },
+        {
+            question: "In n-type materials, the minority carriers are",
+            options: ["Holes", "Free electrons", "Protons", "Mesons"],
+            correct: 0
+        },
+        {
+            question: "The Electric force vector is _______ to the electric field.",
+            options: ["Parallel", "Perpendicular", "Helical", "Intersect"],
+            correct: 0
+        },
+        {
+            question: "Appearance of color in thin films is due to...",
+            options: ["Interference", "Diffraction", "Dispersion", "Polarization"],
+            correct: 0
+        },
+        {
+            question: "Light on passing through a Polaroid is.",
+            options: ["plane polarized", "un-polarized", "circularly polarized", "elliptically polarized"],
+            correct: 0
+        },
+        {
+            question: "The condition for constructive interference of two coherent beams is that the path difference should be...",
+            options: ["Integral multiple of λ", "Integral multiple of λ/2", "Odd integral multiple of λ/2", "None of above"],
+            correct: 0
+        },
+        {
+            question: "The blue colour of the sky is due to...",
+            options: ["Scattering", "Diffraction", "Reflection", "Polarization"],
+            correct: 0
+        },
+        {
+            question: "Which one of the following cannot be polarized?",
+            options: ["Ultrasonic waves", "Radio waves", "Ultraviolet rays", "X-rays"],
+            correct: 0
+        },
+        // ========== امتحان 2021-2022 ==========
+        {
+            question: "In the depletion region of a pn junction, there is a shortage of",
+            options: ["Holes and electrons", "Acceptor ions", "Donor ions", "None of the above"],
+            correct: 0
+        },
+        {
+            question: "If the initial velocity of the charged particle has a component parallel to the magnetic field B, the resulting trajectory will be...",
+            options: ["A helical", "Parallel", "A perpendicular", "None of these"],
+            correct: 0
+        },
+        {
+            question: "In n-type materials, the majority carriers are",
+            options: ["Free electrons", "Holes", "Protons", "Neutrons"],
+            correct: 0
+        },
+        {
+            question: "In Young's double slit experiment the fringe spacing is equal to...",
+            options: ["Lλ/d", "λd/L", "d/Lλ", "L/λd"],
+            correct: 0
+        },
+        // ========== امتحان 2018-2019 ==========
+        {
+            question: "Type-II of superconductors are usually...",
+            options: ["Alloys", "Semiconductors", "Insulators", "Pure metals"],
+            correct: 0
+        },
+        {
+            question: "A distribution of electric charge at rest creates...",
+            options: ["Electric field", "Magnetic field", "Both", "Neither"],
+            correct: 0
+        },
+        {
+            question: "Fringe width is inversely proportional to the...",
+            options: ["Separation between the two slits", "Wavelength", "Distance to screen", "Intensity"],
+            correct: 0
+        },
+        {
+            question: "The width of depletion region of a diode",
+            options: ["Increases under reverse bias", "Increases under forward bias", "Is independent of bias", "Decreases under reverse bias"],
+            correct: 0
+        },
+        {
+            question: "What is the voltage drop across a silicon diode when it is forward-biased?",
+            options: ["0.7 volts", "0 volts", "0.3 volts", "1 volt"],
+            correct: 0
+        },
+        {
+            question: "In Full-wave rectification, if Vp = 48V, the average value Vavg is approximately...",
+            options: ["30.6 V", "31.6 V", "42 V", "24 V"],
+            correct: 0
+        },
+        {
+            question: "In half wave rectification, if Vp = 80V, the average value is approximately...",
+            options: ["25.5 V", "35.5 V", "50.9 V", "3.55 V"],
+            correct: 0
+        },
+        {
+            question: "The length contraction equation is L = L₀√(1 - v²/c²). This means moving objects appear...",
+            options: ["Shorter in the direction of motion", "Longer in the direction of motion", "Unchanged", "Wider"],
+            correct: 0
+        },
+        {
+            question: "The magnetic force on a charged particle moving in a magnetic field is given by...",
+            options: ["F = qv × B", "F = qE", "F = ma", "F = kq₁q₂/r²"],
+            correct: 0
+        },
+        {
+            question: "In a full-wave bridge rectifier, how many diodes are used?",
+            options: ["Four", "One", "Two", "Three"],
+            correct: 0
+        },
+        {
+            question: "The time dilation equation Δt = Δt₀/√(1 - v²/c²) shows that time...",
+            options: ["Runs slower for moving observers", "Runs faster for moving observers", "Is the same for all observers", "Stops completely"],
             correct: 0
         }
     ],
@@ -1001,73 +1160,232 @@ L = L₀ × √(1 − v²/c²)`
     electronics: []
 };
 
-// بنك الأسئلة لكل مادة (للعرض مع الإجابات)
+// بنك الأسئلة لكل مادة (للعرض مع الإجابات) - أسئلة امتحانات السنوات السابقة
 const questionsBankData = {
     physics: [],
     physics2: [
+        // ========== امتحان 2024 ==========
         {
-            question: "ما هي وحدة قياس القوة في النظام الدولي؟",
-            options: ["نيوتن", "جول", "واط", "باسكال"],
+            question: "In Young's double-slit experiment, constructive interference occurs when the path difference is...",
+            options: ["mλ", "(m+1/2)λ", "1/2 mλ", "Zero"],
             correct: 0
         },
         {
-            question: "ما هو قانون نيوتن الثاني للحركة؟",
-            options: ["F = ma", "F = mv", "F = m/a", "F = a/m"],
+            question: "In an interference pattern, the distance between two adjacent bright fringes is determined by...",
+            options: ["The wavelength of light and the slit separation", "The screen's distance from the slits only", "The intensity of the light", "The angle of incidence"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس الشغل؟",
-            options: ["جول", "نيوتن", "واط", "متر"],
+            question: "Which concept did Einstein challenge with his Special Theory of Relativity?",
+            options: ["Newtonian mechanics", "The laws of thermodynamics", "Quantum entanglement", "Electromagnetism"],
             correct: 0
         },
         {
-            question: "ما هو تسارع الجاذبية الأرضية تقريباً؟",
-            options: ["9.8 م/ث²", "10.8 م/ث²", "8.9 م/ث²", "11 م/ث²"],
+            question: "In a rectifier circuit, what is the purpose of the smoothing capacitor?",
+            options: ["To filter out the AC component and reduce ripple", "To amplify the signal", "To store data", "To generate light"],
             correct: 0
         },
         {
-            question: "أي مما يلي يعتبر كمية متجهة؟",
-            options: ["السرعة", "الكتلة", "الزمن", "درجة الحرارة"],
+            question: "What is the primary function of a p-n junction diode in a rectifier circuit?",
+            options: ["Convert AC voltage to DC voltage", "Amplify signals", "Generate light", "Store data"],
             correct: 0
         },
         {
-            question: "ما هي العلاقة بين الطاقة الحركية والسرعة؟",
-            options: ["تتناسب طردياً مع مربع السرعة", "تتناسب طردياً مع السرعة", "تتناسب عكسياً مع السرعة", "لا توجد علاقة"],
+            question: "What happens to a diode when it is reverse-biased?",
+            options: ["No current flows (or extremely small leakage)", "Current flows freely", "Electrons are emitted", "Voltage decreases"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس القدرة الكهربائية؟",
-            options: ["واط", "فولت", "أمبير", "أوم"],
+            question: "Which semiconductor material is commonly used to make diodes?",
+            options: ["Silicon", "Aluminum", "Copper", "Gold"],
             correct: 0
         },
         {
-            question: "ما هو قانون أوم؟",
-            options: ["V = IR", "V = I/R", "V = R/I", "I = VR"],
+            question: "In a half-wave rectifier circuit, how many diodes are used to convert AC to DC?",
+            options: ["One", "Two", "Three", "Four"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس المقاومة الكهربائية؟",
-            options: ["أوم", "فولت", "أمبير", "واط"],
+            question: "What is the voltage drop across a germanium diode when it is forward-biased?",
+            options: ["0.3 volts", "0 volts", "0.7 volts", "1 volt"],
             correct: 0
         },
         {
-            question: "ما هو نوع الطاقة المخزنة في النابض المضغوط؟",
-            options: ["طاقة وضع مرونية", "طاقة حركية", "طاقة حرارية", "طاقة كهربائية"],
+            question: "In reverse bias, the N region of a diode is connected to...",
+            options: ["Positive voltage", "Negative voltage", "Ground", "No voltage"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس الشحنة الكهربائية؟",
-            options: ["كولوم", "أمبير", "فولت", "أوم"],
+            question: "Semiconductors are typically characterized by atoms with...",
+            options: ["Four valence electrons", "Two valence electrons", "One valence electron", "Six valence electrons"],
             correct: 0
         },
         {
-            question: "ما هو قانون كولوم للقوة الكهربائية؟",
-            options: ["F = k(q1q2)/r²", "F = k(q1+q2)/r", "F = k(q1q2)r²", "F = k(q1-q2)/r²"],
+            question: "In time dilation, the moving clock observed from a stationary frame appears...",
+            options: ["Slower", "Faster", "Unaffected", "Random"],
             correct: 0
         },
         {
-            question: "ما هي وحدة قياس المجال الكهربائي؟",
-            options: ["نيوتن/كولوم", "فولت", "أمبير", "جول"],
+            question: "Which of the following is NOT a source of a magnetic field?",
+            options: ["Stationary Electric charge", "Permanent magnets", "Electric charge in motion", "Ferromagnetic materials"],
+            correct: 0
+        },
+        {
+            question: "The Biot-Savart law describes the magnetic field due to...",
+            options: ["A current-carrying conductor", "A stationary charge", "A moving point charge", "A magnetic dipole"],
+            correct: 0
+        },
+        {
+            question: "In a magnetic field, the force on a charged particle is...",
+            options: ["Perpendicular to both velocity and magnetic field", "Opposite to the magnetic field direction", "Zero if the particle is moving", "Along the direction of the magnetic field"],
+            correct: 0
+        },
+        {
+            question: "What happens to polarized light when it passes through a second polarizer oriented perpendicular to the first one?",
+            options: ["The light is completely blocked", "The light becomes completely unpolarized", "The light becomes more colorful", "The light becomes brighter"],
+            correct: 0
+        },
+        {
+            question: "The magnetic force vector is _______ to the magnetic field.",
+            options: ["Perpendicular", "Parallel", "Helical", "Intersect"],
+            correct: 0
+        },
+        // ========== امتحان 2022-2023 ==========
+        {
+            question: "A semiconductor has generally ... valence electrons",
+            options: ["4", "5", "2", "8"],
+            correct: 0
+        },
+        {
+            question: "When a pentavalent impurity is added to a pure semiconductor, it becomes...",
+            options: ["n-type semiconductor", "an insulator", "an intrinsic semiconductor", "p-type semiconductor"],
+            correct: 0
+        },
+        {
+            question: "In double slit experiment we observe...",
+            options: ["Both interference and diffraction fringes", "Diffraction fringes only", "Interference fringes only", "Polarized fringes"],
+            correct: 0
+        },
+        {
+            question: "A reverse biased pn junction has",
+            options: ["almost no current", "very narrow depletion layer", "very low resistance", "large current flow"],
+            correct: 0
+        },
+        {
+            question: "Phenomenon proves that nature of light is transverse",
+            options: ["Polarization", "Diffraction", "Scattering", "Interference"],
+            correct: 0
+        },
+        {
+            question: "In n-type materials, the minority carriers are",
+            options: ["Holes", "Free electrons", "Protons", "Mesons"],
+            correct: 0
+        },
+        {
+            question: "The Electric force vector is _______ to the electric field.",
+            options: ["Parallel", "Perpendicular", "Helical", "Intersect"],
+            correct: 0
+        },
+        {
+            question: "Appearance of color in thin films is due to...",
+            options: ["Interference", "Diffraction", "Dispersion", "Polarization"],
+            correct: 0
+        },
+        {
+            question: "Light on passing through a Polaroid is.",
+            options: ["plane polarized", "un-polarized", "circularly polarized", "elliptically polarized"],
+            correct: 0
+        },
+        {
+            question: "The condition for constructive interference of two coherent beams is that the path difference should be...",
+            options: ["Integral multiple of λ", "Integral multiple of λ/2", "Odd integral multiple of λ/2", "None of above"],
+            correct: 0
+        },
+        {
+            question: "The blue colour of the sky is due to...",
+            options: ["Scattering", "Diffraction", "Reflection", "Polarization"],
+            correct: 0
+        },
+        {
+            question: "Which one of the following cannot be polarized?",
+            options: ["Ultrasonic waves", "Radio waves", "Ultraviolet rays", "X-rays"],
+            correct: 0
+        },
+        // ========== امتحان 2021-2022 ==========
+        {
+            question: "In the depletion region of a pn junction, there is a shortage of",
+            options: ["Holes and electrons", "Acceptor ions", "Donor ions", "None of the above"],
+            correct: 0
+        },
+        {
+            question: "If the initial velocity of the charged particle has a component parallel to the magnetic field B, the resulting trajectory will be...",
+            options: ["A helical", "Parallel", "A perpendicular", "None of these"],
+            correct: 0
+        },
+        {
+            question: "In n-type materials, the majority carriers are",
+            options: ["Free electrons", "Holes", "Protons", "Neutrons"],
+            correct: 0
+        },
+        {
+            question: "In Young's double slit experiment the fringe spacing is equal to...",
+            options: ["Lλ/d", "λd/L", "d/Lλ", "L/λd"],
+            correct: 0
+        },
+        // ========== امتحان 2018-2019 ==========
+        {
+            question: "Type-II of superconductors are usually...",
+            options: ["Alloys", "Semiconductors", "Insulators", "Pure metals"],
+            correct: 0
+        },
+        {
+            question: "A distribution of electric charge at rest creates...",
+            options: ["Electric field", "Magnetic field", "Both", "Neither"],
+            correct: 0
+        },
+        {
+            question: "Fringe width is inversely proportional to the...",
+            options: ["Separation between the two slits", "Wavelength", "Distance to screen", "Intensity"],
+            correct: 0
+        },
+        {
+            question: "The width of depletion region of a diode",
+            options: ["Increases under reverse bias", "Increases under forward bias", "Is independent of bias", "Decreases under reverse bias"],
+            correct: 0
+        },
+        {
+            question: "What is the voltage drop across a silicon diode when it is forward-biased?",
+            options: ["0.7 volts", "0 volts", "0.3 volts", "1 volt"],
+            correct: 0
+        },
+        {
+            question: "In Full-wave rectification, if Vp = 48V, the average value Vavg is approximately...",
+            options: ["30.6 V", "31.6 V", "42 V", "24 V"],
+            correct: 0
+        },
+        {
+            question: "In half wave rectification, if Vp = 80V, the average value is approximately...",
+            options: ["25.5 V", "35.5 V", "50.9 V", "3.55 V"],
+            correct: 0
+        },
+        {
+            question: "The length contraction equation is L = L₀√(1 - v²/c²). This means moving objects appear...",
+            options: ["Shorter in the direction of motion", "Longer in the direction of motion", "Unchanged", "Wider"],
+            correct: 0
+        },
+        {
+            question: "The magnetic force on a charged particle moving in a magnetic field is given by...",
+            options: ["F = qv × B", "F = qE", "F = ma", "F = kq₁q₂/r²"],
+            correct: 0
+        },
+        {
+            question: "In a full-wave bridge rectifier, how many diodes are used?",
+            options: ["Four", "One", "Two", "Three"],
+            correct: 0
+        },
+        {
+            question: "The time dilation equation Δt = Δt₀/√(1 - v²/c²) shows that time...",
+            options: ["Runs slower for moving observers", "Runs faster for moving observers", "Is the same for all observers", "Stops completely"],
             correct: 0
         }
     ],
