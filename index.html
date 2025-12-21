@@ -18,6 +18,7 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#home" class="active">الرئيسية</a></li>
+                <li><a href="#challenge">⚡ التحدي</a></li>
                 <li><a href="#quiz">الامتحانات التفاعلية</a></li>
                 <li><a href="#exams">بنك الأسئلة</a></li>
                 <li><a href="#essay">الأسئلة المقالية</a></li>
@@ -78,6 +79,136 @@
                 <a href="#competitions" class="btn btn-secondary">
                     <i class="fas fa-trophy"></i> المسابقات
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Challenge Section -->
+    <section id="challenge" class="section challenge-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-bolt"></i>
+                وضع التحدي
+            </h2>
+            
+            <div class="challenge-intro" id="challengeIntro">
+                <div class="challenge-info">
+                    <div class="challenge-icon">⚡</div>
+                    <h3>تحدي الـ 15 سؤال</h3>
+                    <p>اختبر سرعتك ودقتك! أجب على 15 سؤال عشوائي في 5 دقائق فقط</p>
+                    <div class="challenge-rules">
+                        <div class="rule">
+                            <i class="fas fa-clock"></i>
+                            <span>5 دقائق</span>
+                        </div>
+                        <div class="rule">
+                            <i class="fas fa-question-circle"></i>
+                            <span>15 سؤال</span>
+                        </div>
+                        <div class="rule">
+                            <i class="fas fa-random"></i>
+                            <span>أسئلة عشوائية</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="challenge-name-input">
+                    <label for="challengerName">
+                        <i class="fas fa-user"></i>
+                        أدخل اسمك للبدء
+                    </label>
+                    <input type="text" id="challengerName" placeholder="اسمك هنا..." maxlength="30">
+                    <button class="btn btn-primary start-challenge-btn" onclick="startChallenge()">
+                        <i class="fas fa-play"></i>
+                        ابدأ التحدي
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Challenge Quiz Container -->
+            <div class="challenge-container" id="challengeContainer" style="display: none;">
+                <div class="challenge-header">
+                    <div class="challenge-timer" id="challengeTimer">
+                        <i class="fas fa-clock"></i>
+                        <span id="timerDisplay">05:00</span>
+                    </div>
+                    <div class="challenge-progress">
+                        <span id="challengeProgress">1/15</span>
+                    </div>
+                    <div class="challenge-score">
+                        <i class="fas fa-star"></i>
+                        <span id="challengeScore">0</span>
+                    </div>
+                </div>
+                
+                <div class="challenge-question-container">
+                    <div class="challenge-question" id="challengeQuestion"></div>
+                    <div class="challenge-options" id="challengeOptions"></div>
+                </div>
+                
+                <div class="challenge-nav">
+                    <button class="btn btn-secondary" id="prevChallengeBtn" onclick="prevChallengeQuestion()" disabled>
+                        <i class="fas fa-arrow-right"></i>
+                        السابق
+                    </button>
+                    <button class="btn btn-primary" id="nextChallengeBtn" onclick="nextChallengeQuestion()">
+                        التالي
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="btn btn-success" id="submitChallengeBtn" onclick="submitChallenge()" style="display: none;">
+                        <i class="fas fa-check"></i>
+                        إنهاء التحدي
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Challenge Result -->
+            <div class="challenge-result" id="challengeResult" style="display: none;">
+                <div class="result-icon" id="resultIcon">🏆</div>
+                <h3 id="resultTitle">أحسنت!</h3>
+                <div class="result-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="finalScore">0</span>
+                        <span class="stat-label">النتيجة</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="finalTime">00:00</span>
+                        <span class="stat-label">الوقت المستغرق</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="correctAnswers">0/15</span>
+                        <span class="stat-label">الإجابات الصحيحة</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="restartChallenge()">
+                    <i class="fas fa-redo"></i>
+                    حاول مرة أخرى
+                </button>
+            </div>
+            
+            <!-- Leaderboard -->
+            <div class="leaderboard-section">
+                <h3 class="leaderboard-title">
+                    <i class="fas fa-trophy"></i>
+                    لوحة المتصدرين
+                </h3>
+                <div class="leaderboard-container" id="leaderboardContainer">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>النتيجة</th>
+                                <th>الوقت</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                    <p class="no-records" id="noRecords" style="display: none;">لا توجد نتائج بعد. كن أول المتحدين!</p>
+                </div>
             </div>
         </div>
     </section>

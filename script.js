@@ -1546,3 +1546,285 @@ function initEssayTabs() {
     displayEssayQuestions('physics2');
 }
 
+// ==========================================
+// Challenge Mode - وضع التحدي
+// ==========================================
+
+let challengeQuestions = [];
+let currentChallengeIndex = 0;
+let challengeAnswers = {};
+let challengeTimerInterval = null;
+let challengeTimeRemaining = 300; // 5 دقائق بالثواني
+let challengeStartTime = null;
+let challengerName = '';
+
+// بدء التحدي
+function startChallenge() {
+    const nameInput = document.getElementById('challengerName');
+    challengerName = nameInput.value.trim();
+    
+    if (!challengerName) {
+        alert('من فضلك أدخل اسمك للبدء!');
+        nameInput.focus();
+        return;
+    }
+    
+    // تهيئة التحدي
+    challengeQuestions = getRandomQuestions(15);
+    currentChallengeIndex = 0;
+    challengeAnswers = {};
+    challengeTimeRemaining = 300;
+    challengeStartTime = Date.now();
+    
+    // إخفاء المقدمة وإظهار التحدي
+    document.getElementById('challengeIntro').style.display = 'none';
+    document.getElementById('challengeContainer').style.display = 'block';
+    document.getElementById('challengeResult').style.display = 'none';
+    
+    // بدء المؤقت
+    startChallengeTimer();
+    
+    // عرض أول سؤال
+    showChallengeQuestion();
+    updateChallengeNav();
+}
+
+// الحصول على أسئلة عشوائية
+function getRandomQuestions(count) {
+    const allQuestions = [...questionsBank.physics2];
+    const shuffled = allQuestions.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
+// بدء المؤقت
+function startChallengeTimer() {
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerDiv = document.getElementById('challengeTimer');
+    
+    challengeTimerInterval = setInterval(() => {
+        challengeTimeRemaining--;
+        
+        const minutes = Math.floor(challengeTimeRemaining / 60);
+        const seconds = challengeTimeRemaining % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        // تحذير عند بقاء دقيقة واحدة
+        if (challengeTimeRemaining <= 60) {
+            timerDiv.classList.add('warning');
+        }
+        
+        // انتهاء الوقت
+        if (challengeTimeRemaining <= 0) {
+            clearInterval(challengeTimerInterval);
+            submitChallenge();
+        }
+    }, 1000);
+}
+
+// عرض سؤال التحدي الحالي
+function showChallengeQuestion() {
+    const question = challengeQuestions[currentChallengeIndex];
+    const questionDiv = document.getElementById('challengeQuestion');
+    const optionsDiv = document.getElementById('challengeOptions');
+    const progressSpan = document.getElementById('challengeProgress');
+    
+    // تحديث التقدم
+    progressSpan.textContent = `${currentChallengeIndex + 1}/15`;
+    
+    // عرض السؤال
+    questionDiv.innerHTML = `<span class="question-number">س${currentChallengeIndex + 1}:</span> ${question.question}`;
+    
+    // عرض الخيارات
+    const letters = ['أ', 'ب', 'ج', 'د'];
+    optionsDiv.innerHTML = question.options.map((option, i) => `
+        <div class="challenge-option ${challengeAnswers[currentChallengeIndex] === i ? 'selected' : ''}" 
+             onclick="selectChallengeOption(${i})">
+            <span class="option-letter">${letters[i]}</span>
+            <span class="option-text">${option}</span>
+        </div>
+    `).join('');
+    
+    updateChallengeNav();
+}
+
+// اختيار إجابة
+function selectChallengeOption(optionIndex) {
+    challengeAnswers[currentChallengeIndex] = optionIndex;
+    
+    // تحديث النتيجة المباشرة
+    updateChallengeScore();
+    
+    // إعادة عرض الخيارات
+    showChallengeQuestion();
+    
+    // الانتقال التلقائي للسؤال التالي بعد 500ms
+    if (currentChallengeIndex < challengeQuestions.length - 1) {
+        setTimeout(() => {
+            nextChallengeQuestion();
+        }, 500);
+    }
+}
+
+// تحديث النتيجة
+function updateChallengeScore() {
+    let score = 0;
+    Object.keys(challengeAnswers).forEach(index => {
+        if (challengeQuestions[index].correct === challengeAnswers[index]) {
+            score++;
+        }
+    });
+    document.getElementById('challengeScore').textContent = score;
+}
+
+// السؤال التالي
+function nextChallengeQuestion() {
+    if (currentChallengeIndex < challengeQuestions.length - 1) {
+        currentChallengeIndex++;
+        showChallengeQuestion();
+    }
+}
+
+// السؤال السابق
+function prevChallengeQuestion() {
+    if (currentChallengeIndex > 0) {
+        currentChallengeIndex--;
+        showChallengeQuestion();
+    }
+}
+
+// تحديث أزرار التنقل
+function updateChallengeNav() {
+    const prevBtn = document.getElementById('prevChallengeBtn');
+    const nextBtn = document.getElementById('nextChallengeBtn');
+    const submitBtn = document.getElementById('submitChallengeBtn');
+    
+    prevBtn.disabled = currentChallengeIndex === 0;
+    
+    if (currentChallengeIndex === challengeQuestions.length - 1) {
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'inline-flex';
+    } else {
+        nextBtn.style.display = 'inline-flex';
+        submitBtn.style.display = 'none';
+    }
+}
+
+// إنهاء التحدي
+function submitChallenge() {
+    clearInterval(challengeTimerInterval);
+    
+    // حساب النتيجة
+    let correctCount = 0;
+    Object.keys(challengeAnswers).forEach(index => {
+        if (challengeQuestions[index].correct === challengeAnswers[index]) {
+            correctCount++;
+        }
+    });
+    
+    // حساب الوقت المستغرق
+    const timeTaken = 300 - challengeTimeRemaining;
+    const minutes = Math.floor(timeTaken / 60);
+    const seconds = timeTaken % 60;
+    const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    
+    // حفظ في قاعدة البيانات
+    saveToLeaderboard({
+        name: challengerName,
+        score: correctCount,
+        total: 15,
+        time: timeString,
+        timeSeconds: timeTaken,
+        date: new Date().toLocaleDateString('ar-EG')
+    });
+    
+    // عرض النتيجة
+    showChallengeResult(correctCount, timeString);
+}
+
+// عرض نتيجة التحدي
+function showChallengeResult(score, time) {
+    document.getElementById('challengeContainer').style.display = 'none';
+    document.getElementById('challengeResult').style.display = 'block';
+    
+    const resultIcon = document.getElementById('resultIcon');
+    const resultTitle = document.getElementById('resultTitle');
+    
+    // تحديد الرمز والعنوان حسب النتيجة
+    if (score >= 13) {
+        resultIcon.textContent = '🏆';
+        resultTitle.textContent = 'ممتاز! أنت بطل!';
+    } else if (score >= 10) {
+        resultIcon.textContent = '🌟';
+        resultTitle.textContent = 'أحسنت! نتيجة رائعة!';
+    } else if (score >= 7) {
+        resultIcon.textContent = '👍';
+        resultTitle.textContent = 'جيد! استمر في التحسن!';
+    } else {
+        resultIcon.textContent = '💪';
+        resultTitle.textContent = 'حاول مرة أخرى!';
+    }
+    
+    document.getElementById('finalScore').textContent = `${score}/15`;
+    document.getElementById('finalTime').textContent = time;
+    document.getElementById('correctAnswers').textContent = `${score}/15`;
+    
+    // تحديث لوحة المتصدرين
+    displayLeaderboard();
+}
+
+// إعادة التحدي
+function restartChallenge() {
+    document.getElementById('challengeResult').style.display = 'none';
+    document.getElementById('challengeIntro').style.display = 'block';
+    document.getElementById('challengerName').value = '';
+    
+    // إعادة تعيين المؤقت
+    document.getElementById('timerDisplay').textContent = '05:00';
+    document.getElementById('challengeTimer').classList.remove('warning');
+}
+
+// حفظ في قاعدة البيانات (localStorage)
+function saveToLeaderboard(entry) {
+    let leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+    leaderboard.push(entry);
+    
+    // ترتيب حسب النتيجة ثم الوقت
+    leaderboard.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeSeconds - b.timeSeconds;
+    });
+    
+    // الاحتفاظ بأفضل 50 نتيجة
+    leaderboard = leaderboard.slice(0, 50);
+    
+    localStorage.setItem('challengeLeaderboard', JSON.stringify(leaderboard));
+}
+
+// عرض لوحة المتصدرين
+function displayLeaderboard() {
+    const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+    const tbody = document.getElementById('leaderboardBody');
+    const noRecords = document.getElementById('noRecords');
+    
+    if (leaderboard.length === 0) {
+        tbody.innerHTML = '';
+        noRecords.style.display = 'block';
+        return;
+    }
+    
+    noRecords.style.display = 'none';
+    tbody.innerHTML = leaderboard.map((entry, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${entry.name}</td>
+            <td>${entry.score}/${entry.total}</td>
+            <td>${entry.time}</td>
+            <td>${entry.date}</td>
+        </tr>
+    `).join('');
+}
+
+// تهيئة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    displayLeaderboard();
+});
