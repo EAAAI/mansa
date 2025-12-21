@@ -1245,3 +1245,229 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #00a8cc;
 }
+
+/* ==========================================
+   Essay Questions Section
+   ========================================== */
+
+.essay-section {
+    background: rgba(22, 33, 62, 0.5);
+}
+
+.essay-questions-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.essay-section .no-questions {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+}
+
+.essay-section .no-questions i {
+    font-size: 4rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.essay-section .no-questions h3 {
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.essay-section .no-questions p {
+    color: #666;
+}
+
+.essay-section {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(22, 33, 62, 0.5));
+}
+
+.essay-section-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
+.essay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.essay-header h3 {
+    color: #00d9ff;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.essay-marks {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.essay-description {
+    color: #aaa;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.essay-questions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.essay-question-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.essay-question-card:hover {
+    border-color: rgba(0, 217, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.essay-term {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.essay-term i {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.essay-term span {
+    flex: 1;
+    font-weight: 600;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.show-essay-answer-btn {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.show-essay-answer-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(17, 153, 142, 0.4);
+}
+
+.show-essay-answer-btn.showing {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.essay-answer {
+    padding: 20px;
+    background: rgba(0, 217, 255, 0.05);
+    border-top: 1px solid rgba(0, 217, 255, 0.2);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.answer-content {
+    color: #38ef7d;
+    line-height: 2;
+    font-size: 1rem;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border-right: 4px solid #38ef7d;
+}
+
+/* Essay Section Card */
+.essay-section-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.essay-section-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.essay-section-card:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.essay-section-card:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.essay-section-card:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+/* Responsive Essay Section */
+@media (max-width: 768px) {
+    .essay-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .essay-term {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .show-essay-answer-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .essay-header h3 {
+        font-size: 1.1rem;
+    }
+}

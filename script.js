@@ -763,6 +763,7 @@ window.addEventListener('scroll', () => {
 document.addEventListener('DOMContentLoaded', () => {
     loadParticipants();
     initBankTabs();
+    initEssayTabs();
     initQuizButtons();
     initQuiz('physics2'); // بدء بامتحان فيزياء 2
 });
@@ -770,6 +771,152 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 // Questions Bank - بنك الأسئلة
 // ==========================================
+
+// ==========================================
+// الأسئلة المقالية - Essay Questions
+// ==========================================
+const essayQuestionsData = {
+    physics: [],
+    physics2: [
+        {
+            title: "السؤال الأول: التعريفات (Definitions)",
+            marks: 6,
+            description: "أول سؤال في الامتحان، سيُطلب منك تعريف واحد أو أكثر من القائمة التالية:",
+            questions: [
+                {
+                    term: "مبدأ هيجنز (Huygens' Principle)",
+                    answer: "كل النقاط الموجودة على صدر الموجة (Wave front) يمكن اعتبارها مصدراً لموجات ثانوية كروية تنتشر في جميع الاتجاهات بنفس سرعة الانتشار، والمماس لهذه الموجات ينشئ غلافاً يمثل الموجة الجديدة."
+                },
+                {
+                    term: "الحيود (Diffraction)",
+                    answer: "هو انتشار الموجات وانحناؤها عند مرورها عبر فتحة أو عائق أبعاده مقاربة للطول الموجي للموجة."
+                },
+                {
+                    term: "الاستقطاب (Polarization)",
+                    answer: "هو خاصية لجميع الأمواج المستعرضة، ويعبر عن اتجاه خطوط المجال الكهربي (Electric Field) للموجة."
+                },
+                {
+                    term: "الجهد الحاجز (Barrier Potential)",
+                    answer: "هو الجهد المتكون على جانبي الوصلة الثنائية (PN Junction) والذي يمنع انتقال المزيد من الإلكترونات والفجوات عبر الوصلة (قيمته 0.7V للسيليكون)."
+                },
+                {
+                    term: "فجوة الطاقة (Band Gap)",
+                    answer: "هي فرق الطاقة بين حزمة التكافؤ (Valence band) وحزمة التوصيل (Conduction band)."
+                }
+            ]
+        },
+        {
+            title: "السؤال الثاني: حيود الشق المفرد (Single Slit Diffraction)",
+            marks: 6,
+            description: "استنتاج رياضي - استنتاج شرط الهدب المظلم الأول والثاني",
+            questions: [
+                {
+                    term: "الهدب المظلم الأول (First Dark Fringe)",
+                    answer: `1. نقسم الشق (عرضه a) إلى منطقتين متساويتين (a/2).
+2. لكي يحدث تداخل هدام (إلغاء) بين شعاع من قمة المنطقة الأولى وشعاع من قمة المنطقة الثانية، يجب أن يكون فرق المسار λ/2.
+3. من الرسم الهندسي: (a/2)sinθ = λ/2
+4. القانون: a·sinθ = λ`
+                },
+                {
+                    term: "الهدب المظلم الثاني (Second Dark Fringe)",
+                    answer: `1. نقسم الشق إلى أربع مناطق متساوية (a/4).
+2. يحدث الإلغاء بين كل منطقتين متجاورتين.
+3. من الرسم الهندسي: (a/4)sinθ = λ/2
+4. القانون: a·sinθ = 2λ`
+                }
+            ]
+        },
+        {
+            title: "السؤال الثالث: الاستقطاب (Polarization)",
+            marks: 6,
+            description: "شرح نظري مع القوانين - غالباً عن أحد النوعين التاليين:",
+            questions: [
+                {
+                    term: "الاستقطاب بالامتصاص (Polarization by Absorption)",
+                    answer: `الشرح: نستخدم مادة (مثل التورمالين أو البولارويد) تمتص الاهتزازات الموازية لمحور البلورة وتسمح بنفاذ الاهتزازات العمودية عليها (محور النفاذ).
+
+نستخدم شريحتين: الأولى (Polarizer) والثانية (Analyzer).
+
+قانون مالوس (Malus's Law): شدة الضوء النافذ تعتمد على الزاوية θ بين المحورين:
+I = Imax × cos²θ`
+                },
+                {
+                    term: "الاستقطاب بالانعكاس (Polarization by Reflection)",
+                    answer: `الشرح: عندما يسقط ضوء غير مستقطب على سطح، ينعكس جزء منه. عند زاوية سقوط معينة تسمى زاوية بروستر (θp)، يكون الشعاع المنعكس مستقطباً كلياً.
+
+في هذه الحالة، الزاوية بين الشعاع المنعكس والمنكسر تكون 90°.
+
+قانون بروستر: tan(θp) = n₂/n₁`
+                }
+            ]
+        },
+        {
+            title: "السؤال الرابع: إثباتات المغناطيسية (Magnetic Fields)",
+            marks: 6,
+            description: "استنتاج رياضي - سيطلب منك إثبات واحد من الثلاثة (الأول هو الأكثر شيوعاً):",
+            questions: [
+                {
+                    term: "سلك مستقيم طويل (Long Straight Wire)",
+                    answer: `نطبق قانون بيو-سافارت، ونكامل بالنسبة للزاوية θ من −π/2 إلى +π/2.
+
+النتيجة النهائية: B = μ₀I / (2πR)`
+                },
+                {
+                    term: "سلك مقوس (Curved Wire Segment)",
+                    answer: `المجال عند المركز. الأجزاء المستقيمة لا تولد مجالاً. الجزء المنحني يولد مجالاً بتكامل طول القوس s = aθ.
+
+النتيجة النهائية: B = (μ₀I / 4πa) × θ (حيث θ بالراديان)`
+                },
+                {
+                    term: "على محور حلقة دائرية (Axis of Circular Loop)",
+                    answer: `نحلل المجال ونأخذ المركبة الأفقية dBₓ.
+
+النتيجة النهائية: Bₓ = μ₀Ia² / [2(a² + x²)^(3/2)]`
+                }
+            ]
+        },
+        {
+            title: "السؤال الخامس: نماذج الدايود والنسبية",
+            marks: 6,
+            description: "الاحتمال الأكبر هو نماذج الدايود، يليها النسبية:",
+            questions: [
+                {
+                    term: "النموذج المثالي (Ideal Model)",
+                    answer: `• انحياز أمامي: مفتاح مغلق (VF = 0)
+• انحياز عكسي: مفتاح مفتوح (I = 0)`
+                },
+                {
+                    term: "النموذج العملي (Practical Model)",
+                    answer: `• انحياز أمامي: مفتاح مغلق + بطارية 0.7V
+• القانون: IF = (Vbias − 0.7) / R`
+                },
+                {
+                    term: "النموذج الكامل (Complete Model)",
+                    answer: `• يضيف مقاومة ديناميكية صغيرة (r'd) في الأمامي ومقاومة كبيرة في العكسي.
+• القانون: IF = (Vbias − 0.7) / (R + r'd)`
+                },
+                {
+                    term: "تمدد الزمن (Time Dilation)",
+                    answer: `استنتاج العلاقة من خلال رسم مثلث مسار الضوء وتطبيق فيثاغورث:
+
+Δt = Δt₀ / √(1 − v²/c²)`
+                },
+                {
+                    term: "انكماش الطول (Length Contraction)",
+                    answer: `استنتاج العلاقة باستخدام معادلات الزمن والسرعة:
+
+L = L₀ × √(1 − v²/c²)`
+                }
+            ]
+        }
+    ],
+    math1: [],
+    math0: [],
+    it: [],
+    'computing-history': [],
+    'computer-laws': [],
+    electronics: []
+};
 
 // بنك الأسئلة لكل مادة (للعرض مع الإجابات)
 const questionsBankData = {
@@ -919,5 +1066,81 @@ function initBankTabs() {
     
     // عرض فيزياء 2 افتراضياً
     displayBankQuestions('physics2');
+}
+
+// عرض الأسئلة المقالية
+function displayEssayQuestions(subject) {
+    const container = document.getElementById('essayQuestionsContainer');
+    const essays = essayQuestionsData[subject] || [];
+    
+    if (essays.length === 0) {
+        container.innerHTML = `
+            <div class="no-questions">
+                <i class="fas fa-inbox"></i>
+                <h3>لا توجد أسئلة مقالية حالياً</h3>
+                <p>سيتم إضافة الأسئلة قريباً</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = essays.map((essay, essayIndex) => `
+        <div class="essay-section-card">
+            <div class="essay-header">
+                <h3>${essay.title}</h3>
+                <span class="essay-marks"><i class="fas fa-star"></i> ${essay.marks} درجات</span>
+            </div>
+            <p class="essay-description">${essay.description}</p>
+            <div class="essay-questions">
+                ${essay.questions.map((q, qIndex) => `
+                    <div class="essay-question-card">
+                        <div class="essay-term">
+                            <i class="fas fa-bookmark"></i>
+                            <span>${q.term}</span>
+                            <button class="show-essay-answer-btn" onclick="toggleEssayAnswer(this)">
+                                <i class="fas fa-eye"></i> إظهار الإجابة
+                            </button>
+                        </div>
+                        <div class="essay-answer" style="display: none;">
+                            <div class="answer-content">${q.answer.replace(/\n/g, '<br>')}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+// إظهار/إخفاء إجابة السؤال المقالي
+function toggleEssayAnswer(btn) {
+    const card = btn.closest('.essay-question-card');
+    const answer = card.querySelector('.essay-answer');
+    const isShowing = btn.classList.contains('showing');
+    
+    if (isShowing) {
+        answer.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-eye"></i> إظهار الإجابة';
+        btn.classList.remove('showing');
+    } else {
+        answer.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء الإجابة';
+        btn.classList.add('showing');
+    }
+}
+
+// تهيئة tabs الأسئلة المقالية
+function initEssayTabs() {
+    const tabs = document.querySelectorAll('[data-essay-subject]');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            displayEssayQuestions(tab.dataset.essaySubject);
+        });
+    });
+    
+    // عرض فيزياء 2 افتراضياً
+    displayEssayQuestions('physics2');
 }
 
