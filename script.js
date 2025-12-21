@@ -8,11 +8,12 @@ const API_CONFIG = {
 };
 
 // ==========================================
-// AI Chat Bot - مساعد إبراهيم الذكي
+// AI Chat Bot - ذكي
 // ==========================================
 let chatHistory = [];
 let userName = '';
 let isFirstMessage = true;
+let pendingImage = null;
 
 // فتح/إغلاق البوت
 function toggleChatBot() {
@@ -24,11 +25,13 @@ function toggleChatBot() {
         setTimeout(() => {
             addBotMessage(`أهلاً وسهلاً بك! 👋
 
-أنا مساعد إبراهيم الذكي، نموذج لغوي طوره **إبراهيم محمد** - طالب معاكم بالكلية.
+أنا **ذكي**، نموذج لغوي ذكي مطور من شركة **EAAAI**.
+🌐 <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank" style="color: #38ef7d;">زور موقعنا</a>
 
 أنا هنا لمساعدتك في:
 • شرح الأسئلة والمفاهيم الصعبة
-• حل المسائل الرياضية والفيزيائية
+• حل المسائل الرياضية والفيزيائية 📐
+• **رفع صور المسائل وحلها** 📷
 • الإجابة على أي استفسار دراسي
 
 ممكن أعرف اسمك الكريم؟ 😊`);
@@ -45,7 +48,7 @@ function addBotMessage(message) {
     messageDiv.innerHTML = `
         <div class="message-header">
             <i class="fas fa-robot"></i>
-            <span>مساعد إبراهيم</span>
+            <span>ذكي</span>
         </div>
         <div class="message-text">${message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>
     `;
@@ -103,6 +106,10 @@ async function sendMessage() {
 
 اسألني أي سؤال في الفيزياء أو الرياضيات أو أي مادة تانية، وأنا هشرحلك بالتفصيل.
 
+💡 **نصيحة:** تقدر ترفع صورة لأي مسألة وأنا هحلها! اضغط على 📷
+
+🌐 لو عايز تعرف أكتر عن شركة EAAAI: <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank" style="color: #38ef7d;">زور موقعنا</a>
+
 إيه اللي محتاج مساعدة فيه؟ 📚`);
             chatHistory.push({ 
                 role: 'assistant', 
@@ -131,7 +138,8 @@ async function sendMessage() {
 
 // الحصول على رد من AI
 async function getAIResponse(userMessage) {
-    const systemPrompt = `أنت "مساعد إبراهيم الذكي"، نموذج لغوي ذكي طوره إبراهيم محمد - طالب بالكلية.
+    const systemPrompt = `أنت "ذكي"، نموذج لغوي ذكي مطور من شركة EAAAI.
+موقع الشركة: https://ibrahim88887.github.io/EAAAI/
 
 شخصيتك:
 - ودود ومرح ومتحمس للمساعدة
@@ -148,7 +156,7 @@ async function getAIResponse(userMessage) {
 ${userName ? `اسم الطالب الذي تتحدث معه: ${userName}` : ''}
 
 قواعد مهمة:
-- لو سألك حد "مين عملك" أو "مين طورك"، قول إنك نموذج لغوي طوره إبراهيم محمد طالب بالكلية
+- لو سألك حد "مين عملك" أو "مين طورك"، قول إنك "ذكي" نموذج لغوي مطور من شركة EAAAI واديلهم رابط الموقع: https://ibrahim88887.github.io/EAAAI/
 - خلي إجاباتك مختصرة ومفيدة
 - استخدم الأمثلة لتوضيح المفاهيم
 - شجع الطالب دائماً`;
@@ -185,6 +193,130 @@ function handleChatKeyPress(event) {
     if (event.key === 'Enter') {
         sendMessage();
     }
+}
+
+// التعامل مع رفع الصور
+function handleChatImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        addBotMessage('⚠️ من فضلك ارفع صورة فقط!');
+        return;
+    }
+    
+    if (file.size > 10 * 1024 * 1024) {
+        addBotMessage('⚠️ حجم الصورة كبير جداً! الحد الأقصى 10MB');
+        return;
+    }
+    
+    // تحويل الصورة لـ base64
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const base64Image = e.target.result;
+        
+        // عرض الصورة في الشات
+        addUserImageMessage(base64Image);
+        
+        // إظهار مؤشر الكتابة
+        showTypingIndicator();
+        
+        try {
+            const response = await analyzeImageWithAI(base64Image);
+            hideTypingIndicator();
+            addBotMessage(response);
+        } catch (error) {
+            hideTypingIndicator();
+            addBotMessage('عذراً، مش قادر أحلل الصورة دلوقتي. ممكن تحاول تاني؟ 🙏');
+        }
+    };
+    reader.readAsDataURL(file);
+    
+    // إعادة تعيين الـ input
+    event.target.value = '';
+}
+
+// إضافة صورة المستخدم للشات
+function addUserImageMessage(imageSrc) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-message user image-message';
+    messageDiv.innerHTML = `
+        <img src="${imageSrc}" alt="صورة المسألة" onclick="openImagePreview(this.src)">
+        <span class="image-label">📷 صورة مسألة</span>
+    `;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// تحليل الصورة بالـ AI
+async function analyzeImageWithAI(imageData) {
+    const base64Data = imageData.split(',')[1];
+    const mimeType = imageData.split(';')[0].split(':')[1];
+    
+    const response = await fetch(API_CONFIG.apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${API_CONFIG.apiKey}`
+        },
+        body: JSON.stringify({
+            model: 'llama-3.2-90b-vision-preview',
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: `أنت "ذكي"، نموذج لغوي ذكي مطور من شركة EAAAI.
+                            
+حلل هذه الصورة واستخرج السؤال أو المسألة منها، ثم:
+1. اكتب نص السؤال/المسألة
+2. قدم الحل خطوة بخطوة
+3. اكتب الإجابة النهائية
+
+${userName ? `اسم الطالب: ${userName}` : ''}
+
+اشرح بطريقة بسيطة وواضحة باللغة العربية. استخدم الإيموجي بشكل معتدل.`
+                        },
+                        {
+                            type: 'image_url',
+                            image_url: {
+                                url: `data:${mimeType};base64,${base64Data}`
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens: 2048,
+            temperature: 0.5
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error('API Error');
+    }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || 'عذراً، مش قادر أحلل الصورة.';
+}
+
+// فتح الصورة بحجم كبير
+function openImagePreview(src) {
+    const overlay = document.createElement('div');
+    overlay.className = 'image-preview-overlay';
+    overlay.innerHTML = `
+        <div class="image-preview-content">
+            <img src="${src}" alt="معاينة">
+            <button onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i> إغلاق
+            </button>
+        </div>
+    `;
+    overlay.onclick = (e) => {
+        if (e.target === overlay) overlay.remove();
+    };
+    document.body.appendChild(overlay);
 }
 
 // ==========================================
