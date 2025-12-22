@@ -1602,13 +1602,69 @@ let challengeTimeRemaining = 300; // 5 دقائق بالثواني
 let challengeStartTime = null;
 let challengerName = '';
 
+// قائمة الكلمات الممنوعة (الشتائم والألفاظ غير اللائقة)
+const bannedWords = [
+    // شتائم عربية
+    'كس', 'طيز', 'زب', 'شرموط', 'عرص', 'متناك', 'منيك', 'لبوه', 'قحب', 'عاهر',
+    'خول', 'ابن الكلب', 'ابن الحرام', 'ابن العرص', 'ابن الشرموطه', 'كسم',
+    'احا', 'ينعل', 'يلعن', 'زانيه', 'زاني', 'فاجر', 'فاجره', 'وسخ', 'وسخه',
+    'حمار', 'غبي', 'احمق', 'معفن', 'قذر', 'نجس', 'حقير', 'تافه', 'واطي',
+    'كلب', 'خنزير', 'حيوان', 'بهيم', 'ديوث', 'قواد',
+    // شتائم إنجليزية
+    'fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'bastard', 'whore',
+    'slut', 'cunt', 'cock', 'damn', 'hell', 'nigger', 'fag', 'gay',
+    'stupid', 'idiot', 'dumb', 'retard', 'loser', 'sucker', 'motherfucker',
+    // أسماء غير لائقة
+    'ابليس', 'شيطان', 'satan', 'devil', 'demon'
+];
+
+// فلترة الاسم من الشتائم
+function filterName(name) {
+    if (!name) return '';
+    
+    let filteredName = name.trim();
+    const lowerName = filteredName.toLowerCase();
+    
+    // التحقق من الكلمات الممنوعة
+    for (const word of bannedWords) {
+        const regex = new RegExp(word, 'gi');
+        if (regex.test(lowerName) || regex.test(filteredName)) {
+            return null; // الاسم يحتوي على كلمة ممنوعة
+        }
+    }
+    
+    // التحقق من الأسماء القصيرة جداً أو الطويلة جداً
+    if (filteredName.length < 2 || filteredName.length > 30) {
+        return null;
+    }
+    
+    // التحقق من الرموز الغريبة والأرقام فقط
+    const onlyNumbers = /^[0-9]+$/;
+    const onlySymbols = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+    if (onlyNumbers.test(filteredName) || onlySymbols.test(filteredName)) {
+        return null;
+    }
+    
+    return filteredName;
+}
+
 // بدء التحدي
 function startChallenge() {
     const nameInput = document.getElementById('challengerName');
-    challengerName = nameInput.value.trim();
+    const rawName = nameInput.value.trim();
+    
+    if (!rawName) {
+        alert('من فضلك أدخل اسمك للبدء!');
+        nameInput.focus();
+        return;
+    }
+    
+    // فلترة الاسم
+    challengerName = filterName(rawName);
     
     if (!challengerName) {
-        alert('من فضلك أدخل اسمك للبدء!');
+        alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.');
+        nameInput.value = '';
         nameInput.focus();
         return;
     }
