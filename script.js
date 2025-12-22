@@ -878,31 +878,43 @@ function initQuizButtons() {
                 it: 'IT',
                 electronics: 'إلكترونيات'
             };
-            document.getElementById('selectedSubjectName').textContent = subjectNames[selectedQuizSubject];
+            const subjectNameEl = document.getElementById('selectedSubjectName');
+            if (subjectNameEl) subjectNameEl.textContent = subjectNames[selectedQuizSubject];
             
             // إظهار شاشة البداية وإخفاء الامتحان
-            document.getElementById('quizStartScreen').style.display = 'block';
-            document.getElementById('quizContainer').style.display = 'none';
-            document.getElementById('quizResult').style.display = 'none';
+            const startScreen = document.getElementById('quizStartScreen');
+            const container = document.getElementById('quizContainer');
+            const result = document.getElementById('quizResult');
+            if (startScreen) startScreen.style.display = 'block';
+            if (container) container.style.display = 'none';
+            if (result) result.style.display = 'none';
         });
     });
     
-    // زر التالي
-    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+    // زر التالي (مع فحص وجوده)
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
     
-    // زر السابق
-    document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+    // زر السابق (مع فحص وجوده)
+    const prevBtn = document.getElementById('prevBtn');
+    if (prevBtn) prevBtn.addEventListener('click', prevQuestion);
     
-    // زر إنهاء الامتحان
-    document.getElementById('submitQuiz').addEventListener('click', submitQuiz);
+    // زر إنهاء الامتحان (مع فحص وجوده)
+    const submitBtn = document.getElementById('submitQuiz');
+    if (submitBtn) submitBtn.addEventListener('click', submitQuiz);
     
-    // زر إعادة الامتحان
-    document.getElementById('retryQuiz').addEventListener('click', () => {
-        // العودة لشاشة البداية
-        document.getElementById('quizStartScreen').style.display = 'block';
-        document.getElementById('quizResult').style.display = 'none';
-        document.getElementById('quizContainer').style.display = 'none';
-    });
+    // زر إعادة الامتحان (مع فحص وجوده)
+    const retryBtn = document.getElementById('retryQuiz');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            const startScreen = document.getElementById('quizStartScreen');
+            const container = document.getElementById('quizContainer');
+            const result = document.getElementById('quizResult');
+            if (startScreen) startScreen.style.display = 'block';
+            if (result) result.style.display = 'none';
+            if (container) container.style.display = 'none';
+        });
+    }
 }
 
 // بدء الامتحان مع الاسم
@@ -2105,16 +2117,21 @@ async function saveToLeaderboard(entry) {
 // عرض لوحة المتصدرين من Firebase
 async function displayLeaderboard() {
     try {
-        // جلب البيانات من Firebase مرتبة حسب النتيجة
+        // جلب البيانات من Firebase مرتبة حسب النتيجة فقط
         const snapshot = await db.collection('leaderboard')
             .orderBy('score', 'desc')
-            .orderBy('timeSeconds', 'asc')
             .limit(50)
             .get();
         
-        const leaderboard = [];
+        let leaderboard = [];
         snapshot.forEach(doc => {
             leaderboard.push(doc.data());
+        });
+        
+        // ترتيب ثانوي حسب الوقت (الأسرع أولاً) في حالة تساوي النتيجة
+        leaderboard.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.timeSeconds - b.timeSeconds;
         });
         
         // تحديث لوحة المتصدرين في قسم التحدي
@@ -2180,12 +2197,16 @@ function updateLeaderboardUI(leaderboard) {
 function listenToLeaderboard() {
     db.collection('leaderboard')
         .orderBy('score', 'desc')
-        .orderBy('timeSeconds', 'asc')
         .limit(50)
         .onSnapshot((snapshot) => {
-            const leaderboard = [];
+            let leaderboard = [];
             snapshot.forEach(doc => {
                 leaderboard.push(doc.data());
+            });
+            // ترتيب ثانوي حسب الوقت
+            leaderboard.sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return a.timeSeconds - b.timeSeconds;
             });
             updateLeaderboardUI(leaderboard);
         }, (error) => {
