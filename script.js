@@ -2129,11 +2129,16 @@ async function saveToLeaderboard(entry) {
 
 // عرض لوحة المتصدرين من Firebase
 async function displayLeaderboard() {
+    if (!db) {
+        const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+        updateLeaderboardUI(leaderboard);
+        return;
+    }
+    
     try {
-        // جلب البيانات من Firebase مرتبة حسب النتيجة فقط
+        // جلب البيانات من Firebase بدون ترتيب (لتجنب الحاجة لـ index)
         const snapshot = await db.collection('leaderboard')
-            .orderBy('score', 'desc')
-            .limit(50)
+            .limit(100)
             .get();
         
         let leaderboard = [];
@@ -2141,11 +2146,14 @@ async function displayLeaderboard() {
             leaderboard.push(doc.data());
         });
         
-        // ترتيب ثانوي حسب الوقت (الأسرع أولاً) في حالة تساوي النتيجة
+        // ترتيب في JavaScript: الأعلى نتيجة أولاً، ثم الأسرع وقتاً
         leaderboard.sort((a, b) => {
             if (b.score !== a.score) return b.score - a.score;
             return a.timeSeconds - b.timeSeconds;
         });
+        
+        // أخذ أفضل 50 فقط
+        leaderboard = leaderboard.slice(0, 50);
         
         // تحديث لوحة المتصدرين في قسم التحدي
         updateLeaderboardUI(leaderboard);
@@ -2218,20 +2226,22 @@ function listenToLeaderboard() {
     
     console.log('🔄 جاري الاتصال بـ Firebase...');
     
+    // جلب البيانات بدون ترتيب (لتجنب الحاجة لـ index)
     db.collection('leaderboard')
-        .orderBy('score', 'desc')
-        .limit(50)
+        .limit(100)
         .onSnapshot((snapshot) => {
             console.log('✅ تم جلب البيانات:', snapshot.size, 'سجل');
             let leaderboard = [];
             snapshot.forEach(doc => {
                 leaderboard.push(doc.data());
             });
-            // ترتيب ثانوي حسب الوقت
+            // ترتيب في JavaScript: الأعلى نتيجة أولاً، ثم الأسرع وقتاً
             leaderboard.sort((a, b) => {
                 if (b.score !== a.score) return b.score - a.score;
                 return a.timeSeconds - b.timeSeconds;
             });
+            // أخذ أفضل 50 فقط
+            leaderboard = leaderboard.slice(0, 50);
             updateLeaderboardUI(leaderboard);
         }, (error) => {
             console.error('❌ خطأ في الاستماع للتحديثات:', error);
