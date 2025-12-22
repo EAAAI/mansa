@@ -1666,10 +1666,17 @@ const questionsBankData = {
     electronics: []
 };
 
-// عرض أسئلة بنك الأسئلة
-function displayBankQuestions(subject) {
+// عرض أسئلة بنك الأسئلة مع زر عرض المزيد
+let bankQuestionsShown = 10;
+let currentBankSubject = 'physics2';
+
+function displayBankQuestions(subject, reset = true) {
     const container = document.getElementById('questionsBankContainer');
     const questions = questionsBankData[subject] || [];
+    if (reset) {
+        bankQuestionsShown = 10;
+        currentBankSubject = subject;
+    }
     
     if (questions.length === 0) {
         container.innerHTML = `
@@ -1681,10 +1688,8 @@ function displayBankQuestions(subject) {
         `;
         return;
     }
-    
     const letters = ['أ', 'ب', 'ج', 'د'];
-    
-    container.innerHTML = questions.map((q, index) => `
+    let html = questions.slice(0, bankQuestionsShown).map((q, index) => `
         <div class="bank-question-card">
             <div class="bank-question-header">
                 <span class="question-number">${index + 1}</span>
@@ -1703,6 +1708,21 @@ function displayBankQuestions(subject) {
             </div>
         </div>
     `).join('');
+    // زر عرض المزيد
+    if (bankQuestionsShown < questions.length) {
+        html += `<div style="text-align:center;margin:1.5rem 0;">
+            <button class="btn btn-secondary" onclick="showMoreBankQuestions()">عرض المزيد</button>
+        </div>`;
+    }
+    container.innerHTML = html;
+}
+
+// زر عرض المزيد
+function showMoreBankQuestions() {
+    const questions = questionsBankData[currentBankSubject] || [];
+    bankQuestionsShown += 10;
+    if (bankQuestionsShown > questions.length) bankQuestionsShown = questions.length;
+    displayBankQuestions(currentBankSubject, false);
 }
 
 // إظهار/إخفاء الإجابة
