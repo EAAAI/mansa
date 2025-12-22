@@ -8,6 +8,23 @@ const API_CONFIG = {
 };
 
 // ==========================================
+// Firebase Configuration
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyCFhUdOI9IqFCjBkg8zytanD5O1_67vCr4",
+    authDomain: "manasa-ceaa2.firebaseapp.com",
+    projectId: "manasa-ceaa2",
+    storageBucket: "manasa-ceaa2.firebasestorage.app",
+    messagingSenderId: "847284305108",
+    appId: "1:847284305108:web:7a14698f76b3981c6acf41",
+    measurementId: "G-CYX6QKJZSR"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ==========================================
 // AI Chat Bot - ذكي
 // ==========================================
 let chatHistory = [];
@@ -2057,27 +2074,63 @@ function restartChallenge() {
     document.getElementById('challengeTimer').classList.remove('warning');
 }
 
-// حفظ في قاعدة البيانات (localStorage)
-function saveToLeaderboard(entry) {
-    let leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
-    leaderboard.push(entry);
-    
-    // ترتيب حسب النتيجة ثم الوقت
-    leaderboard.sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return a.timeSeconds - b.timeSeconds;
-    });
-    
-    // الاحتفاظ بأفضل 50 نتيجة
-    leaderboard = leaderboard.slice(0, 50);
-    
-    localStorage.setItem('challengeLeaderboard', JSON.stringify(leaderboard));
+// حفظ في قاعدة البيانات (Firebase Firestore)
+async function saveToLeaderboard(entry) {
+    try {
+        // إضافة timestamp للترتيب
+        entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
+        
+        // حفظ في Firebase
+        await db.collection('leaderboard').add(entry);
+        
+        console.log('✅ تم حفظ النتيجة في Firebase');
+        
+        // تحديث العرض
+        displayLeaderboard();
+    } catch (error) {
+        console.error('❌ خطأ في حفظ النتيجة:', error);
+        
+        // حفظ احتياطي في localStorage
+        let leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+        leaderboard.push(entry);
+        leaderboard.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.timeSeconds - b.timeSeconds;
+        });
+        leaderboard = leaderboard.slice(0, 50);
+        localStorage.setItem('challengeLeaderboard', JSON.stringify(leaderboard));
+    }
 }
 
-// عرض لوحة المتصدرين
-function displayLeaderboard() {
-    const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
-    
+// عرض لوحة المتصدرين من Firebase
+async function displayLeaderboard() {
+    try {
+        // جلب البيانات من Firebase مرتبة حسب النتيجة
+        const snapshot = await db.collection('leaderboard')
+            .orderBy('score', 'desc')
+            .orderBy('timeSeconds', 'asc')
+            .limit(50)
+            .get();
+        
+        const leaderboard = [];
+        snapshot.forEach(doc => {
+            leaderboard.push(doc.data());
+        });
+        
+        // تحديث لوحة المتصدرين في قسم التحدي
+        updateLeaderboardUI(leaderboard);
+        
+    } catch (error) {
+        console.error('❌ خطأ في جلب البيانات:', error);
+        
+        // استخدام localStorage كاحتياط
+        const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+        updateLeaderboardUI(leaderboard);
+    }
+}
+
+// تحديث واجهة لوحة المتصدرين
+function updateLeaderboardUI(leaderboard) {
     // تحديث لوحة المتصدرين في قسم التحدي
     const tbody = document.getElementById('leaderboardBody');
     const noRecords = document.getElementById('noRecords');
@@ -2123,7 +2176,25 @@ function displayLeaderboard() {
     }
 }
 
+// الاستماع للتحديثات في الوقت الحقيقي
+function listenToLeaderboard() {
+    db.collection('leaderboard')
+        .orderBy('score', 'desc')
+        .orderBy('timeSeconds', 'asc')
+        .limit(50)
+        .onSnapshot((snapshot) => {
+            const leaderboard = [];
+            snapshot.forEach(doc => {
+                leaderboard.push(doc.data());
+            });
+            updateLeaderboardUI(leaderboard);
+        }, (error) => {
+            console.error('❌ خطأ في الاستماع للتحديثات:', error);
+        });
+}
+
 // تهيئة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-    displayLeaderboard();
+    // بدء الاستماع للتحديثات الفورية
+    listenToLeaderboard();
 });
