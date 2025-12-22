@@ -1959,16 +1959,13 @@ function filterName(name) {
 function startChallenge() {
     const nameInput = document.getElementById('challengerName');
     const rawName = nameInput.value.trim();
-    
     if (!rawName) {
-        alert('من فضلك أدخل اسمك للبدء!');
+        alert('يجب إدخال اسمك للبدء!');
         nameInput.focus();
         return;
     }
-    
     // فلترة الاسم
     challengerName = filterName(rawName);
-    
     if (!challengerName) {
         alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.');
         nameInput.value = '';
@@ -2195,8 +2192,12 @@ function restartChallenge() {
 // حفظ في قاعدة البيانات (Firebase Firestore)
 async function saveToLeaderboard(entry) {
     // حفظ في localStorage أولاً كاحتياط
+    // تأكد من وجود الاسم دائماً
+    let name = entry.name || challengerName || '';
+    if (!name) name = prompt('يرجى إدخال اسمك ليظهر في لوحة المتصدرين:');
+    if (!name) name = 'مشارك مجهول';
     let localLeaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
-    localLeaderboard.push({...entry});
+    localLeaderboard.push({...entry, name});
     localLeaderboard.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return a.timeSeconds - b.timeSeconds;
@@ -2210,16 +2211,13 @@ async function saveToLeaderboard(entry) {
         updateLeaderboardUI(localLeaderboard);
         return;
     }
-    
     try {
         // إضافة timestamp للترتيب
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
-        
-        // حفظ في Firebase
+        // تأكد من وجود الاسم في الحفظ السحابي أيضاً
+        if (!entry.name) entry.name = name;
         const docRef = await db.collection('leaderboard').add(entry);
-        
         console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
-        
     } catch (error) {
         console.error('❌ خطأ في حفظ النتيجة:', error);
         // البيانات محفوظة محلياً بالفعل

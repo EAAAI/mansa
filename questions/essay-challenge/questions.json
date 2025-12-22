@@ -1,0 +1,10 @@
+[
+  {
+    "question": "اشرح نظرية النسبية الخاصة بإيجاز.",
+    "modelAnswer": "النسبية الخاصة هي نظرية وضعها أينشتاين تشرح العلاقة بين الزمان والمكان عند السرعات العالية. من أهم نتائجها أن الزمن يبطئ كلما زادت السرعة، وأن الكتلة والطاقة مرتبطتان بمعادلة E=mc^2.\nSpecial relativity is a theory by Einstein that explains the relationship between space and time at high speeds. One of its main results is that time slows down as speed increases, and mass and energy are related by E=mc^2."
+  },
+  {
+    "question": "ما أهمية أشباه الموصلات في الإلكترونيات الحديثة؟",
+    "modelAnswer": "أشباه الموصلات هي مواد تستخدم لصنع المكونات الإلكترونية مثل الترانزستورات والدوائر المتكاملة، وهي أساس كل الأجهزة الحديثة مثل الحواسيب والهواتف.\nSemiconductors are materials used to make electronic components like transistors and integrated circuits, and they are the foundation of all modern devices such as computers and phones."
+  }
+]
