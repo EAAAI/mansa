@@ -2084,15 +2084,17 @@ function submitChallenge() {
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     
-    // حفظ في قاعدة البيانات
-    saveToLeaderboard({
-        name: challengerName,
-        score: correctCount,
-        total: 15,
-        time: timeString,
-        timeSeconds: timeTaken,
-        date: new Date().toLocaleDateString('ar-EG')
-    });
+    // منع الغش: إذا الوقت أقل من دقيقة والنتيجة 13 أو أكثر لا تحفظ
+    if (!(timeTaken < 60 && correctCount >= 13)) {
+        saveToLeaderboard({
+            name: challengerName,
+            score: correctCount,
+            total: 15,
+            time: timeString,
+            timeSeconds: timeTaken,
+            date: new Date().toLocaleDateString('ar-EG')
+        });
+    }
     
     // عرض النتيجة
     showChallengeResult(correctCount, timeString);

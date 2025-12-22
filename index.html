@@ -13,11 +13,55 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-    <!-- Top Scorer Alert -->
-    <div id="topScorerAlert" class="top-scorer-alert" style="display:none;">
-        <span id="topScorerText"></span>
-        <button onclick="document.getElementById('topScorerAlert').style.display='none'" class="close-alert-btn" title="إغلاق الإعلام">&times;</button>
-    </div>
+        <script>
+        // تسجيل جلسة دخول تلقائياً في Firebase
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // توليد معرف للجلسة
+                var sessionId = localStorage.getItem('sessionId');
+                if (!sessionId) {
+                    sessionId = 'sess-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('sessionId', sessionId);
+                }
+
+                // بيانات الجهاز والمتصفح
+                var userAgent = navigator.userAgent;
+                var platform = navigator.platform;
+                var language = navigator.language;
+                var time = new Date().toISOString();
+
+                // جلب الموقع الجغرافي عبر IP API
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(loc => {
+                        var geo = {
+                            ip: loc.ip,
+                            country: loc.country_name,
+                            city: loc.city,
+                            region: loc.region,
+                            org: loc.org
+                        };
+                        saveSessionToFirebase({
+                            sessionId, userAgent, platform, language, time,
+                            ...geo
+                        });
+                    })
+                    .catch(() => {
+                        saveSessionToFirebase({ sessionId, userAgent, platform, language, time });
+                    });
+            } catch(e) { /* ignore */ }
+        });
+
+        function saveSessionToFirebase(data) {
+            if (typeof firebase !== 'undefined' && firebase.firestore) {
+                try {
+                    var db = firebase.firestore();
+                    db.collection('sessions').add(data);
+                } catch(e) {}
+            }
+        }
+        </script>
+    
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -407,16 +451,6 @@
 
     <script src="script.js"></script>
     <script>
-    // إعلام أعلى متصدر
-    function showTopScorerAlert(name, score) {
-        var alertDiv = document.getElementById('topScorerAlert');
-        var textSpan = document.getElementById('topScorerText');
-        if (alertDiv && textSpan && name && score) {
-            textSpan.innerHTML = `🥇 <b>${name}</b> هو المتصدر الحالي على المنصة برصيد <b>${score}</b> نقطة!`;
-            alertDiv.style.display = 'block';
-        }
-    }
-
     // عرض الأخطاء بعد التحدي
     function showChallengeMistakes(mistakes) {
         var container = document.getElementById('challengeMistakesContainer');
@@ -436,23 +470,6 @@
             }
         }
     }
-
-    // مراقبة المتصدر من لوحة المتصدرين
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            var leaderboard = document.getElementById('mainLeaderboardBody');
-            if (leaderboard && leaderboard.children.length > 0) {
-                var firstRow = leaderboard.children[0];
-                if (firstRow) {
-                    var name = firstRow.children[1]?.textContent?.trim();
-                    var score = firstRow.children[2]?.textContent?.split('/')[0]?.trim();
-                    if (name && score) {
-                        showTopScorerAlert(name, score);
-                    }
-                }
-            }
-        }, 1200); // تأخير بسيط بعد التحميل لضمان تحديث الجدول
-    });
     </script>
 </body>
 </html>
