@@ -1,3 +1,53 @@
+// ==============================
+// Essay Correction with AI
+// ==============================
+async function correctEssay() {
+    const studentAnswer = document.getElementById('studentEssayAnswer').value.trim();
+    const modelAnswer = document.getElementById('modelEssayAnswer').value.trim();
+    const responseDiv = document.getElementById('essayCorrectionResponse');
+    const responseContent = document.getElementById('essayCorrectionResponseContent');
+
+    if (!studentAnswer || !modelAnswer) {
+        alert('يرجى كتابة إجابتك ولصق الإجابة النموذجية.');
+        return;
+    }
+
+    responseDiv.style.display = 'block';
+    responseContent.innerHTML = '<div class="ask-ai-loading"><i class="fas fa-spinner"></i> الذكاء الاصطناعي يصحح إجابتك...</div>';
+
+    // برومبت التصحيح
+    const correctionPrompt = `أنت مصحح ذكي لأسئلة مقالية لطلاب أولى حاسبات. لديك إجابة طالب وإجابة نموذجية. قيم إجابة الطالب بالنسبة للنموذجية، وامنحه درجة من 0 إلى 10 مع تعليق مختصر يوضح نقاط القوة والضعف، واقتراحات للتحسين. اكتب بالعربي فقط، وكن مشجعاً.\n\nالإجابة النموذجية:\n${modelAnswer}\n\nإجابة الطالب:\n${studentAnswer}`;
+
+    try {
+        const response = await fetch(API_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: API_CONFIG.model,
+                messages: [
+                    { role: 'system', content: 'أنت مصحح ذكي لأسئلة مقالية لطلاب أولى حاسبات.' },
+                    { role: 'user', content: correctionPrompt }
+                ],
+                max_tokens: 512,
+                temperature: 0.3
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('API Error');
+        }
+
+        const data = await response.json();
+        const answer = data.choices[0]?.message?.content || 'عذراً، لم أستطع التصحيح الآن.';
+        responseContent.innerHTML = answer.replace(/\n/g, '<br>');
+    } catch (error) {
+        console.error('Essay Correction Error:', error);
+        responseContent.innerHTML = '❌ حدث خطأ أثناء التصحيح. حاول مرة أخرى.';
+    }
+}
 // ==========================================
 // Configuration - Groq API
 // ==========================================
@@ -1835,25 +1885,25 @@ function initEssayTabs() {
     displayEssayQuestions('physics2');
 }
 
-// ==========================================
-// Challenge Mode - وضع التحدي
-// ==========================================
+// ==============================
+// Essay Correction with AI
+// ==============================
+async function correctEssay() {
+    const studentAnswer = document.getElementById('studentEssayAnswer').value.trim();
+    const modelAnswer = document.getElementById('modelEssayAnswer').value.trim();
+    const responseDiv = document.getElementById('essayCorrectionResponse');
+    const responseContent = document.getElementById('essayCorrectionResponseContent');
 
-let challengeQuestions = [];
-let currentChallengeIndex = 0;
-let challengeAnswers = {};
-let challengeTimerInterval = null;
-let challengeTimeRemaining = 300; // 5 دقائق بالثواني
-let challengeStartTime = null;
-let challengerName = '';
+    if (!studentAnswer || !modelAnswer) {
+        alert('يرجى كتابة إجابتك ولصق الإجابة النموذجية.');
+        return;
+    }
 
-// قائمة الكلمات الممنوعة (الشتائم والألفاظ غير اللائقة)
-const bannedWords = [
-    // شتائم عربية
-    'كس', 'طيز', 'زب', 'شرموط', 'عرص', 'متناك', 'منيك', 'لبوه', 'قحب', 'عاهر',
-    'خول', 'ابن الكلب', 'ابن الحرام', 'ابن العرص', 'ابن الشرموطه', 'كسم',
-    'احا', 'ينعل', 'يلعن', 'زانيه', 'زاني', 'فاجر', 'فاجره', 'وسخ', 'وسخه',
-    'حمار', 'غبي', 'احمق', 'معفن', 'قذر', 'نجس', 'حقير', 'تافه', 'واطي',
+    responseDiv.style.display = 'block';
+    responseContent.innerHTML = '<div class="ask-ai-loading"><i class="fas fa-spinner"></i> الذكاء الاصطناعي يصحح إجابتك...</div>';
+
+    // برومبت التصحيح
+    const correctionPrompt = `أنت مصحح ذكي لأسئلة مقالية لطلاب أولى حاسبات
     'كلب', 'خنزير', 'حيوان', 'بهيم', 'ديوث', 'قواد',
     // شتائم إنجليزية
     'fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'bastard', 'whore',

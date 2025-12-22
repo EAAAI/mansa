@@ -368,6 +368,31 @@
                     </div>
                     <div class="response-content" id="askAiResponseContent"></div>
                 </div>
+
+                <!-- Essay Correction Section -->
+                <hr>
+                <h3 class="ask-ai-title">
+                    <i class="fas fa-spell-check"></i>
+                    تصحيح إجابتك المقالية
+                </h3>
+                <p class="ask-ai-desc">اكتب إجابتك على السؤال، ثم الصق الإجابة النموذجية، واضغط تصحيح ليقوم الذكاء الاصطناعي بتقييم إجابتك.</p>
+                <div class="ask-ai-input-container">
+                    <textarea id="studentEssayAnswer" placeholder="اكتب إجابتك هنا..."></textarea>
+                </div>
+                <div class="ask-ai-input-container">
+                    <textarea id="modelEssayAnswer" placeholder="الصق هنا الإجابة النموذجية أو المرجعية..."></textarea>
+                </div>
+                <button class="btn btn-success" onclick="correctEssay()">
+                    <i class="fas fa-magic"></i>
+                    صحح إجابتي
+                </button>
+                <div class="ask-ai-response" id="essayCorrectionResponse" style="display: none; margin-top:10px;">
+                    <div class="response-header">
+                        <i class="fas fa-spell-check"></i>
+                        <span>نتيجة التصحيح</span>
+                    </div>
+                    <div class="response-content" id="essayCorrectionResponseContent"></div>
+                </div>
             </div>
         </div>
     </section>
