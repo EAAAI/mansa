@@ -7,6 +7,12 @@ const API_CONFIG = {
     model: 'llama-3.3-70b-versatile'
 };
 
+// Gemini API for Vision (Images)
+const GEMINI_CONFIG = {
+    apiKey: 'AIzaSyAErOl-9MrM_A-HLRxvxFqx5b6WJWwi2Zs',
+    apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+};
+
 // ==========================================
 // Firebase Configuration
 // ==========================================
@@ -374,62 +380,58 @@ function addUserImageMessage(imageSrc) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// تحليل الصورة بالـ AI
+// تحليل الصورة بالـ AI (باستخدام Google Gemini)
 async function analyzeImageWithAI(imageData) {
     const base64Data = imageData.split(',')[1];
     const mimeType = imageData.split(';')[0].split(':')[1];
     
     try {
-        const response = await fetch(API_CONFIG.apiUrl, {
+        const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_CONFIG.apiKey}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.2-90b-vision-preview',
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'text',
-                                text: `You are "ذكي" (Zaki), an AI assistant developed by EAAAI company.
+                contents: [{
+                    parts: [
+                        {
+                            text: `أنت "ذكي"، نموذج ذكاء اصطناعي مطور من شركة EAAAI.
 
-Look at this image carefully. It contains a math problem, physics problem, or educational question.
+انظر لهذه الصورة بعناية. تحتوي على سؤال أو مسألة تعليمية.
 
-Your task:
-1. Extract and write the problem/question from the image
-2. Solve it step by step
-3. Write the final answer
+المطلوب:
+1. استخرج واكتب نص السؤال/المسألة من الصورة
+2. قدم الحل خطوة بخطوة
+3. اكتب الإجابة النهائية
 
-${userName ? `Student name: ${userName}` : ''}
+${userName ? `اسم الطالب: ${userName}` : ''}
 
-IMPORTANT: Answer in Arabic language. Explain in a simple and clear way. Use emojis moderately.
-إجابتك يجب أن تكون بالعربية.`
-                            },
-                            {
-                                type: 'image_url',
-                                image_url: {
-                                    url: `data:${mimeType};base64,${base64Data}`
-                                }
+اشرح بطريقة بسيطة وواضحة باللغة العربية. استخدم الإيموجي بشكل معتدل.`
+                        },
+                        {
+                            inline_data: {
+                                mime_type: mimeType,
+                                data: base64Data
                             }
-                        ]
-                    }
-                ],
-                max_tokens: 2048,
-                temperature: 0.3
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    temperature: 0.3,
+                    maxOutputTokens: 2048
+                }
             })
         });
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            console.error('API Error:', response.status, errorData);
+            console.error('Gemini API Error:', response.status, errorData);
             throw new Error(`API Error: ${response.status}`);
         }
 
         const data = await response.json();
-        return data.choices[0]?.message?.content || 'عذراً، مش قادر أحلل الصورة. جرب تاني! 🔄';
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        return text || 'عذراً، مش قادر أحلل الصورة. جرب تاني! 🔄';
     } catch (error) {
         console.error('Image analysis error:', error);
         throw error;
