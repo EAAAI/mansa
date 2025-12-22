@@ -1967,7 +1967,7 @@ function startChallenge() {
     // فلترة الاسم
     challengerName = filterName(rawName);
     if (!challengerName) {
-        alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.');
+        alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.'.replace(/\\n/g, '\n'));
         nameInput.value = '';
         nameInput.focus();
         return;
