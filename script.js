@@ -1,53 +1,3 @@
-// ==============================
-// Essay Correction with AI
-// ==============================
-async function correctEssay() {
-    const studentAnswer = document.getElementById('studentEssayAnswer').value.trim();
-    const modelAnswer = document.getElementById('modelEssayAnswer').value.trim();
-    const responseDiv = document.getElementById('essayCorrectionResponse');
-    const responseContent = document.getElementById('essayCorrectionResponseContent');
-
-    if (!studentAnswer || !modelAnswer) {
-        alert('يرجى كتابة إجابتك ولصق الإجابة النموذجية.');
-        return;
-    }
-
-    responseDiv.style.display = 'block';
-    responseContent.innerHTML = '<div class="ask-ai-loading"><i class="fas fa-spinner"></i> الذكاء الاصطناعي يصحح إجابتك...</div>';
-
-    // برومبت التصحيح
-    const correctionPrompt = `أنت مصحح ذكي لأسئلة مقالية لطلاب أولى حاسبات. لديك إجابة طالب وإجابة نموذجية. قيم إجابة الطالب بالنسبة للنموذجية، وامنحه درجة من 0 إلى 10 مع تعليق مختصر يوضح نقاط القوة والضعف، واقتراحات للتحسين. اكتب بالعربي فقط، وكن مشجعاً.\n\nالإجابة النموذجية:\n${modelAnswer}\n\nإجابة الطالب:\n${studentAnswer}`;
-
-    try {
-        const response = await fetch(API_CONFIG.apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${API_CONFIG.apiKey}`
-            },
-            body: JSON.stringify({
-                model: API_CONFIG.model,
-                messages: [
-                    { role: 'system', content: 'أنت مصحح ذكي لأسئلة مقالية لطلاب أولى حاسبات.' },
-                    { role: 'user', content: correctionPrompt }
-                ],
-                max_tokens: 512,
-                temperature: 0.3
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('API Error');
-        }
-
-        const data = await response.json();
-        const answer = data.choices[0]?.message?.content || 'عذراً، لم أستطع التصحيح الآن.';
-        responseContent.innerHTML = answer.replace(/\n/g, '<br>');
-    } catch (error) {
-        console.error('Essay Correction Error:', error);
-        responseContent.innerHTML = '❌ حدث خطأ أثناء التصحيح. حاول مرة أخرى.';
-    }
-}
 // ==========================================
 // Configuration - Groq API
 // ==========================================
@@ -1885,25 +1835,25 @@ function initEssayTabs() {
     displayEssayQuestions('physics2');
 }
 
-// ==============================
-// Essay Correction with AI
-// ==============================
-async function correctEssay() {
-    const studentAnswer = document.getElementById('studentEssayAnswer').value.trim();
-    const modelAnswer = document.getElementById('modelEssayAnswer').value.trim();
-    const responseDiv = document.getElementById('essayCorrectionResponse');
-    const responseContent = document.getElementById('essayCorrectionResponseContent');
+// ==========================================
+// Challenge Mode - وضع التحدي
+// ==========================================
 
-    if (!studentAnswer || !modelAnswer) {
-        alert('يرجى كتابة إجابتك ولصق الإجابة النموذجية.');
-        return;
-    }
+let challengeQuestions = [];
+let currentChallengeIndex = 0;
+let challengeAnswers = {};
+let challengeTimerInterval = null;
+let challengeTimeRemaining = 300; // 5 دقائق بالثواني
+let challengeStartTime = null;
+let challengerName = '';
 
-    responseDiv.style.display = 'block';
-    responseContent.innerHTML = '<div class="ask-ai-loading"><i class="fas fa-spinner"></i> الذكاء الاصطناعي يصحح إجابتك...</div>';
-
-    // برومبت التصحيح
-    const correctionPrompt = `أنت مصحح ذكي لأسئلة مقالية لطلاب أولى حاسبات
+// قائمة الكلمات الممنوعة (الشتائم والألفاظ غير اللائقة)
+const bannedWords = [
+    // شتائم عربية
+    'كس', 'طيز', 'زب', 'شرموط', 'عرص', 'متناك', 'منيك', 'لبوه', 'قحب', 'عاهر',
+    'خول', 'ابن الكلب', 'ابن الحرام', 'ابن العرص', 'ابن الشرموطه', 'كسم',
+    'احا', 'ينعل', 'يلعن', 'زانيه', 'زاني', 'فاجر', 'فاجره', 'وسخ', 'وسخه',
+    'حمار', 'غبي', 'احمق', 'معفن', 'قذر', 'نجس', 'حقير', 'تافه', 'واطي',
     'كلب', 'خنزير', 'حيوان', 'بهيم', 'ديوث', 'قواد',
     // شتائم إنجليزية
     'fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'bastard', 'whore',
@@ -1959,15 +1909,18 @@ function filterName(name) {
 function startChallenge() {
     const nameInput = document.getElementById('challengerName');
     const rawName = nameInput.value.trim();
+    
     if (!rawName) {
-        alert('يجب إدخال اسمك للبدء!');
+        alert('من فضلك أدخل اسمك للبدء!');
         nameInput.focus();
         return;
     }
+    
     // فلترة الاسم
     challengerName = filterName(rawName);
+    
     if (!challengerName) {
-        alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.'.replace(/\\n/g, '\n'));
+        alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.');
         nameInput.value = '';
         nameInput.focus();
         return;
@@ -2131,17 +2084,15 @@ function submitChallenge() {
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     
-    // منع الغش: إذا الوقت أقل من دقيقة والنتيجة 13 أو أكثر لا تحفظ
-    if (!(timeTaken < 60 && correctCount >= 13)) {
-        saveToLeaderboard({
-            name: challengerName,
-            score: correctCount,
-            total: 15,
-            time: timeString,
-            timeSeconds: timeTaken,
-            date: new Date().toLocaleDateString('ar-EG')
-        });
-    }
+    // حفظ في قاعدة البيانات
+    saveToLeaderboard({
+        name: challengerName,
+        score: correctCount,
+        total: 15,
+        time: timeString,
+        timeSeconds: timeTaken,
+        date: new Date().toLocaleDateString('ar-EG')
+    });
     
     // عرض النتيجة
     showChallengeResult(correctCount, timeString);
@@ -2192,17 +2143,13 @@ function restartChallenge() {
 // حفظ في قاعدة البيانات (Firebase Firestore)
 async function saveToLeaderboard(entry) {
     // حفظ في localStorage أولاً كاحتياط
-    // تأكد من وجود الاسم دائماً
-    let name = entry.name || challengerName || '';
-    if (!name) name = prompt('يرجى إدخال اسمك ليظهر في لوحة المتصدرين:');
-    if (!name) name = 'مشارك مجهول';
     let localLeaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
-    localLeaderboard.push({...entry, name});
+    localLeaderboard.push({...entry});
     localLeaderboard.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return a.timeSeconds - b.timeSeconds;
     });
-    localLeaderboard = localLeaderboard.slice(0, 100);
+    localLeaderboard = localLeaderboard.slice(0, 50);
     localStorage.setItem('challengeLeaderboard', JSON.stringify(localLeaderboard));
     
     // محاولة الحفظ في Firebase
@@ -2211,13 +2158,16 @@ async function saveToLeaderboard(entry) {
         updateLeaderboardUI(localLeaderboard);
         return;
     }
+    
     try {
         // إضافة timestamp للترتيب
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
-        // تأكد من وجود الاسم في الحفظ السحابي أيضاً
-        if (!entry.name) entry.name = name;
+        
+        // حفظ في Firebase
         const docRef = await db.collection('leaderboard').add(entry);
+        
         console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
+        
     } catch (error) {
         console.error('❌ خطأ في حفظ النتيجة:', error);
         // البيانات محفوظة محلياً بالفعل
@@ -2250,8 +2200,8 @@ async function displayLeaderboard() {
             return a.timeSeconds - b.timeSeconds;
         });
         
-        // أخذ أفضل 100 فقط
-        leaderboard = leaderboard.slice(0, 100);
+        // أخذ أفضل 50 فقط
+        leaderboard = leaderboard.slice(0, 50);
         
         // تحديث لوحة المتصدرين في قسم التحدي
         updateLeaderboardUI(leaderboard);
