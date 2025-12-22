@@ -379,51 +379,61 @@ async function analyzeImageWithAI(imageData) {
     const base64Data = imageData.split(',')[1];
     const mimeType = imageData.split(';')[0].split(':')[1];
     
-    const response = await fetch(API_CONFIG.apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_CONFIG.apiKey}`
-        },
-        body: JSON.stringify({
-            model: 'llama-3.2-90b-vision-preview',
-            messages: [
-                {
-                    role: 'user',
-                    content: [
-                        {
-                            type: 'text',
-                            text: `أنت "ذكي"، نموذج لغوي ذكي مطور من شركة EAAAI.
-                            
-حلل هذه الصورة واستخرج السؤال أو المسألة منها، ثم:
-1. اكتب نص السؤال/المسألة
-2. قدم الحل خطوة بخطوة
-3. اكتب الإجابة النهائية
+    try {
+        const response = await fetch(API_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.2-11b-vision-preview',
+                messages: [
+                    {
+                        role: 'user',
+                        content: [
+                            {
+                                type: 'text',
+                                text: `You are "ذكي" (Zaki), an AI assistant developed by EAAAI company.
 
-${userName ? `اسم الطالب: ${userName}` : ''}
+Look at this image carefully. It contains a math problem, physics problem, or educational question.
 
-اشرح بطريقة بسيطة وواضحة باللغة العربية. استخدم الإيموجي بشكل معتدل.`
-                        },
-                        {
-                            type: 'image_url',
-                            image_url: {
-                                url: `data:${mimeType};base64,${base64Data}`
+Your task:
+1. Extract and write the problem/question from the image
+2. Solve it step by step
+3. Write the final answer
+
+${userName ? `Student name: ${userName}` : ''}
+
+IMPORTANT: Answer in Arabic language. Explain in a simple and clear way. Use emojis moderately.
+إجابتك يجب أن تكون بالعربية.`
+                            },
+                            {
+                                type: 'image_url',
+                                image_url: {
+                                    url: `data:${mimeType};base64,${base64Data}`
+                                }
                             }
-                        }
-                    ]
-                }
-            ],
-            max_tokens: 2048,
-            temperature: 0.5
-        })
-    });
+                        ]
+                    }
+                ],
+                max_tokens: 2048,
+                temperature: 0.3
+            })
+        });
 
-    if (!response.ok) {
-        throw new Error('API Error');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('API Error:', response.status, errorData);
+            throw new Error(`API Error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0]?.message?.content || 'عذراً، مش قادر أحلل الصورة. جرب تاني! 🔄';
+    } catch (error) {
+        console.error('Image analysis error:', error);
+        throw error;
     }
-
-    const data = await response.json();
-    return data.choices[0]?.message?.content || 'عذراً، مش قادر أحلل الصورة.';
 }
 
 // فتح الصورة بحجم كبير
