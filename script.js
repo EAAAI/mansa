@@ -1059,138 +1059,214 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 // ==========================================
-// الأسئلة المقالية - Essay Questions
+// الأسئلة المقالية - Essay Questions (عربي + English)
 // ==========================================
 const essayQuestionsData = {
     physics: [],
     physics2: [
         {
-            title: "السؤال الأول: التعريفات (Definitions)",
+            title: "السؤال الأول: التعريفات | Q1: Definitions",
             marks: 6,
-            description: "أول سؤال في الامتحان، سيُطلب منك تعريف واحد أو أكثر من القائمة التالية:",
+            description: "أول سؤال في الامتحان، سيُطلب منك تعريف واحد أو أكثر من القائمة التالية | The first question in the exam, you will be asked to define one or more of the following:",
             questions: [
                 {
-                    term: "مبدأ هيجنز (Huygens' Principle)",
-                    answer: "كل النقاط الموجودة على صدر الموجة (Wave front) يمكن اعتبارها مصدراً لموجات ثانوية كروية تنتشر في جميع الاتجاهات بنفس سرعة الانتشار، والمماس لهذه الموجات ينشئ غلافاً يمثل الموجة الجديدة."
+                    term: "مبدأ هيجنز | Huygens' Principle",
+                    answer: `🔵 بالعربي:
+كل النقاط الموجودة على صدر الموجة (Wave front) يمكن اعتبارها مصدراً لموجات ثانوية كروية تنتشر في جميع الاتجاهات بنفس سرعة الانتشار، والمماس لهذه الموجات ينشئ غلافاً يمثل الموجة الجديدة.
+
+🔵 In English:
+Every point on a wavefront can be considered as a source of secondary spherical wavelets that spread out in all directions with the same speed. The tangent to these wavelets forms an envelope representing the new wavefront.`
                 },
                 {
-                    term: "الحيود (Diffraction)",
-                    answer: "هو انتشار الموجات وانحناؤها عند مرورها عبر فتحة أو عائق أبعاده مقاربة للطول الموجي للموجة."
+                    term: "الحيود | Diffraction",
+                    answer: `🔵 بالعربي:
+هو انتشار الموجات وانحناؤها عند مرورها عبر فتحة أو عائق أبعاده مقاربة للطول الموجي للموجة.
+
+🔵 In English:
+Diffraction is the spreading and bending of waves when they pass through an aperture or around an obstacle whose dimensions are comparable to the wavelength.`
                 },
                 {
-                    term: "الاستقطاب (Polarization)",
-                    answer: "هو خاصية لجميع الأمواج المستعرضة، ويعبر عن اتجاه خطوط المجال الكهربي (Electric Field) للموجة."
+                    term: "الاستقطاب | Polarization",
+                    answer: `🔵 بالعربي:
+هو خاصية لجميع الأمواج المستعرضة، ويعبر عن اتجاه خطوط المجال الكهربي (Electric Field) للموجة.
+
+🔵 In English:
+Polarization is a property of all transverse waves, describing the orientation of the electric field oscillations of the wave.`
                 },
                 {
-                    term: "الجهد الحاجز (Barrier Potential)",
-                    answer: "هو الجهد المتكون على جانبي الوصلة الثنائية (PN Junction) والذي يمنع انتقال المزيد من الإلكترونات والفجوات عبر الوصلة (قيمته 0.7V للسيليكون)."
+                    term: "الجهد الحاجز | Barrier Potential",
+                    answer: `🔵 بالعربي:
+هو الجهد المتكون على جانبي الوصلة الثنائية (PN Junction) والذي يمنع انتقال المزيد من الإلكترونات والفجوات عبر الوصلة (قيمته 0.7V للسيليكون).
+
+🔵 In English:
+The barrier potential is the voltage formed across a PN junction that prevents further movement of electrons and holes across the junction (0.7V for Silicon).`
                 },
                 {
-                    term: "فجوة الطاقة (Band Gap)",
-                    answer: "هي فرق الطاقة بين حزمة التكافؤ (Valence band) وحزمة التوصيل (Conduction band)."
+                    term: "فجوة الطاقة | Band Gap",
+                    answer: `🔵 بالعربي:
+هي فرق الطاقة بين حزمة التكافؤ (Valence band) وحزمة التوصيل (Conduction band).
+
+🔵 In English:
+The band gap is the energy difference between the valence band and the conduction band.`
                 }
             ]
         },
         {
-            title: "السؤال الثاني: حيود الشق المفرد (Single Slit Diffraction)",
+            title: "السؤال الثاني: حيود الشق المفرد | Q2: Single Slit Diffraction",
             marks: 6,
-            description: "استنتاج رياضي - استنتاج شرط الهدب المظلم الأول والثاني",
+            description: "استنتاج رياضي - شرط الهدب المظلم | Mathematical derivation - Dark fringe condition",
             questions: [
                 {
-                    term: "الهدب المظلم الأول (First Dark Fringe)",
-                    answer: `1. نقسم الشق (عرضه a) إلى منطقتين متساويتين (a/2).
-2. لكي يحدث تداخل هدام (إلغاء) بين شعاع من قمة المنطقة الأولى وشعاع من قمة المنطقة الثانية، يجب أن يكون فرق المسار λ/2.
+                    term: "الهدب المظلم الأول | First Dark Fringe",
+                    answer: `🔵 بالعربي:
+1. نقسم الشق (عرضه a) إلى منطقتين متساويتين (a/2).
+2. لكي يحدث تداخل هدام بين شعاع من قمة المنطقة الأولى وشعاع من قمة المنطقة الثانية، يجب أن يكون فرق المسار λ/2.
 3. من الرسم الهندسي: (a/2)sinθ = λ/2
-4. القانون: a·sinθ = λ`
+4. القانون: a·sinθ = λ
+
+🔵 In English:
+1. Divide the slit (width a) into two equal zones (a/2).
+2. For destructive interference between rays from the top of each zone, path difference must be λ/2.
+3. From geometry: (a/2)sinθ = λ/2
+4. Formula: a·sinθ = λ`
                 },
                 {
-                    term: "الهدب المظلم الثاني (Second Dark Fringe)",
-                    answer: `1. نقسم الشق إلى أربع مناطق متساوية (a/4).
+                    term: "الهدب المظلم الثاني | Second Dark Fringe",
+                    answer: `🔵 بالعربي:
+1. نقسم الشق إلى أربع مناطق متساوية (a/4).
 2. يحدث الإلغاء بين كل منطقتين متجاورتين.
 3. من الرسم الهندسي: (a/4)sinθ = λ/2
-4. القانون: a·sinθ = 2λ`
+4. القانون: a·sinθ = 2λ
+
+🔵 In English:
+1. Divide the slit into four equal zones (a/4).
+2. Cancellation occurs between adjacent zones.
+3. From geometry: (a/4)sinθ = λ/2
+4. Formula: a·sinθ = 2λ`
                 }
             ]
         },
         {
-            title: "السؤال الثالث: الاستقطاب (Polarization)",
+            title: "السؤال الثالث: الاستقطاب | Q3: Polarization",
             marks: 6,
-            description: "شرح نظري مع القوانين - غالباً عن أحد النوعين التاليين:",
+            description: "شرح نظري مع القوانين | Theoretical explanation with formulas",
             questions: [
                 {
-                    term: "الاستقطاب بالامتصاص (Polarization by Absorption)",
-                    answer: `الشرح: نستخدم مادة (مثل التورمالين أو البولارويد) تمتص الاهتزازات الموازية لمحور البلورة وتسمح بنفاذ الاهتزازات العمودية عليها (محور النفاذ).
-
+                    term: "الاستقطاب بالامتصاص | Polarization by Absorption",
+                    answer: `🔵 بالعربي:
+الشرح: نستخدم مادة (مثل التورمالين أو البولارويد) تمتص الاهتزازات الموازية لمحور البلورة وتسمح بنفاذ الاهتزازات العمودية عليها.
 نستخدم شريحتين: الأولى (Polarizer) والثانية (Analyzer).
+قانون مالوس: I = Imax × cos²θ
 
-قانون مالوس (Malus's Law): شدة الضوء النافذ تعتمد على الزاوية θ بين المحورين:
-I = Imax × cos²θ`
+🔵 In English:
+Explanation: A material (like tourmaline or Polaroid) absorbs vibrations parallel to its axis and transmits perpendicular vibrations.
+Two sheets are used: Polarizer and Analyzer.
+Malus's Law: I = Imax × cos²θ`
                 },
                 {
-                    term: "الاستقطاب بالانعكاس (Polarization by Reflection)",
-                    answer: `الشرح: عندما يسقط ضوء غير مستقطب على سطح، ينعكس جزء منه. عند زاوية سقوط معينة تسمى زاوية بروستر (θp)، يكون الشعاع المنعكس مستقطباً كلياً.
+                    term: "الاستقطاب بالانعكاس | Polarization by Reflection",
+                    answer: `🔵 بالعربي:
+عندما يسقط ضوء غير مستقطب على سطح، عند زاوية بروستر (θp)، يكون الشعاع المنعكس مستقطباً كلياً.
+الزاوية بين الشعاع المنعكس والمنكسر تكون 90°.
+قانون بروستر: tan(θp) = n₂/n₁
 
-في هذه الحالة، الزاوية بين الشعاع المنعكس والمنكسر تكون 90°.
-
-قانون بروستر: tan(θp) = n₂/n₁`
+🔵 In English:
+When unpolarized light hits a surface at Brewster's angle (θp), the reflected ray is completely polarized.
+The angle between reflected and refracted rays is 90°.
+Brewster's Law: tan(θp) = n₂/n₁`
                 }
             ]
         },
         {
-            title: "السؤال الرابع: إثباتات المغناطيسية (Magnetic Fields)",
+            title: "السؤال الرابع: المجال المغناطيسي | Q4: Magnetic Fields",
             marks: 6,
-            description: "استنتاج رياضي - سيطلب منك إثبات واحد من الثلاثة (الأول هو الأكثر شيوعاً):",
+            description: "استنتاج رياضي باستخدام قانون بيو-سافارت | Derivation using Biot-Savart Law",
             questions: [
                 {
-                    term: "سلك مستقيم طويل (Long Straight Wire)",
-                    answer: `نطبق قانون بيو-سافارت، ونكامل بالنسبة للزاوية θ من −π/2 إلى +π/2.
+                    term: "سلك مستقيم طويل | Long Straight Wire",
+                    answer: `🔵 بالعربي:
+نطبق قانون بيو-سافارت، ونكامل بالنسبة للزاوية θ من −π/2 إلى +π/2.
+النتيجة: B = μ₀I / (2πR)
 
-النتيجة النهائية: B = μ₀I / (2πR)`
+🔵 In English:
+Apply Biot-Savart Law and integrate with respect to angle θ from −π/2 to +π/2.
+Result: B = μ₀I / (2πR)`
                 },
                 {
-                    term: "سلك مقوس (Curved Wire Segment)",
-                    answer: `المجال عند المركز. الأجزاء المستقيمة لا تولد مجالاً. الجزء المنحني يولد مجالاً بتكامل طول القوس s = aθ.
+                    term: "سلك مقوس | Curved Wire Segment",
+                    answer: `🔵 بالعربي:
+المجال عند المركز. الأجزاء المستقيمة لا تولد مجالاً.
+النتيجة: B = (μ₀I / 4πa) × θ (θ بالراديان)
 
-النتيجة النهائية: B = (μ₀I / 4πa) × θ (حيث θ بالراديان)`
+🔵 In English:
+Field at center. Straight parts produce no field.
+Result: B = (μ₀I / 4πa) × θ (θ in radians)`
                 },
                 {
-                    term: "على محور حلقة دائرية (Axis of Circular Loop)",
-                    answer: `نحلل المجال ونأخذ المركبة الأفقية dBₓ.
+                    term: "على محور حلقة دائرية | Axis of Circular Loop",
+                    answer: `🔵 بالعربي:
+نحلل المجال ونأخذ المركبة الأفقية dBₓ.
+النتيجة: Bₓ = μ₀Ia² / [2(a² + x²)^(3/2)]
 
-النتيجة النهائية: Bₓ = μ₀Ia² / [2(a² + x²)^(3/2)]`
+🔵 In English:
+Resolve the field and take horizontal component dBₓ.
+Result: Bₓ = μ₀Ia² / [2(a² + x²)^(3/2)]`
                 }
             ]
         },
         {
-            title: "السؤال الخامس: نماذج الدايود والنسبية",
+            title: "السؤال الخامس: الدايود والنسبية | Q5: Diodes & Relativity",
             marks: 6,
-            description: "الاحتمال الأكبر هو نماذج الدايود، يليها النسبية:",
+            description: "نماذج الدايود أو النسبية الخاصة | Diode models or Special Relativity",
             questions: [
                 {
-                    term: "النموذج المثالي (Ideal Model)",
-                    answer: `• انحياز أمامي: مفتاح مغلق (VF = 0)
-• انحياز عكسي: مفتاح مفتوح (I = 0)`
-                },
-                {
-                    term: "النموذج العملي (Practical Model)",
-                    answer: `• انحياز أمامي: مفتاح مغلق + بطارية 0.7V
-• القانون: IF = (Vbias − 0.7) / R`
-                },
-                {
-                    term: "النموذج الكامل (Complete Model)",
-                    answer: `• يضيف مقاومة ديناميكية صغيرة (r'd) في الأمامي ومقاومة كبيرة في العكسي.
-• القانون: IF = (Vbias − 0.7) / (R + r'd)`
-                },
-                {
-                    term: "تمدد الزمن (Time Dilation)",
-                    answer: `استنتاج العلاقة من خلال رسم مثلث مسار الضوء وتطبيق فيثاغورث:
+                    term: "النموذج المثالي | Ideal Model",
+                    answer: `🔵 بالعربي:
+• انحياز أمامي: مفتاح مغلق (VF = 0)
+• انحياز عكسي: مفتاح مفتوح (I = 0)
 
+🔵 In English:
+• Forward bias: Closed switch (VF = 0)
+• Reverse bias: Open switch (I = 0)`
+                },
+                {
+                    term: "النموذج العملي | Practical Model",
+                    answer: `🔵 بالعربي:
+• انحياز أمامي: مفتاح مغلق + بطارية 0.7V
+• القانون: IF = (Vbias − 0.7) / R
+
+🔵 In English:
+• Forward bias: Closed switch + 0.7V battery
+• Formula: IF = (Vbias − 0.7) / R`
+                },
+                {
+                    term: "النموذج الكامل | Complete Model",
+                    answer: `🔵 بالعربي:
+• يضيف مقاومة ديناميكية صغيرة (r'd) في الأمامي
+• القانون: IF = (Vbias − 0.7) / (R + r'd)
+
+🔵 In English:
+• Adds small dynamic resistance (r'd) in forward
+• Formula: IF = (Vbias − 0.7) / (R + r'd)`
+                },
+                {
+                    term: "تمدد الزمن | Time Dilation",
+                    answer: `🔵 بالعربي:
+استنتاج العلاقة من رسم مثلث مسار الضوء وتطبيق فيثاغورث:
+Δt = Δt₀ / √(1 − v²/c²)
+
+🔵 In English:
+Derive from light path triangle using Pythagorean theorem:
 Δt = Δt₀ / √(1 − v²/c²)`
                 },
                 {
-                    term: "انكماش الطول (Length Contraction)",
-                    answer: `استنتاج العلاقة باستخدام معادلات الزمن والسرعة:
+                    term: "انكماش الطول | Length Contraction",
+                    answer: `🔵 بالعربي:
+استنتاج العلاقة باستخدام معادلات الزمن والسرعة:
+L = L₀ × √(1 − v²/c²)
 
+🔵 In English:
+Derive using time and velocity equations:
 L = L₀ × √(1 − v²/c²)`
                 }
             ]
@@ -1903,25 +1979,50 @@ function saveToLeaderboard(entry) {
 // عرض لوحة المتصدرين
 function displayLeaderboard() {
     const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+    
+    // تحديث لوحة المتصدرين في قسم التحدي
     const tbody = document.getElementById('leaderboardBody');
     const noRecords = document.getElementById('noRecords');
     
-    if (leaderboard.length === 0) {
-        tbody.innerHTML = '';
-        noRecords.style.display = 'block';
-        return;
+    if (tbody) {
+        if (leaderboard.length === 0) {
+            tbody.innerHTML = '';
+            if (noRecords) noRecords.style.display = 'block';
+        } else {
+            if (noRecords) noRecords.style.display = 'none';
+            tbody.innerHTML = leaderboard.map((entry, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.score}/${entry.total}</td>
+                    <td>${entry.time}</td>
+                    <td>${entry.date}</td>
+                </tr>
+            `).join('');
+        }
     }
     
-    noRecords.style.display = 'none';
-    tbody.innerHTML = leaderboard.map((entry, index) => `
-        <tr>
-            <td>${index + 1}</td>
-            <td>${entry.name}</td>
-            <td>${entry.score}/${entry.total}</td>
-            <td>${entry.time}</td>
-            <td>${entry.date}</td>
-        </tr>
-    `).join('');
+    // تحديث لوحة المتصدرين الرئيسية
+    const mainTbody = document.getElementById('mainLeaderboardBody');
+    const noRecordsMain = document.getElementById('noRecordsMain');
+    
+    if (mainTbody) {
+        if (leaderboard.length === 0) {
+            mainTbody.innerHTML = '';
+            if (noRecordsMain) noRecordsMain.style.display = 'block';
+        } else {
+            if (noRecordsMain) noRecordsMain.style.display = 'none';
+            mainTbody.innerHTML = leaderboard.map((entry, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.score}/${entry.total}</td>
+                    <td>${entry.time}</td>
+                    <td>${entry.date}</td>
+                </tr>
+            `).join('');
+        }
+    }
 }
 
 // تهيئة عند تحميل الصفحة

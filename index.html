@@ -21,7 +21,7 @@
                 <li><a href="#challenge">⚡ وضع التحدي</a></li>
                 <li><a href="#exams">بنك الأسئلة</a></li>
                 <li><a href="#essay">الأسئلة المقالية</a></li>
-                <li><a href="#competitions">مسابقات الدرجات</a></li>
+                <li><a href="#leaderboard">المتصدرين</a></li>
             </ul>
         </div>
     </nav>
@@ -75,8 +75,8 @@
                 <a href="#exams" class="btn btn-secondary">
                     <i class="fas fa-book-open"></i> بنك الأسئلة
                 </a>
-                <a href="#competitions" class="btn btn-secondary">
-                    <i class="fas fa-trophy"></i> المسابقات
+                <a href="#leaderboard" class="btn btn-secondary">
+                    <i class="fas fa-trophy"></i> المتصدرين
                 </a>
             </div>
         </div>
@@ -296,104 +296,34 @@
         </div>
     </section>
 
-    <!-- Bicycle Competitions Section -->
-    <section id="competitions" class="section competitions-section">
+    <!-- Leaderboard Section -->
+    <section id="leaderboard" class="section leaderboard-main-section">
         <div class="container">
             <h2 class="section-title">
                 <i class="fas fa-trophy"></i>
-                مسابقات الدرجات
+                المتصدرين
             </h2>
             
-            <div class="levels-container">
-                <!-- Level 1 -->
-                <div class="level-card level-1">
-                    <div class="level-header">
-                        <div class="level-badge">
-                            <i class="fas fa-star"></i>
-                            <span>المستوى الأول</span>
-                        </div>
-                        <h3>مسابقة المبتدئين</h3>
-                        <p class="level-description">للمتسابقين الجدد - من 0 إلى 50 درجة</p>
-                    </div>
-                    <div class="participants-list">
-                        <h4><i class="fas fa-users"></i> المتسابقون</h4>
-                        <ul id="level1Participants">
-                            <li><span class="rank gold">1</span> أحمد محمد <span class="score">48</span></li>
-                            <li><span class="rank silver">2</span> محمود علي <span class="score">45</span></li>
-                            <li><span class="rank bronze">3</span> خالد حسن <span class="score">42</span></li>
-                            <li><span class="rank">4</span> عمر سعيد <span class="score">38</span></li>
-                            <li><span class="rank">5</span> يوسف أحمد <span class="score">35</span></li>
-                        </ul>
-                    </div>
-                    <div class="add-participant">
-                        <input type="text" id="name1" placeholder="اسم المتسابق">
-                        <input type="text" id="time1" placeholder="الدرجة (مثال: 45)">
-                        <button class="btn btn-add" onclick="addParticipant(1)">
-                            <i class="fas fa-plus"></i> إضافة
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Level 2 -->
-                <div class="level-card level-2">
-                    <div class="level-header">
-                        <div class="level-badge">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>المستوى الثاني</span>
-                        </div>
-                        <h3>مسابقة المتوسطين</h3>
-                        <p class="level-description">للمتسابقين ذوي الخبرة - من 51 إلى 80 درجة</p>
-                    </div>
-                    <div class="participants-list">
-                        <h4><i class="fas fa-users"></i> المتسابقون</h4>
-                        <ul id="level2Participants">
-                            <li><span class="rank gold">1</span> سامي عبدالله <span class="score">78</span></li>
-                            <li><span class="rank silver">2</span> فادي كريم <span class="score">75</span></li>
-                            <li><span class="rank bronze">3</span> ماجد حسين <span class="score">70</span></li>
-                            <li><span class="rank">4</span> طارق نور <span class="score">65</span></li>
-                            <li><span class="rank">5</span> هاني صالح <span class="score">60</span></li>
-                        </ul>
-                    </div>
-                    <div class="add-participant">
-                        <input type="text" id="name2" placeholder="اسم المتسابق">
-                        <input type="text" id="time2" placeholder="الدرجة (مثال: 70)">
-                        <button class="btn btn-add" onclick="addParticipant(2)">
-                            <i class="fas fa-plus"></i> إضافة
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Level 3 -->
-                <div class="level-card level-3">
-                    <div class="level-header">
-                        <div class="level-badge">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>المستوى الثالث</span>
-                        </div>
-                        <h3>مسابقة المحترفين</h3>
-                        <p class="level-description">للمحترفين فقط - من 81 إلى 100 درجة</p>
-                    </div>
-                    <div class="participants-list">
-                        <h4><i class="fas fa-users"></i> المتسابقون</h4>
-                        <ul id="level3Participants">
-                            <li><span class="rank gold">1</span> كريم الشامي <span class="score">98</span></li>
-                            <li><span class="rank silver">2</span> باسم الخطيب <span class="score">95</span></li>
-                            <li><span class="rank bronze">3</span> وليد جمال <span class="score">92</span></li>
-                            <li><span class="rank">4</span> رامي فؤاد <span class="score">88</span></li>
-                            <li><span class="rank">5</span> نادر حكيم <span class="score">85</span></li>
-                        </ul>
-                    </div>
-                    <div class="add-participant">
-                        <input type="text" id="name3" placeholder="اسم المتسابق">
-                        <input type="text" id="time3" placeholder="الدرجة (مثال: 95)">
-                        <button class="btn btn-add" onclick="addParticipant(3)">
-                            <i class="fas fa-plus"></i> إضافة
-                        </button>
-                    </div>
-                </div>
+            <div class="leaderboard-info">
+                <p>هنا يظهر أفضل المتحدين في وضع التحدي. ابدأ التحدي وسجل اسمك في لوحة الشرف!</p>
+            </div>
+            
+            <div class="main-leaderboard-container">
+                <table class="main-leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>المركز</th>
+                            <th>الاسم</th>
+                            <th>النتيجة</th>
+                            <th>الوقت</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mainLeaderboardBody">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+                <p class="no-records-main" id="noRecordsMain">لا توجد نتائج بعد. <a href="#challenge">ابدأ التحدي الآن!</a></p>
             </div>
         </div>
     </section>

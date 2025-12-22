@@ -2517,3 +2517,118 @@ body {
         font-size: 0.9rem;
     }
 }
+
+/* ==========================================
+   Main Leaderboard Section
+   ========================================== */
+
+.leaderboard-main-section {
+    background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f28 100%);
+    min-height: 80vh;
+    padding: 100px 0;
+}
+
+.leaderboard-main-section .section-title {
+    color: #ffc107;
+}
+
+.leaderboard-info {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.leaderboard-info p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2rem;
+}
+
+.main-leaderboard-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 25px;
+    border: 2px solid rgba(255, 193, 7, 0.2);
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.main-leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.main-leaderboard-table th {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 152, 0, 0.2));
+    padding: 20px;
+    color: #ffc107;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.main-leaderboard-table td {
+    padding: 18px;
+    color: #fff;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 1.05rem;
+}
+
+.main-leaderboard-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.main-leaderboard-table tbody tr:hover {
+    background: rgba(255, 193, 7, 0.1);
+    transform: scale(1.01);
+}
+
+.main-leaderboard-table tbody tr:first-child {
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.1));
+}
+
+.main-leaderboard-table tbody tr:first-child td:first-child::after {
+    content: ' 🥇';
+}
+
+.main-leaderboard-table tbody tr:nth-child(2) {
+    background: rgba(192, 192, 192, 0.1);
+}
+
+.main-leaderboard-table tbody tr:nth-child(2) td:first-child::after {
+    content: ' 🥈';
+}
+
+.main-leaderboard-table tbody tr:nth-child(3) {
+    background: rgba(205, 127, 50, 0.1);
+}
+
+.main-leaderboard-table tbody tr:nth-child(3) td:first-child::after {
+    content: ' 🥉';
+}
+
+.no-records-main {
+    text-align: center;
+    padding: 60px 40px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1.2rem;
+}
+
+.no-records-main a {
+    color: #ffc107;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.no-records-main a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .main-leaderboard-table th,
+    .main-leaderboard-table td {
+        padding: 12px 8px;
+        font-size: 0.9rem;
+    }
+}
