@@ -2151,7 +2151,7 @@ async function saveToLeaderboard(entry) {
         if (b.score !== a.score) return b.score - a.score;
         return a.timeSeconds - b.timeSeconds;
     });
-    localLeaderboard = localLeaderboard.slice(0, 50);
+    localLeaderboard = localLeaderboard.slice(0, 100);
     localStorage.setItem('challengeLeaderboard', JSON.stringify(localLeaderboard));
     
     // محاولة الحفظ في Firebase
@@ -2202,8 +2202,8 @@ async function displayLeaderboard() {
             return a.timeSeconds - b.timeSeconds;
         });
         
-        // أخذ أفضل 50 فقط
-        leaderboard = leaderboard.slice(0, 50);
+        // أخذ أفضل 100 فقط
+        leaderboard = leaderboard.slice(0, 100);
         
         // تحديث لوحة المتصدرين في قسم التحدي
         updateLeaderboardUI(leaderboard);
