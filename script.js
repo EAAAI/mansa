@@ -21,8 +21,14 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let db;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    console.log('✅ Firebase initialized successfully');
+} catch (error) {
+    console.error('❌ Firebase initialization error:', error);
+}
 
 // ==========================================
 // AI Chat Bot - ذكي
@@ -2088,29 +2094,36 @@ function restartChallenge() {
 
 // حفظ في قاعدة البيانات (Firebase Firestore)
 async function saveToLeaderboard(entry) {
+    // حفظ في localStorage أولاً كاحتياط
+    let localLeaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+    localLeaderboard.push({...entry});
+    localLeaderboard.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.timeSeconds - b.timeSeconds;
+    });
+    localLeaderboard = localLeaderboard.slice(0, 50);
+    localStorage.setItem('challengeLeaderboard', JSON.stringify(localLeaderboard));
+    
+    // محاولة الحفظ في Firebase
+    if (!db) {
+        console.error('❌ Firebase غير متصل، تم الحفظ محلياً فقط');
+        updateLeaderboardUI(localLeaderboard);
+        return;
+    }
+    
     try {
         // إضافة timestamp للترتيب
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
         
         // حفظ في Firebase
-        await db.collection('leaderboard').add(entry);
+        const docRef = await db.collection('leaderboard').add(entry);
         
-        console.log('✅ تم حفظ النتيجة في Firebase');
+        console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
         
-        // تحديث العرض
-        displayLeaderboard();
     } catch (error) {
         console.error('❌ خطأ في حفظ النتيجة:', error);
-        
-        // حفظ احتياطي في localStorage
-        let leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
-        leaderboard.push(entry);
-        leaderboard.sort((a, b) => {
-            if (b.score !== a.score) return b.score - a.score;
-            return a.timeSeconds - b.timeSeconds;
-        });
-        leaderboard = leaderboard.slice(0, 50);
-        localStorage.setItem('challengeLeaderboard', JSON.stringify(leaderboard));
+        // البيانات محفوظة محلياً بالفعل
+        updateLeaderboardUI(localLeaderboard);
     }
 }
 
@@ -2195,10 +2208,21 @@ function updateLeaderboardUI(leaderboard) {
 
 // الاستماع للتحديثات في الوقت الحقيقي
 function listenToLeaderboard() {
+    if (!db) {
+        console.error('❌ Firebase غير متصل');
+        // استخدام localStorage كاحتياط
+        const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+        updateLeaderboardUI(leaderboard);
+        return;
+    }
+    
+    console.log('🔄 جاري الاتصال بـ Firebase...');
+    
     db.collection('leaderboard')
         .orderBy('score', 'desc')
         .limit(50)
         .onSnapshot((snapshot) => {
+            console.log('✅ تم جلب البيانات:', snapshot.size, 'سجل');
             let leaderboard = [];
             snapshot.forEach(doc => {
                 leaderboard.push(doc.data());
@@ -2211,6 +2235,9 @@ function listenToLeaderboard() {
             updateLeaderboardUI(leaderboard);
         }, (error) => {
             console.error('❌ خطأ في الاستماع للتحديثات:', error);
+            // استخدام localStorage كاحتياط
+            const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
+            updateLeaderboardUI(leaderboard);
         });
 }
 
