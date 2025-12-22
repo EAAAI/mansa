@@ -192,6 +192,104 @@ ${userName ? `اسم الطالب الذي تتحدث معه: ${userName}` : ''}
     return data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
 }
 
+// ==========================================
+// Ask AI - اسأل الذكاء الاصطناعي
+// ==========================================
+
+async function askAI() {
+    const questionInput = document.getElementById('askAiQuestion');
+    const responseDiv = document.getElementById('askAiResponse');
+    const responseContent = document.getElementById('askAiResponseContent');
+    const askBtn = document.querySelector('.ask-ai-btn');
+    
+    const question = questionInput.value.trim();
+    
+    if (!question) {
+        alert('من فضلك اكتب سؤالك أولاً!');
+        questionInput.focus();
+        return;
+    }
+    
+    // إظهار حالة التحميل
+    askBtn.disabled = true;
+    askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التفكير...';
+    responseDiv.style.display = 'block';
+    responseContent.innerHTML = '<div class="ask-ai-loading"><i class="fas fa-spinner"></i> ذكي بيفكر في إجابتك...</div>';
+    
+    try {
+        const systemPrompt = `أنت "ذكي"، نموذج لغوي ذكي مطور من شركة EAAAI.
+أنت مخصص لمساعدة طلاب أولى حاسبات في الأسئلة المقالية والعلمية.
+
+أنت خبير في:
+- فيزياء (موجات، ضوء، مغناطيسية، نسبية، أشباه موصلات)
+- رياضيات
+- إلكترونيات
+- IT
+- تاريخ الحوسبة
+- قوانين الحاسبات
+
+طريقة الإجابة:
+1. اشرح بالعربي والإنجليزي معاً
+2. استخدم 🔵 بالعربي: و 🔵 In English:
+3. اكتب القوانين والمعادلات بوضوح
+4. استخدم أمثلة عند الحاجة
+5. خلي الإجابة منظمة ومرتبة
+6. استخدم الإيموجي بشكل معتدل`;
+
+        const response = await fetch(API_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: API_CONFIG.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: question }
+                ],
+                max_tokens: 2048,
+                temperature: 0.7
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('API Error');
+        }
+
+        const data = await response.json();
+        const answer = data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
+        
+        // تنسيق الإجابة
+        const formattedAnswer = answer
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+        
+        responseContent.innerHTML = formattedAnswer;
+        
+    } catch (error) {
+        console.error('Ask AI Error:', error);
+        responseContent.innerHTML = '❌ حدث خطأ. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.';
+    }
+    
+    // إعادة الزر لحالته الطبيعية
+    askBtn.disabled = false;
+    askBtn.innerHTML = '<i class="fas fa-paper-plane"></i> اسأل ذكي';
+}
+
+// التعامل مع Enter في Ask AI
+document.addEventListener('DOMContentLoaded', () => {
+    const askAiTextarea = document.getElementById('askAiQuestion');
+    if (askAiTextarea) {
+        askAiTextarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                e.preventDefault();
+                askAI();
+            }
+        });
+    }
+});
+
 // التعامل مع Enter
 function handleChatKeyPress(event) {
     if (event.key === 'Enter') {

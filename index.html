@@ -293,6 +293,29 @@
             <div class="essay-questions-container" id="essayQuestionsContainer">
                 <!-- الأسئلة المقالية ستُعرض هنا ديناميكياً -->
             </div>
+            
+            <!-- Ask AI Section -->
+            <div class="ask-ai-section">
+                <h3 class="ask-ai-title">
+                    <i class="fas fa-robot"></i>
+                    اسأل الذكاء الاصطناعي
+                </h3>
+                <p class="ask-ai-desc">عندك سؤال مش لاقي إجابته؟ اسأل ذكي وهيساعدك!</p>
+                <div class="ask-ai-input-container">
+                    <textarea id="askAiQuestion" placeholder="اكتب سؤالك هنا... مثال: اشرح لي قانون مالوس"></textarea>
+                    <button class="btn btn-primary ask-ai-btn" onclick="askAI()">
+                        <i class="fas fa-paper-plane"></i>
+                        اسأل ذكي
+                    </button>
+                </div>
+                <div class="ask-ai-response" id="askAiResponse" style="display: none;">
+                    <div class="response-header">
+                        <i class="fas fa-robot"></i>
+                        <span>إجابة ذكي</span>
+                    </div>
+                    <div class="response-content" id="askAiResponseContent"></div>
+                </div>
+            </div>
         </div>
     </section>
 

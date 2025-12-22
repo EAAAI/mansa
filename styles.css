@@ -1555,6 +1555,163 @@ body {
 }
 
 /* ==========================================
+   Ask AI Section
+   ========================================== */
+
+.ask-ai-section {
+    margin-top: 60px;
+    padding: 40px;
+    background: linear-gradient(145deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05));
+    border-radius: 25px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    text-align: center;
+}
+
+.ask-ai-title {
+    font-size: 1.8rem;
+    color: #667eea;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.ask-ai-title i {
+    font-size: 2rem;
+    animation: bounce 2s infinite;
+}
+
+.ask-ai-desc {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+.ask-ai-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.ask-ai-input-container textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 20px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 1.1rem;
+    font-family: 'Cairo', sans-serif;
+    resize: vertical;
+    transition: all 0.3s ease;
+}
+
+.ask-ai-input-container textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+}
+
+.ask-ai-input-container textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.ask-ai-btn {
+    align-self: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.ask-ai-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.ask-ai-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.ask-ai-response {
+    margin-top: 30px;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    text-align: right;
+}
+
+.response-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #667eea;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.response-header i {
+    font-size: 1.5rem;
+}
+
+.response-content {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.05rem;
+    line-height: 2;
+    white-space: pre-wrap;
+}
+
+.response-content strong {
+    color: #667eea;
+}
+
+.ask-ai-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+}
+
+.ask-ai-loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .ask-ai-section {
+        padding: 25px;
+    }
+    
+    .ask-ai-title {
+        font-size: 1.4rem;
+    }
+    
+    .ask-ai-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ==========================================
    AI Chat Bot Styles
    ========================================== */
 
