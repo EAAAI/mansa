@@ -10,7 +10,7 @@ const API_CONFIG = {
 // Gemini API for Vision (Images)
 const GEMINI_CONFIG = {
     apiKey: 'AIzaSyAErOl-9MrM_A-HLRxvxFqx5b6WJWwi2Zs',
-    apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+    apiUrl: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
 };
 
 // ==========================================
