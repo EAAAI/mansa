@@ -1883,13 +1883,25 @@ function filterName(name) {
         return null;
     }
     
-    // التحقق من الرموز الغريبة والأرقام فقط
+    // رفض الأسماء التي كلها أرقام أو كلها رموز
     const onlyNumbers = /^[0-9]+$/;
     const onlySymbols = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
     if (onlyNumbers.test(filteredName) || onlySymbols.test(filteredName)) {
         return null;
     }
-    
+
+    // رفض الأسماء التي تحتوي على أرقام أو رموز أو حروف مكررة بشكل غير طبيعي
+    // يسمح فقط بحروف عربية أو إنجليزية ومسافة
+    const validName = /^[\u0600-\u06FFa-zA-Z ]+$/;
+    if (!validName.test(filteredName)) {
+        return null;
+    }
+
+    // رفض الأسماء التي فيها أكثر من 3 حروف متكررة متتالية (مثل aaa أو ممممم)
+    if (/(.)\1{2,}/.test(filteredName)) {
+        return null;
+    }
+
     return filteredName;
 }
 
