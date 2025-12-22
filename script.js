@@ -387,7 +387,7 @@ async function analyzeImageWithAI(imageData) {
                 'Authorization': `Bearer ${API_CONFIG.apiKey}`
             },
             body: JSON.stringify({
-                model: 'llama-3.2-11b-vision-preview',
+                model: 'llama-3.2-90b-vision-preview',
                 messages: [
                     {
                         role: 'user',
@@ -725,12 +725,16 @@ function initQuiz(subject) {
         electronics: 'إلكترونيات'
     };
     
-    document.getElementById('currentSubject').textContent = subjectNames[subject];
-    document.getElementById('totalQ').textContent = currentQuiz.questions.length;
+    const currentSubjectEl = document.getElementById('currentSubject');
+    const totalQEl = document.getElementById('totalQ');
+    if (currentSubjectEl) currentSubjectEl.textContent = subjectNames[subject];
+    if (totalQEl) totalQEl.textContent = currentQuiz.questions.length;
     
     // إخفاء النتيجة وإظهار الامتحان
-    document.getElementById('quizResult').style.display = 'none';
-    document.getElementById('quizContainer').style.display = 'block';
+    const quizResult = document.getElementById('quizResult');
+    const quizContainer = document.getElementById('quizContainer');
+    if (quizResult) quizResult.style.display = 'none';
+    if (quizContainer) quizContainer.style.display = 'block';
     
     // التحقق من وجود أسئلة
     if (currentQuiz.questions.length === 0) {
