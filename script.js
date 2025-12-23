@@ -37,6 +37,84 @@ try {
 }
 
 // ==========================================
+// Visitor Analytics Tracking - تتبع الزوار
+// ==========================================
+async function trackVisitor() {
+    try {
+        // Get visitor's location from IP
+        const geoResponse = await fetch('http://ip-api.com/json/?fields=status,country,countryCode,city,query');
+        const geoData = await geoResponse.json();
+
+        if (geoData.status !== 'success') {
+            console.log('Could not get location data');
+            return;
+        }
+
+        const visitorData = {
+            ip: geoData.query,
+            country: geoData.country,
+            countryCode: geoData.countryCode,
+            city: geoData.city,
+            page: window.location.pathname || '/',
+            userAgent: navigator.userAgent,
+            isMobile: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            date: new Date().toISOString().split('T')[0]
+        };
+
+        // Check if this is a unique visitor today
+        const today = new Date().toISOString().split('T')[0];
+        const visitorId = `${geoData.query}_${today}`;
+
+        // Save visit to Firebase
+        if (db) {
+            // Add to visits collection
+            await db.collection('analytics_visits').add(visitorData);
+
+            // Update daily stats
+            const statsRef = db.collection('analytics_stats').doc(today);
+            const statsDoc = await statsRef.get();
+
+            if (statsDoc.exists) {
+                await statsRef.update({
+                    totalViews: firebase.firestore.FieldValue.increment(1),
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Check if unique visitor
+                const existingVisitor = await db.collection('analytics_visits')
+                    .where('ip', '==', geoData.query)
+                    .where('date', '==', today)
+                    .limit(2)
+                    .get();
+
+                if (existingVisitor.size <= 1) {
+                    await statsRef.update({
+                        uniqueVisitors: firebase.firestore.FieldValue.increment(1)
+                    });
+                }
+            } else {
+                await statsRef.set({
+                    date: today,
+                    totalViews: 1,
+                    uniqueVisitors: 1,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            console.log('✅ Visitor tracked successfully');
+        }
+    } catch (error) {
+        console.log('Analytics tracking error:', error);
+    }
+}
+
+// Track visitor when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(trackVisitor, 1000);
+});
+
+// ==========================================
 // AI Chat Bot - ذكي
 // ==========================================
 let chatHistory = [];
