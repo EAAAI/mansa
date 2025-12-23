@@ -1,3 +1,34 @@
+// رفع الأسئلة وتخزينها محليًا
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadForm = document.getElementById('uploadQuestionsForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('questionsFile');
+            const status = document.getElementById('uploadStatus');
+            if (!fileInput.files.length) {
+                status.textContent = 'يرجى اختيار ملف.';
+                status.style.color = 'red';
+                return;
+            }
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const questions = JSON.parse(event.target.result);
+                    // حفظ في localStorage (أو يمكن استخدام IndexedDB)
+                    localStorage.setItem('uploadedQuestions', JSON.stringify(questions));
+                    status.textContent = 'تم رفع الأسئلة بنجاح!';
+                    status.style.color = 'green';
+                } catch (err) {
+                    status.textContent = 'ملف غير صالح!';
+                    status.style.color = 'red';
+                }
+            };
+            reader.readAsText(file);
+        });
+    }
+});
 // ==========================================
 // Configuration - Groq API
 // ==========================================
