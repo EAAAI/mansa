@@ -41,19 +41,19 @@ try {
 // ==========================================
 async function trackVisitor() {
     try {
-        // Get visitor's location from IP
-        const geoResponse = await fetch('http://ip-api.com/json/?fields=status,country,countryCode,city,query');
+        // Get visitor's location from IP (using HTTPS API)
+        const geoResponse = await fetch('https://ipapi.co/json/');
         const geoData = await geoResponse.json();
 
-        if (geoData.status !== 'success') {
+        if (geoData.error) {
             console.log('Could not get location data');
             return;
         }
 
         const visitorData = {
-            ip: geoData.query,
-            country: geoData.country,
-            countryCode: geoData.countryCode,
+            ip: geoData.ip,
+            country: geoData.country_name,
+            countryCode: geoData.country_code,
             city: geoData.city,
             page: window.location.pathname || '/',
             userAgent: navigator.userAgent,
@@ -64,7 +64,7 @@ async function trackVisitor() {
 
         // Check if this is a unique visitor today
         const today = new Date().toISOString().split('T')[0];
-        const visitorId = `${geoData.query}_${today}`;
+        const visitorId = `${geoData.ip}_${today}`;
 
         // Save visit to Firebase
         if (db) {
