@@ -1,8 +1,8 @@
 // رفع الأسئلة وتخزينها محليًا
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const uploadForm = document.getElementById('uploadQuestionsForm');
     if (uploadForm) {
-        uploadForm.addEventListener('submit', function(e) {
+        uploadForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const fileInput = document.getElementById('questionsFile');
             const status = document.getElementById('uploadStatus');
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             const file = fileInput.files[0];
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 try {
                     const questions = JSON.parse(event.target.result);
                     // حفظ في localStorage (أو يمكن استخدام IndexedDB)
@@ -2251,6 +2251,36 @@ function restartChallenge() {
 
 // حفظ في قاعدة البيانات (Firebase Firestore)
 async function saveToLeaderboard(entry) {
+    // 🚫 كشف الغش: رفض النتائج المثالية في وقت قصير جداً
+    // إذا حصل على 14 أو 15 في أقل من 60 ثانية، فهذا مشبوه
+    if (entry.score >= 14 && entry.timeSeconds < 60) {
+        console.warn('🚫 تم اكتشاف نتيجة مشبوهة - غش محتمل');
+        alert('⚠️ تم اكتشاف نشاط مشبوه!\n\nلا يمكن حفظ نتيجتك.\n\nإذا كنت تعتقد أن هذا خطأ، يرجى إعادة المحاولة بشكل طبيعي.');
+
+        // حذف النتيجة من Firebase إذا كانت موجودة
+        if (db) {
+            try {
+                // البحث عن نتائج مشبوهة وحذفها
+                const suspiciousResults = await db.collection('leaderboard')
+                    .where('name', '==', entry.name)
+                    .where('score', '>=', 14)
+                    .get();
+
+                suspiciousResults.forEach(async (doc) => {
+                    const data = doc.data();
+                    if (data.timeSeconds < 60) {
+                        await db.collection('leaderboard').doc(doc.id).delete();
+                        console.log('🗑️ تم حذف نتيجة مشبوهة:', doc.id);
+                    }
+                });
+            } catch (error) {
+                console.error('خطأ في حذف النتائج المشبوهة:', error);
+            }
+        }
+
+        return; // لا تحفظ النتيجة
+    }
+
     // حفظ في localStorage أولاً كاحتياط
     let localLeaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
     localLeaderboard.push({ ...entry });
@@ -2432,8 +2462,42 @@ function listenToLeaderboard() {
         });
 }
 
+// 🧹 تنظيف النتائج المشبوهة من قاعدة البيانات
+async function cleanSuspiciousResults() {
+    if (!db) return;
+
+    try {
+        console.log('🧹 جاري البحث عن نتائج مشبوهة...');
+
+        // جلب جميع النتائج
+        const snapshot = await db.collection('leaderboard').get();
+
+        let deletedCount = 0;
+        for (const doc of snapshot.docs) {
+            const data = doc.data();
+            // حذف النتائج المشبوهة: 14 أو 15 في أقل من 60 ثانية
+            if (data.score >= 14 && data.timeSeconds < 60) {
+                await db.collection('leaderboard').doc(doc.id).delete();
+                console.log('🗑️ تم حذف نتيجة مشبوهة:', data.name, '- النتيجة:', data.score, '- الوقت:', data.timeSeconds, 'ثانية');
+                deletedCount++;
+            }
+        }
+
+        if (deletedCount > 0) {
+            console.log(`✅ تم حذف ${deletedCount} نتيجة مشبوهة`);
+        } else {
+            console.log('✅ لا توجد نتائج مشبوهة');
+        }
+    } catch (error) {
+        console.error('خطأ في تنظيف النتائج المشبوهة:', error);
+    }
+}
+
 // تهيئة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
+    // تنظيف النتائج المشبوهة أولاً
+    setTimeout(cleanSuspiciousResults, 2000);
+
     // بدء الاستماع للتحديثات الفورية
     listenToLeaderboard();
 });
