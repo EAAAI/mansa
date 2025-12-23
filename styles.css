@@ -1,3 +1,74 @@
+.ibrahim-leader td.name-cell {
+    position: relative;
+    color: #b8860b !important;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px #fffbe6, 0 0 2px #FFD700, 0 0 16px #ff9800;
+}
+.ibrahim-leader td {
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 24px 8px #FFD700, 0 0 48px 16px #ff9800 inset;
+    background: linear-gradient(90deg, #fffbe6 60%, #fffde4 100%);
+    z-index: 2;
+    animation: fire-glow 1.2s infinite alternate;
+}
+.ibrahim-leader .ibrahim-crown {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-size: 1.3em;
+    animation: crown-bounce 1.2s infinite alternate;
+    color: #FFD700;
+    filter: drop-shadow(0 0 6px #ff9800);
+}
+@keyframes crown-bounce {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1.15); }
+    100% { transform: translateY(0) scale(1); }
+}
+/* تمييز خاص لـ Ibrahim mohamed */
+.leaderboard-table tr.ibrahim-leader td,
+.main-leaderboard-table tr.ibrahim-leader td {
+    position: relative;
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 16px 4px #FFD700, 0 0 32px 8px #ff9800 inset;
+    background: linear-gradient(90deg, #fffbe6 60%, #fffde4 100%);
+    z-index: 1;
+}
+.leaderboard-table tr.ibrahim-leader td.name-cell,
+.main-leaderboard-table tr.ibrahim-leader td.name-cell {
+    color: #b8860b !important;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px #fffbe6, 0 0 2px #FFD700;
+}
+/* تمييز المتصدر بفريم ذهبي وأنيميشن نار */
+.leaderboard-table tr.top-leader td,
+.main-leaderboard-table tr.top-leader td {
+    position: relative;
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 16px 4px #FFD700, 0 0 32px 8px #ff9800 inset;
+    background: linear-gradient(90deg, #fffbe6 60%, #fffde4 100%);
+    z-index: 1;
+}
+
+.leaderboard-table tr.top-leader td::before,
+.main-leaderboard-table tr.top-leader td::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: -8px; right: -8px; bottom: -8px;
+    border-radius: 16px;
+    z-index: 2;
+    pointer-events: none;
+    background: none;
+    animation: fire-glow 1.2s infinite alternate;
+}
+
+@keyframes fire-glow {
+    0% { box-shadow: 0 0 16px 4px #FFD700, 0 0 32px 8px #ff9800 inset; }
+    50% { box-shadow: 0 0 32px 12px #ff9800, 0 0 48px 16px #FFD700 inset; }
+    100% { box-shadow: 0 0 16px 4px #FFD700, 0 0 32px 8px #ff9800 inset; }
+}
 /* Top Scorer Alert */
 .top-scorer-alert {
     background: linear-gradient(90deg, #ffb347 0%, #ff6b6b 100%);

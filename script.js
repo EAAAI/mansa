@@ -2227,15 +2227,27 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecords) noRecords.style.display = 'block';
         } else {
             if (noRecords) noRecords.style.display = 'none';
-            tbody.innerHTML = leaderboard.map((entry, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${entry.name}</td>
-                    <td>${entry.score}/${entry.total}</td>
-                    <td>${entry.time}</td>
-                    <td>${entry.date}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = leaderboard.map((entry, index) => {
+                let rowClass = '';
+                                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
+                                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
+                                if (nameNorm === 'Ibrahim mohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
+                                    rowClass = 'ibrahim-leader';
+                                } else if (index === 0) rowClass = 'top-leader';
+                                let nameCell = entry.name;
+                                if (nameNorm === 'Ibrahim mohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
+                                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
+                                }
+                                return `
+                                <tr class="${rowClass}">
+                                        <td>${index + 1}</td>
+                                        <td class="name-cell">${nameCell}</td>
+                                        <td>${entry.score}/${entry.total}</td>
+                                        <td>${entry.time}</td>
+                                        <td>${entry.date}</td>
+                                </tr>
+                                `;
+            }).join('');
         }
     }
     
@@ -2249,15 +2261,27 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecordsMain) noRecordsMain.style.display = 'block';
         } else {
             if (noRecordsMain) noRecordsMain.style.display = 'none';
-            mainTbody.innerHTML = leaderboard.map((entry, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${entry.name}</td>
-                    <td>${entry.score}/${entry.total}</td>
-                    <td>${entry.time}</td>
-                    <td>${entry.date}</td>
-                </tr>
-            `).join('');
+            mainTbody.innerHTML = leaderboard.map((entry, index) => {
+                let rowClass = '';
+                                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
+                                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
+                                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
+                                    rowClass = 'ibrahim-leader';
+                                } else if (index === 0) rowClass = 'top-leader';
+                                let nameCell = entry.name;
+                                if (nameNorm === 'ibrahim mohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
+                                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
+                                }
+                                return `
+                                <tr class="${rowClass}">
+                                        <td>${index + 1}</td>
+                                        <td class="name-cell">${nameCell}</td>
+                                        <td>${entry.score}/${entry.total}</td>
+                                        <td>${entry.time}</td>
+                                        <td>${entry.date}</td>
+                                </tr>
+                                `;
+            }).join('');
         }
     }
 }
