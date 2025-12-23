@@ -48,7 +48,7 @@ let pendingImage = null;
 function toggleChatBot() {
     const container = document.getElementById('chatBotContainer');
     container.classList.toggle('active');
-    
+
     // إرسال رسالة الترحيب عند أول فتح
     if (container.classList.contains('active') && isFirstMessage) {
         setTimeout(() => {
@@ -118,18 +118,18 @@ function hideTypingIndicator() {
 async function sendMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
-    
+
     if (!message) return;
-    
+
     // إضافة رسالة المستخدم
     addUserMessage(message);
     input.value = '';
-    
+
     // حفظ الاسم لو لسه مقالوش
     if (!userName && chatHistory.length === 0) {
         userName = message;
         chatHistory.push({ role: 'user', content: message });
-        
+
         setTimeout(() => {
             addBotMessage(`أهلاً يا ${userName}! 🎉
 
@@ -142,20 +142,20 @@ async function sendMessage() {
 🌐 لو عايز تعرف أكتر عن شركة EAAAI: <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank" style="color: #38ef7d;">زور موقعنا</a>
 
 إيه اللي محتاج مساعدة فيه؟ 📚`);
-            chatHistory.push({ 
-                role: 'assistant', 
+            chatHistory.push({
+                role: 'assistant',
                 content: `أهلاً يا ${userName}! نورتني والله! أنا سعيد جداً إني أقدر أساعدك. اسألني أي سؤال وأنا هشرحلك بالتفصيل.`
             });
         }, 800);
         return;
     }
-    
+
     // إضافة للتاريخ
     chatHistory.push({ role: 'user', content: message });
-    
+
     // إظهار مؤشر الكتابة
     showTypingIndicator();
-    
+
     try {
         const response = await getAIResponse(message);
         hideTypingIndicator();
@@ -230,21 +230,21 @@ async function askAI() {
     const responseDiv = document.getElementById('askAiResponse');
     const responseContent = document.getElementById('askAiResponseContent');
     const askBtn = document.querySelector('.ask-ai-btn');
-    
+
     const question = questionInput.value.trim();
-    
+
     if (!question) {
         alert('من فضلك اكتب سؤالك أولاً!');
         questionInput.focus();
         return;
     }
-    
+
     // إظهار حالة التحميل
     askBtn.disabled = true;
     askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التفكير...';
     responseDiv.style.display = 'block';
     responseContent.innerHTML = '<div class="ask-ai-loading"><i class="fas fa-spinner"></i> ذكي بيفكر في إجابتك...</div>';
-    
+
     try {
         const systemPrompt = `أنت "ذكي"، نموذج لغوي ذكي مطور من شركة EAAAI.
 أنت مخصص لمساعدة طلاب أولى حاسبات في الأسئلة المقالية والعلمية.
@@ -288,19 +288,19 @@ async function askAI() {
 
         const data = await response.json();
         const answer = data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
-        
+
         // تنسيق الإجابة
         const formattedAnswer = answer
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\n/g, '<br>');
-        
+
         responseContent.innerHTML = formattedAnswer;
-        
+
     } catch (error) {
         console.error('Ask AI Error:', error);
         responseContent.innerHTML = '❌ حدث خطأ. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.';
     }
-    
+
     // إعادة الزر لحالته الطبيعية
     askBtn.disabled = false;
     askBtn.innerHTML = '<i class="fas fa-paper-plane"></i> اسأل ذكي';
@@ -330,28 +330,28 @@ function handleChatKeyPress(event) {
 function handleChatImage(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
+
     if (!file.type.startsWith('image/')) {
         addBotMessage('⚠️ من فضلك ارفع صورة فقط!');
         return;
     }
-    
+
     if (file.size > 10 * 1024 * 1024) {
         addBotMessage('⚠️ حجم الصورة كبير جداً! الحد الأقصى 10MB');
         return;
     }
-    
+
     // تحويل الصورة لـ base64
     const reader = new FileReader();
     reader.onload = async (e) => {
         const base64Image = e.target.result;
-        
+
         // عرض الصورة في الشات
         addUserImageMessage(base64Image);
-        
+
         // إظهار مؤشر الكتابة
         showTypingIndicator();
-        
+
         try {
             const response = await analyzeImageWithAI(base64Image);
             hideTypingIndicator();
@@ -362,7 +362,7 @@ function handleChatImage(event) {
         }
     };
     reader.readAsDataURL(file);
-    
+
     // إعادة تعيين الـ input
     event.target.value = '';
 }
@@ -384,7 +384,7 @@ function addUserImageMessage(imageSrc) {
 async function analyzeImageWithAI(imageData) {
     const base64Data = imageData.split(',')[1];
     const mimeType = imageData.split(';')[0].split(':')[1];
-    
+
     try {
         const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, {
             method: 'POST',
@@ -708,15 +708,15 @@ let currentQuiz = {
 // تهيئة الامتحان
 function initQuiz(subject) {
     currentQuiz.subject = subject;
-    
+
     // خلط الأسئلة واختيار 15 سؤال عشوائي
     const allQuestions = [...questionsBank[subject]];
     const shuffled = allQuestions.sort(() => Math.random() - 0.5);
     currentQuiz.questions = shuffled.slice(0, Math.min(15, shuffled.length));
-    
+
     currentQuiz.currentIndex = 0;
     currentQuiz.answers = new Array(currentQuiz.questions.length).fill(null);
-    
+
     // تحديث العنوان
     const subjectNames = {
         physics: 'فيزياء 1',
@@ -726,18 +726,18 @@ function initQuiz(subject) {
         it: 'IT',
         electronics: 'إلكترونيات'
     };
-    
+
     const currentSubjectEl = document.getElementById('currentSubject');
     const totalQEl = document.getElementById('totalQ');
     if (currentSubjectEl) currentSubjectEl.textContent = subjectNames[subject];
     if (totalQEl) totalQEl.textContent = currentQuiz.questions.length;
-    
+
     // إخفاء النتيجة وإظهار الامتحان
     const quizResult = document.getElementById('quizResult');
     const quizContainer = document.getElementById('quizContainer');
     if (quizResult) quizResult.style.display = 'none';
     if (quizContainer) quizContainer.style.display = 'block';
-    
+
     // التحقق من وجود أسئلة
     if (currentQuiz.questions.length === 0) {
         document.getElementById('questionText').textContent = 'لا توجد أسئلة لهذه المادة حالياً';
@@ -746,10 +746,10 @@ function initQuiz(subject) {
         document.getElementById('submitQuiz').style.display = 'none';
         return;
     }
-    
+
     // بدء المؤقت
     startTimer();
-    
+
     // عرض السؤال الأول
     showQuestion(0);
 }
@@ -759,12 +759,12 @@ function showQuestion(index) {
     const question = currentQuiz.questions[index];
     document.getElementById('currentQ').textContent = index + 1;
     document.getElementById('questionText').textContent = question.question;
-    
+
     const optionsContainer = document.getElementById('quizOptions');
     optionsContainer.innerHTML = '';
-    
+
     const letters = ['أ', 'ب', 'ج', 'د'];
-    
+
     question.options.forEach((option, i) => {
         const optionBtn = document.createElement('button');
         optionBtn.className = 'quiz-option';
@@ -778,10 +778,10 @@ function showQuestion(index) {
         optionBtn.onclick = () => selectOption(i);
         optionsContainer.appendChild(optionBtn);
     });
-    
+
     // تحديث الأزرار
     document.getElementById('prevBtn').disabled = index === 0;
-    
+
     if (index === currentQuiz.questions.length - 1) {
         document.getElementById('nextBtn').style.display = 'none';
         document.getElementById('submitQuiz').style.display = 'inline-flex';
@@ -794,7 +794,7 @@ function showQuestion(index) {
 // اختيار إجابة
 function selectOption(optionIndex) {
     currentQuiz.answers[currentQuiz.currentIndex] = optionIndex;
-    
+
     const options = document.querySelectorAll('.quiz-option');
     options.forEach((opt, i) => {
         opt.classList.remove('selected');
@@ -824,7 +824,7 @@ function prevQuestion() {
 function startTimer() {
     currentQuiz.timer = 0;
     if (currentQuiz.timerInterval) clearInterval(currentQuiz.timerInterval);
-    
+
     currentQuiz.timerInterval = setInterval(() => {
         currentQuiz.timer++;
         const minutes = Math.floor(currentQuiz.timer / 60).toString().padStart(2, '0');
@@ -836,28 +836,28 @@ function startTimer() {
 // إنهاء الامتحان
 function submitQuiz() {
     clearInterval(currentQuiz.timerInterval);
-    
+
     let score = 0;
     currentQuiz.questions.forEach((q, i) => {
         if (currentQuiz.answers[i] === q.correct) {
             score++;
         }
     });
-    
+
     const percentage = Math.round((score / currentQuiz.questions.length) * 100);
-    
+
     // عرض النتيجة
     document.getElementById('quizContainer').style.display = 'none';
     document.getElementById('quizResult').style.display = 'block';
-    
+
     document.getElementById('finalScore').textContent = score;
     document.getElementById('maxScore').textContent = currentQuiz.questions.length;
     document.getElementById('resultPercentage').textContent = percentage + '%';
-    
+
     // رسالة النتيجة
     let message = '';
     const percentageEl = document.getElementById('resultPercentage');
-    
+
     if (percentage >= 90) {
         message = 'ممتاز! أداء رائع 🌟';
         percentageEl.style.color = '#38ef7d';
@@ -874,7 +874,7 @@ function submitQuiz() {
         message = 'تحتاج للمزيد من المراجعة 📖';
         percentageEl.style.color = '#ff5252';
     }
-    
+
     document.getElementById('resultMessage').textContent = message;
 }
 
@@ -890,7 +890,7 @@ function initQuizButtons() {
             document.querySelectorAll('.quiz-subject-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedQuizSubject = btn.dataset.quizSubject;
-            
+
             // تحديث اسم المادة في شاشة البداية
             const subjectNames = {
                 physics: 'فيزياء 1',
@@ -902,7 +902,7 @@ function initQuizButtons() {
             };
             const subjectNameEl = document.getElementById('selectedSubjectName');
             if (subjectNameEl) subjectNameEl.textContent = subjectNames[selectedQuizSubject];
-            
+
             // إظهار شاشة البداية وإخفاء الامتحان
             const startScreen = document.getElementById('quizStartScreen');
             const container = document.getElementById('quizContainer');
@@ -912,19 +912,19 @@ function initQuizButtons() {
             if (result) result.style.display = 'none';
         });
     });
-    
+
     // زر التالي (مع فحص وجوده)
     const nextBtn = document.getElementById('nextBtn');
     if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
-    
+
     // زر السابق (مع فحص وجوده)
     const prevBtn = document.getElementById('prevBtn');
     if (prevBtn) prevBtn.addEventListener('click', prevQuestion);
-    
+
     // زر إنهاء الامتحان (مع فحص وجوده)
     const submitBtn = document.getElementById('submitQuiz');
     if (submitBtn) submitBtn.addEventListener('click', submitQuiz);
-    
+
     // زر إعادة الامتحان (مع فحص وجوده)
     const retryBtn = document.getElementById('retryQuiz');
     if (retryBtn) {
@@ -943,13 +943,13 @@ function initQuizButtons() {
 function startQuizWithName() {
     const nameInput = document.getElementById('quizUserName');
     quizUserName = nameInput.value.trim();
-    
+
     if (!quizUserName) {
         alert('من فضلك أدخل اسمك للبدء!');
         nameInput.focus();
         return;
     }
-    
+
     // إخفاء شاشة البداية وبدء الامتحان
     document.getElementById('quizStartScreen').style.display = 'none';
     initQuiz(selectedQuizSubject);
@@ -1002,15 +1002,15 @@ function saveParticipants() {
 function addParticipant(level) {
     const nameInput = document.getElementById(`name${level}`);
     const scoreInput = document.getElementById(`time${level}`);
-    
+
     const name = nameInput.value.trim();
     const score = parseInt(scoreInput.value.trim());
-    
+
     if (!name) {
         alert('الرجاء إدخال اسم المتسابق');
         return;
     }
-    
+
     if (isNaN(score) || score < 0 || score > 100) {
         alert('الرجاء إدخال درجة صحيحة (من 0 إلى 100)');
         return;
@@ -1018,20 +1018,20 @@ function addParticipant(level) {
 
     // Add to data
     participantsData[level].push({ name, score });
-    
+
     // Sort by score (highest first)
     participantsData[level].sort((a, b) => b.score - a.score);
 
     // Update UI
     updateParticipantsList(level);
-    
+
     // Save to localStorage
     saveParticipants();
-    
+
     // Clear inputs
     nameInput.value = '';
     scoreInput.value = '';
-    
+
     // Show success message
     showNotification(`تم إضافة ${name} بنجاح!`);
 }
@@ -1040,15 +1040,15 @@ function addParticipant(level) {
 function updateParticipantsList(level) {
     const list = document.getElementById(`level${level}Participants`);
     list.innerHTML = '';
-    
+
     participantsData[level].forEach((participant, index) => {
         const li = document.createElement('li');
-        
+
         let rankClass = '';
         if (index === 0) rankClass = 'gold';
         else if (index === 1) rankClass = 'silver';
         else if (index === 2) rankClass = 'bronze';
-        
+
         li.innerHTML = `
             <span class="rank ${rankClass}">${index + 1}</span>
             ${participant.name}
@@ -1098,7 +1098,7 @@ function showNotification(message) {
         animation: slideUp 0.5s ease;
     `;
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.style.animation = 'slideDown 0.5s ease';
         setTimeout(() => notification.remove(), 500);
@@ -1174,16 +1174,16 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a');
-    
+
     let current = '';
-    
+
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         if (scrollY >= sectionTop - 200) {
             current = section.getAttribute('id');
         }
     });
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${current}`) {
@@ -1677,7 +1677,7 @@ function displayBankQuestions(subject, reset = true) {
         bankQuestionsShown = 10;
         currentBankSubject = subject;
     }
-    
+
     if (questions.length === 0) {
         container.innerHTML = `
             <div class="no-questions">
@@ -1730,7 +1730,7 @@ function toggleAnswer(btn, correctIndex) {
     const card = btn.closest('.bank-question-card');
     const options = card.querySelectorAll('.bank-option');
     const isShowing = btn.classList.contains('showing');
-    
+
     if (isShowing) {
         options.forEach(opt => opt.classList.remove('correct'));
         btn.innerHTML = '<i class="fas fa-eye"></i> إظهار الإجابة';
@@ -1745,7 +1745,7 @@ function toggleAnswer(btn, correctIndex) {
 // تهيئة tabs بنك الأسئلة
 function initBankTabs() {
     const tabs = document.querySelectorAll('[data-bank-subject]');
-    
+
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
@@ -1753,7 +1753,7 @@ function initBankTabs() {
             displayBankQuestions(tab.dataset.bankSubject);
         });
     });
-    
+
     // عرض فيزياء 2 افتراضياً
     displayBankQuestions('physics2');
 }
@@ -1763,7 +1763,7 @@ function displayEssayQuestions(subject) {
     const container = document.getElementById('essayQuestionsContainer');
     if (!container) return;
     const essays = essayQuestionsData[subject] || [];
-    
+
     if (essays.length === 0) {
         container.innerHTML = `
             <div class="no-questions">
@@ -1774,7 +1774,7 @@ function displayEssayQuestions(subject) {
         `;
         return;
     }
-    
+
     container.innerHTML = essays.map((essay, essayIndex) => `
         <div class="essay-section-card">
             <div class="essay-header">
@@ -1807,7 +1807,7 @@ function toggleEssayAnswer(btn) {
     const card = btn.closest('.essay-question-card');
     const answer = card.querySelector('.essay-answer');
     const isShowing = btn.classList.contains('showing');
-    
+
     if (isShowing) {
         answer.style.display = 'none';
         btn.innerHTML = '<i class="fas fa-eye"></i> إظهار الإجابة';
@@ -1822,7 +1822,7 @@ function toggleEssayAnswer(btn) {
 // تهيئة tabs الأسئلة المقالية
 function initEssayTabs() {
     const tabs = document.querySelectorAll('[data-essay-subject]');
-    
+
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
@@ -1830,7 +1830,7 @@ function initEssayTabs() {
             displayEssayQuestions(tab.dataset.essaySubject);
         });
     });
-    
+
     // عرض فيزياء 2 افتراضياً
     displayEssayQuestions('physics2');
 }
@@ -1866,10 +1866,10 @@ const bannedWords = [
 // فلترة الاسم من الشتائم
 function filterName(name) {
     if (!name) return '';
-    
+
     let filteredName = name.trim();
     const lowerName = filteredName.toLowerCase();
-    
+
     // التحقق من الكلمات الممنوعة
     for (const word of bannedWords) {
         const regex = new RegExp(word, 'gi');
@@ -1877,12 +1877,12 @@ function filterName(name) {
             return null; // الاسم يحتوي على كلمة ممنوعة
         }
     }
-    
+
     // التحقق من الأسماء القصيرة جداً أو الطويلة جداً
     if (filteredName.length < 2 || filteredName.length > 30) {
         return null;
     }
-    
+
     // رفض الأسماء التي كلها أرقام أو كلها رموز
     const onlyNumbers = /^[0-9]+$/;
     const onlySymbols = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
@@ -1909,38 +1909,38 @@ function filterName(name) {
 function startChallenge() {
     const nameInput = document.getElementById('challengerName');
     const rawName = nameInput.value.trim();
-    
+
     if (!rawName) {
         alert('من فضلك أدخل اسمك للبدء!');
         nameInput.focus();
         return;
     }
-    
+
     // فلترة الاسم
     challengerName = filterName(rawName);
-    
+
     if (!challengerName) {
         alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق بدون ألفاظ غير مناسبة.');
         nameInput.value = '';
         nameInput.focus();
         return;
     }
-    
+
     // تهيئة التحدي
     challengeQuestions = getRandomQuestions(15);
     currentChallengeIndex = 0;
     challengeAnswers = {};
     challengeTimeRemaining = 300;
     challengeStartTime = Date.now();
-    
+
     // إخفاء المقدمة وإظهار التحدي
     document.getElementById('challengeIntro').style.display = 'none';
     document.getElementById('challengeContainer').style.display = 'block';
     document.getElementById('challengeResult').style.display = 'none';
-    
+
     // بدء المؤقت
     startChallengeTimer();
-    
+
     // عرض أول سؤال
     showChallengeQuestion();
     updateChallengeNav();
@@ -1957,19 +1957,19 @@ function getRandomQuestions(count) {
 function startChallengeTimer() {
     const timerDisplay = document.getElementById('timerDisplay');
     const timerDiv = document.getElementById('challengeTimer');
-    
+
     challengeTimerInterval = setInterval(() => {
         challengeTimeRemaining--;
-        
+
         const minutes = Math.floor(challengeTimeRemaining / 60);
         const seconds = challengeTimeRemaining % 60;
         timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        
+
         // تحذير عند بقاء دقيقة واحدة
         if (challengeTimeRemaining <= 60) {
             timerDiv.classList.add('warning');
         }
-        
+
         // انتهاء الوقت
         if (challengeTimeRemaining <= 0) {
             clearInterval(challengeTimerInterval);
@@ -1984,13 +1984,13 @@ function showChallengeQuestion() {
     const questionDiv = document.getElementById('challengeQuestion');
     const optionsDiv = document.getElementById('challengeOptions');
     const progressSpan = document.getElementById('challengeProgress');
-    
+
     // تحديث التقدم
     progressSpan.textContent = `${currentChallengeIndex + 1}/15`;
-    
+
     // عرض السؤال
     questionDiv.innerHTML = `<span class="question-number">س${currentChallengeIndex + 1}:</span> ${question.question}`;
-    
+
     // عرض الخيارات
     const letters = ['أ', 'ب', 'ج', 'د'];
     optionsDiv.innerHTML = question.options.map((option, i) => `
@@ -2000,20 +2000,20 @@ function showChallengeQuestion() {
             <span class="option-text">${option}</span>
         </div>
     `).join('');
-    
+
     updateChallengeNav();
 }
 
 // اختيار إجابة
 function selectChallengeOption(optionIndex) {
     challengeAnswers[currentChallengeIndex] = optionIndex;
-    
+
     // تحديث النتيجة المباشرة
     updateChallengeScore();
-    
+
     // إعادة عرض الخيارات
     showChallengeQuestion();
-    
+
     // الانتقال التلقائي للسؤال التالي بعد 500ms
     if (currentChallengeIndex < challengeQuestions.length - 1) {
         setTimeout(() => {
@@ -2054,9 +2054,9 @@ function updateChallengeNav() {
     const prevBtn = document.getElementById('prevChallengeBtn');
     const nextBtn = document.getElementById('nextChallengeBtn');
     const submitBtn = document.getElementById('submitChallengeBtn');
-    
+
     prevBtn.disabled = currentChallengeIndex === 0;
-    
+
     if (currentChallengeIndex === challengeQuestions.length - 1) {
         nextBtn.style.display = 'none';
         submitBtn.style.display = 'inline-flex';
@@ -2069,7 +2069,7 @@ function updateChallengeNav() {
 // إنهاء التحدي
 function submitChallenge() {
     clearInterval(challengeTimerInterval);
-    
+
     // حساب النتيجة
     let correctCount = 0;
     Object.keys(challengeAnswers).forEach(index => {
@@ -2077,13 +2077,13 @@ function submitChallenge() {
             correctCount++;
         }
     });
-    
+
     // حساب الوقت المستغرق
     const timeTaken = 300 - challengeTimeRemaining;
     const minutes = Math.floor(timeTaken / 60);
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    
+
     // حفظ في قاعدة البيانات
     saveToLeaderboard({
         name: challengerName,
@@ -2093,7 +2093,7 @@ function submitChallenge() {
         timeSeconds: timeTaken,
         date: new Date().toLocaleDateString('ar-EG')
     });
-    
+
     // عرض النتيجة
     showChallengeResult(correctCount, timeString);
 }
@@ -2102,10 +2102,10 @@ function submitChallenge() {
 function showChallengeResult(score, time) {
     document.getElementById('challengeContainer').style.display = 'none';
     document.getElementById('challengeResult').style.display = 'block';
-    
+
     const resultIcon = document.getElementById('resultIcon');
     const resultTitle = document.getElementById('resultTitle');
-    
+
     // تحديد الرمز والعنوان حسب النتيجة
     if (score >= 13) {
         resultIcon.textContent = '🏆';
@@ -2120,11 +2120,11 @@ function showChallengeResult(score, time) {
         resultIcon.textContent = '💪';
         resultTitle.textContent = 'حاول مرة أخرى!';
     }
-    
+
     document.getElementById('finalScore').textContent = `${score}/15`;
     document.getElementById('finalTime').textContent = time;
     document.getElementById('correctAnswers').textContent = `${score}/15`;
-    
+
     // تحديث لوحة المتصدرين
     displayLeaderboard();
 }
@@ -2134,7 +2134,7 @@ function restartChallenge() {
     document.getElementById('challengeResult').style.display = 'none';
     document.getElementById('challengeIntro').style.display = 'block';
     document.getElementById('challengerName').value = '';
-    
+
     // إعادة تعيين المؤقت
     document.getElementById('timerDisplay').textContent = '05:00';
     document.getElementById('challengeTimer').classList.remove('warning');
@@ -2144,30 +2144,30 @@ function restartChallenge() {
 async function saveToLeaderboard(entry) {
     // حفظ في localStorage أولاً كاحتياط
     let localLeaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
-    localLeaderboard.push({...entry});
+    localLeaderboard.push({ ...entry });
     localLeaderboard.sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return a.timeSeconds - b.timeSeconds;
     });
     localLeaderboard = localLeaderboard.slice(0, 50);
     localStorage.setItem('challengeLeaderboard', JSON.stringify(localLeaderboard));
-    
+
     // محاولة الحفظ في Firebase
     if (!db) {
         console.error('❌ Firebase غير متصل، تم الحفظ محلياً فقط');
         updateLeaderboardUI(localLeaderboard);
         return;
     }
-    
+
     try {
         // إضافة timestamp للترتيب
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
-        
+
         // حفظ في Firebase
         const docRef = await db.collection('leaderboard').add(entry);
-        
+
         console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
-        
+
     } catch (error) {
         console.error('❌ خطأ في حفظ النتيجة:', error);
         // البيانات محفوظة محلياً بالفعل
@@ -2182,33 +2182,33 @@ async function displayLeaderboard() {
         updateLeaderboardUI(leaderboard);
         return;
     }
-    
+
     try {
         // جلب البيانات من Firebase بدون ترتيب (لتجنب الحاجة لـ index)
         const snapshot = await db.collection('leaderboard')
             .limit(100)
             .get();
-        
+
         let leaderboard = [];
         snapshot.forEach(doc => {
             leaderboard.push(doc.data());
         });
-        
+
         // ترتيب في JavaScript: الأعلى نتيجة أولاً، ثم الأسرع وقتاً
         leaderboard.sort((a, b) => {
             if (b.score !== a.score) return b.score - a.score;
             return a.timeSeconds - b.timeSeconds;
         });
-        
+
         // أخذ أفضل 50 فقط
         leaderboard = leaderboard.slice(0, 50);
-        
+
         // تحديث لوحة المتصدرين في قسم التحدي
         updateLeaderboardUI(leaderboard);
-        
+
     } catch (error) {
         console.error('❌ خطأ في جلب البيانات:', error);
-        
+
         // استخدام localStorage كاحتياط
         const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
         updateLeaderboardUI(leaderboard);
@@ -2220,7 +2220,7 @@ function updateLeaderboardUI(leaderboard) {
     // تحديث لوحة المتصدرين في قسم التحدي
     const tbody = document.getElementById('leaderboardBody');
     const noRecords = document.getElementById('noRecords');
-    
+
     if (tbody) {
         if (leaderboard.length === 0) {
             tbody.innerHTML = '';
@@ -2229,16 +2229,16 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecords) noRecords.style.display = 'none';
             tbody.innerHTML = leaderboard.map((entry, index) => {
                 let rowClass = '';
-                                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
-                                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
-                                if (nameNorm === 'Ibrahim mohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
-                                    rowClass = 'ibrahim-leader';
-                                } else if (index === 0) rowClass = 'top-leader';
-                                let nameCell = entry.name;
-                                if (nameNorm === 'Ibrahim mohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
-                                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
-                                }
-                                return `
+                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
+                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
+                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
+                    rowClass = 'ibrahim-leader';
+                } else if (index === 0) rowClass = 'top-leader';
+                let nameCell = entry.name;
+                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
+                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
+                }
+                return `
                                 <tr class="${rowClass}">
                                         <td>${index + 1}</td>
                                         <td class="name-cell">${nameCell}</td>
@@ -2250,11 +2250,11 @@ function updateLeaderboardUI(leaderboard) {
             }).join('');
         }
     }
-    
+
     // تحديث لوحة المتصدرين الرئيسية
     const mainTbody = document.getElementById('mainLeaderboardBody');
     const noRecordsMain = document.getElementById('noRecordsMain');
-    
+
     if (mainTbody) {
         if (leaderboard.length === 0) {
             mainTbody.innerHTML = '';
@@ -2263,16 +2263,16 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecordsMain) noRecordsMain.style.display = 'none';
             mainTbody.innerHTML = leaderboard.map((entry, index) => {
                 let rowClass = '';
-                                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
-                                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
-                                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
-                                    rowClass = 'ibrahim-leader';
-                                } else if (index === 0) rowClass = 'top-leader';
-                                let nameCell = entry.name;
-                                if (nameNorm === 'ibrahim mohamed' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد') {
-                                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
-                                }
-                                return `
+                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
+                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
+                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
+                    rowClass = 'ibrahim-leader';
+                } else if (index === 0) rowClass = 'top-leader';
+                let nameCell = entry.name;
+                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
+                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
+                }
+                return `
                                 <tr class="${rowClass}">
                                         <td>${index + 1}</td>
                                         <td class="name-cell">${nameCell}</td>
@@ -2295,9 +2295,9 @@ function listenToLeaderboard() {
         updateLeaderboardUI(leaderboard);
         return;
     }
-    
+
     console.log('🔄 جاري الاتصال بـ Firebase...');
-    
+
     // جلب البيانات بدون ترتيب (لتجنب الحاجة لـ index)
     db.collection('leaderboard')
         .limit(100)
