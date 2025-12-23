@@ -417,7 +417,7 @@
                 <p class="made-with">صُنع بـ 🌙 بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
                         target="_blank">EAAAI</a></p>
                 <div style="margin-top: 12px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="admin-dashboard.html"
+                    <a href="#" id="showStatsVideoBtn"
                         style="color: #555; font-size: 0.8rem; text-decoration: none; opacity: 0.6; transition: opacity 0.3s;"
                         onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
                         <i class="fas fa-chart-line"></i> لوحة الإحصائيات
@@ -516,5 +516,18 @@
         });
     </script>
 </body>
+</body>
+<div id="statsVideoModal" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
+    <video controls autoplay style="width:100vw;height:100vh;object-fit:cover;outline:none;">
+        <source src="https://videos.pexels.com/video-files/8561926/8561926-hd_1920_1080_25fps.mp4" type="video/mp4">
+        المتصفح لا يدعم تشغيل الفيديو.
+    </video>
+</div>
+<script>
+document.getElementById('showStatsVideoBtn').onclick = function(e) {
+    e.preventDefault();
+    document.getElementById('statsVideoModal').style.display = 'flex';
+};
+</script>
 
 </html>
