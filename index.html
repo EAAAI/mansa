@@ -36,6 +36,7 @@
             <ul class="nav-links">
                 <li><a href="#home" class="active">الرئيسية</a></li>
                 <li><a href="#challenge">⚡ وضع التحدي</a></li>
+                <li><a href="essay-challenge.html">📝 تحدي المقالي</a></li>
                 <li><a href="#exams">بنك الأسئلة</a></li>
                 <li><a href="#essay">الأسئلة المقالية</a></li>
                 <li><a href="#leaderboard">المتصدرين</a></li>
@@ -86,6 +87,10 @@
             <div class="hero-buttons">
                 <a href="#challenge" class="btn btn-primary">
                     <i class="fas fa-bolt"></i> ابدأ التحدي
+                </a>
+                <a href="essay-challenge.html" class="btn btn-primary"
+                    style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                    <i class="fas fa-pen-fancy"></i> تحدي المقالي
                 </a>
                 <a href="#exams" class="btn btn-secondary">
                     <i class="fas fa-book-open"></i> بنك الأسئلة
@@ -228,6 +233,175 @@
                         </tbody>
                     </table>
                     <p class="no-records" id="noRecords" style="display: none;">لا توجد نتائج بعد. كن أول المتحدين!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Essay Challenge Section - تحدي المقالي -->
+    <section id="essay-challenge" class="section essay-challenge-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-pen-fancy"></i>
+                تحدي المقالي
+            </h2>
+
+            <!-- Essay Challenge Intro -->
+            <div class="essay-challenge-intro" id="essayChallengeIntro">
+                <div class="challenge-info">
+                    <div class="challenge-icon">📝</div>
+                    <h3>تحدي المقالي بالذكاء الاصطناعي</h3>
+                    <p>اختبر معرفتك! أجب على 5 أسئلة مقالية عشوائية وسيقوم الذكاء الاصطناعي بتصحيحها</p>
+                    <div class="challenge-rules">
+                        <div class="rule">
+                            <i class="fas fa-clock"></i>
+                            <span>15 دقيقة</span>
+                        </div>
+                        <div class="rule">
+                            <i class="fas fa-question-circle"></i>
+                            <span>5 أسئلة</span>
+                        </div>
+                        <div class="rule">
+                            <i class="fas fa-star"></i>
+                            <span>30 درجة</span>
+                        </div>
+                        <div class="rule">
+                            <i class="fas fa-robot"></i>
+                            <span>تصحيح AI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="challenge-name-input">
+                    <label for="essayChallengerName">
+                        <i class="fas fa-user"></i>
+                        أدخل اسمك للبدء
+                    </label>
+                    <input type="text" id="essayChallengerName" placeholder="اسمك هنا..." maxlength="30">
+                    <button class="btn btn-primary start-challenge-btn" onclick="startEssayChallenge()">
+                        <i class="fas fa-play"></i>
+                        ابدأ التحدي
+                    </button>
+                </div>
+            </div>
+
+            <!-- Essay Challenge Container -->
+            <div class="essay-challenge-container" id="essayChallengeContainer" style="display: none;">
+                <div class="challenge-header">
+                    <div class="challenge-timer essay-timer" id="essayChallengeTimer">
+                        <i class="fas fa-clock"></i>
+                        <span id="essayTimerDisplay">15:00</span>
+                    </div>
+                    <div class="challenge-progress">
+                        <span id="essayChallengeProgress">1/5</span>
+                    </div>
+                    <div class="challenge-score">
+                        <i class="fas fa-star"></i>
+                        <span>30 درجة</span>
+                    </div>
+                </div>
+
+                <div class="essay-question-box">
+                    <div class="essay-question-header">
+                        <span class="question-badge" id="essayQuestionBadge">السؤال 1</span>
+                        <span class="question-points">6 درجات</span>
+                    </div>
+                    <div class="essay-question-text" id="essayQuestionText"></div>
+                </div>
+
+                <div class="essay-answer-box">
+                    <label for="essayAnswerInput">
+                        <i class="fas fa-edit"></i>
+                        إجابتك:
+                    </label>
+                    <textarea id="essayAnswerInput" placeholder="اكتب إجابتك هنا بالتفصيل..." rows="8"></textarea>
+                    <div class="char-counter">
+                        <span id="essayCharCount">0</span> حرف
+                    </div>
+                </div>
+
+                <div class="challenge-nav">
+                    <button class="btn btn-secondary" id="prevEssayBtn" onclick="prevEssayQuestion()" disabled>
+                        <i class="fas fa-arrow-right"></i>
+                        السابق
+                    </button>
+                    <button class="btn btn-primary" id="nextEssayBtn" onclick="nextEssayQuestion()">
+                        التالي
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button class="btn btn-success" id="submitEssayBtn" onclick="submitEssayChallenge()"
+                        style="display: none;">
+                        <i class="fas fa-paper-plane"></i>
+                        إرسال للتصحيح
+                    </button>
+                </div>
+            </div>
+
+            <!-- Essay Grading Loading -->
+            <div class="essay-grading-loading" id="essayGradingLoading" style="display: none;">
+                <div class="grading-animation">
+                    <i class="fas fa-robot fa-spin"></i>
+                </div>
+                <h3>جاري التصحيح بالذكاء الاصطناعي...</h3>
+                <p>يرجى الانتظار بينما يقوم ذكي بتحليل إجاباتك</p>
+                <div class="grading-progress">
+                    <div class="grading-bar" id="gradingBar"></div>
+                </div>
+            </div>
+
+            <!-- Essay Challenge Result -->
+            <div class="essay-challenge-result" id="essayChallengeResult" style="display: none;">
+                <div class="result-icon" id="essayResultIcon">📚</div>
+                <h3 id="essayResultTitle">تم التصحيح!</h3>
+                <div class="result-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="essayFinalScore">0/30</span>
+                        <span class="stat-label">الدرجة الكلية</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="essayFinalTime">00:00</span>
+                        <span class="stat-label">الوقت المستغرق</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="essayPercentage">0%</span>
+                        <span class="stat-label">النسبة المئوية</span>
+                    </div>
+                </div>
+
+                <!-- AI Feedback Cards -->
+                <div class="essay-feedback-container" id="essayFeedbackContainer">
+                    <!-- Will be filled dynamically -->
+                </div>
+
+                <button class="btn btn-primary" onclick="restartEssayChallenge()">
+                    <i class="fas fa-redo"></i>
+                    حاول مرة أخرى
+                </button>
+            </div>
+
+            <!-- Essay Leaderboard -->
+            <div class="leaderboard-section">
+                <h3 class="leaderboard-title">
+                    <i class="fas fa-trophy"></i>
+                    متصدرين المقالي
+                </h3>
+                <div class="leaderboard-container" id="essayLeaderboardContainer">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>الدرجة</th>
+                                <th>الوقت</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="essayLeaderboardBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                    <p class="no-records" id="noEssayRecords" style="display: none;">لا توجد نتائج بعد. كن أول المتحدين!
+                    </p>
                 </div>
             </div>
         </div>
@@ -517,17 +691,18 @@
     </script>
 </body>
 </body>
-<div id="statsVideoModal" style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
+<div id="statsVideoModal"
+    style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
     <video controls autoplay style="width:100vw;height:100vh;object-fit:cover;outline:none;">
         <source src="https://videos.pexels.com/video-files/8561926/8561926-hd_1920_1080_25fps.mp4" type="video/mp4">
         المتصفح لا يدعم تشغيل الفيديو.
     </video>
 </div>
 <script>
-document.getElementById('showStatsVideoBtn').onclick = function(e) {
-    e.preventDefault();
-    document.getElementById('statsVideoModal').style.display = 'flex';
-};
+    document.getElementById('showStatsVideoBtn').onclick = function (e) {
+        e.preventDefault();
+        document.getElementById('statsVideoModal').style.display = 'flex';
+    };
 </script>
 
 </html>
