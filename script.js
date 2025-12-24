@@ -1,4 +1,375 @@
+// ==========================================
+// User Profile & Theme System - نظام المستخدم والثيم
+// ==========================================
+
+// توليد رقم مميز للمستخدم
+function generateUserId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = '';
+    for (let i = 0; i < 8; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
+
+// تهيئة بيانات المستخدم
+function initUserProfile() {
+    let userProfile = JSON.parse(localStorage.getItem('userProfile'));
+
+    if (!userProfile) {
+        userProfile = {
+            id: generateUserId(),
+            name: '',
+            totalChallenges: 0,
+            bestScore: 0,
+            totalCorrect: 0,
+            visits: 1,
+            theme: 'default',
+            createdAt: new Date().toISOString(),
+            lastVisit: new Date().toISOString()
+        };
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    } else {
+        // تحديث عدد الزيارات
+        userProfile.visits = (userProfile.visits || 0) + 1;
+        userProfile.lastVisit = new Date().toISOString();
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    }
+
+    // تطبيق الثيم المحفوظ
+    if (userProfile.theme === 'space') {
+        document.body.classList.add('space-theme');
+    }
+
+    // عرض رسالة الترحيب
+    displayWelcomeGreeting(userProfile);
+
+    return userProfile;
+}
+
+// عرض رسالة ترحيب
+function displayWelcomeGreeting(userProfile) {
+    const greetingEl = document.getElementById('welcomeGreeting');
+    if (!greetingEl) return;
+
+    const displayName = userProfile.nickname || userProfile.name;
+
+    if (displayName) {
+        const greetings = [
+            `أهلاً يا ${displayName} 👋`,
+            `مرحباً ${displayName} ✨`,
+            `يا هلا ${displayName} 🌟`,
+            `منور يا ${displayName} 💫`
+        ];
+        const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+        greetingEl.textContent = randomGreeting;
+    }
+}
+
+// فتح مودال البروفايل
+function openUserProfile() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+
+    // عرض الاسم مع اللقب إن وجد
+    if (userProfile.name && userProfile.nickname) {
+        document.getElementById('profileDisplayName').innerHTML = `${userProfile.name} <span style="color: #ffc107; font-size: 0.9rem;">(${userProfile.nickname})</span>`;
+    } else {
+        document.getElementById('profileDisplayName').textContent = userProfile.name || 'مستخدم جديد';
+    }
+
+    document.getElementById('profileUserId').textContent = userProfile.id;
+    document.getElementById('profileNameInput').value = userProfile.name || '';
+    document.getElementById('statTotalChallenges').textContent = userProfile.totalChallenges || 0;
+    document.getElementById('statBestScore').textContent = userProfile.bestScore || 0;
+    document.getElementById('statTotalCorrect').textContent = userProfile.totalCorrect || 0;
+    document.getElementById('statVisits').textContent = userProfile.visits || 0;
+
+    document.getElementById('userProfileModal').classList.add('active');
+}
+
+// إغلاق مودال البروفايل
+function closeUserProfile() {
+    document.getElementById('userProfileModal').classList.remove('active');
+}
+
+// توليد لقب/دلع بالذكاء الاصطناعي
+async function generateNickname(name) {
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer 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'
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'أنت مساعد ودود. مهمتك توليد لقب أو دلع واحد فقط لطيف وودود باللغة العربية للاسم المعطى. الرد يجب أن يكون اللقب فقط بدون أي كلام إضافي. مثال: إذا الاسم "محمد" يمكن أن يكون اللقب "حمودة 🌟" أو "ميدو ⭐"'
+                    },
+                    {
+                        role: 'user',
+                        content: `ولد لقب أو دلع لطيف للاسم: ${name}`
+                    }
+                ],
+                max_tokens: 50,
+                temperature: 0.9
+            })
+        });
+
+        const data = await response.json();
+        if (data.choices && data.choices[0]) {
+            return data.choices[0].message.content.trim();
+        }
+        return null;
+    } catch (error) {
+        console.log('Error generating nickname:', error);
+        return null;
+    }
+}
+
+// حفظ بيانات البروفايل
+async function saveUserProfile() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+    const newName = document.getElementById('profileNameInput').value.trim();
+
+    if (newName) {
+        // عرض رسالة انتظار
+        const saveBtn = document.querySelector('.profile-btn.save-btn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> حفظ ومزامنة...';
+        saveBtn.disabled = true;
+
+        // توليد لقب بالذكاء الاصطناعي
+        const nickname = await generateNickname(newName);
+
+        userProfile.name = newName;
+        userProfile.nickname = nickname || '';
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        // مزامنة مع Firebase (بدون الثيم)
+        if (dbLeaderboard) {
+            try {
+                // ننسخ البيانات ونشيل منها الثيم قبل الرفع
+                const profileToSync = { ...userProfile };
+                delete profileToSync.theme; // لا نحفظ الثيم أونلاين
+
+                await dbLeaderboard.collection('users').doc(userProfile.id).set(profileToSync, { merge: true });
+                console.log('✅ تم مزامنة البروفايل مع Firebase');
+            } catch (error) {
+                console.error('فشل المزامنة:', error);
+            }
+        }
+
+        // عرض الاسم مع اللقب
+        if (nickname) {
+            document.getElementById('profileDisplayName').innerHTML = `${newName} <span style="color: #ffc107; font-size: 0.9rem;">(${nickname})</span>`;
+            alert(`✅ تم حفظ البيانات ومزامنتها!\n\n🏷️ لقبك: ${nickname}\n🆔 المعرف الخاص بك: ${userProfile.id}\n(احتفظ بهذا الكود لاسترجاع حسابك)`);
+        } else {
+            document.getElementById('profileDisplayName').textContent = newName;
+            alert(`✅ تم حفظ البيانات بنجاح!\n🆔 المعرف الخاص بك: ${userProfile.id}`);
+        }
+
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    } else {
+        alert('⚠️ من فضلك أدخل اسمك');
+    }
+}
+
+// استرجاع بروفايل موجود
+async function restoreProfile() {
+    const idInput = prompt("أدخل كود المعرف (User ID) الخاص بك لاسترجاع بياناتك:");
+    if (!idInput) return;
+
+    const userId = idInput.trim().toUpperCase();
+
+    if (dbLeaderboard) {
+        try {
+            const doc = await dbLeaderboard.collection('users').doc(userId).get();
+            if (doc.exists) {
+                const data = doc.data();
+                // دمج البيانات المسترجعة مع البيانات المحلية (مع الحفاظ على الثيم المحلي)
+                const currentLocal = JSON.parse(localStorage.getItem('userProfile')) || {};
+                const mergedProfile = { ...data, theme: currentLocal.theme || 'default' };
+
+                localStorage.setItem('userProfile', JSON.stringify(mergedProfile));
+
+                alert(`✅ تم استرجاع البروفايل بنجاح!\nأهلاً بك مجدداً يا ${data.name}`);
+                location.reload(); // إعادة تحميل لتطبيق الجدد
+            } else {
+                alert("❌ لم يتم العثور على بروفايل بهذا المعرف.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("حدث خطأ أثناء الاسترجاع. تأكد من الاتصال بالإنترنت.");
+        }
+    }
+}
+
+// تحديث إحصائيات المستخدم بعد التحدي
+async function updateUserStats(score) {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+
+    userProfile.totalChallenges = (userProfile.totalChallenges || 0) + 1;
+    userProfile.totalCorrect = (userProfile.totalCorrect || 0) + score;
+
+    if (score > (userProfile.bestScore || 0)) {
+        userProfile.bestScore = score;
+    }
+
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+    // مزامنة الإحصائيات مع Firebase
+    if (dbLeaderboard) {
+        try {
+            const statsToSync = {
+                totalChallenges: userProfile.totalChallenges,
+                totalCorrect: userProfile.totalCorrect,
+                bestScore: userProfile.bestScore,
+                lastActive: new Date().toISOString()
+            };
+            await dbLeaderboard.collection('users').doc(userProfile.id).set(statsToSync, { merge: true });
+        } catch (error) {
+            console.error('Error syncing stats:', error);
+        }
+    }
+}
+
+// تبديل الثيم الفضائي
+function toggleSpaceTheme() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+
+    if (document.body.classList.contains('space-theme')) {
+        document.body.classList.remove('space-theme');
+        userProfile.theme = 'default';
+    } else {
+        document.body.classList.add('space-theme');
+        userProfile.theme = 'space';
+    }
+
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+}
+
+// زر الصاروخ للتنقل
+let scrollGoingDown = true;
+
+function toggleScrollDirection() {
+    const scrollRocket = document.getElementById('scrollRocket');
+
+    if (scrollGoingDown) {
+        // انزل لآخر الصفحة
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+    } else {
+        // اطلع لأول الصفحة
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// تحديث اتجاه الصاروخ بناءً على الموقع
+window.addEventListener('scroll', () => {
+    const scrollRocket = document.getElementById('scrollRocket');
+    if (!scrollRocket) return;
+
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    if (scrollTop > scrollHeight / 2) {
+        // لو في النص الأسفل، الصاروخ بيطلع
+        scrollRocket.classList.remove('going-down');
+        scrollGoingDown = false;
+    } else {
+        // لو في النص الأعلى، الصاروخ بينزل
+        scrollRocket.classList.add('going-down');
+        scrollGoingDown = true;
+    }
+});
+
+// الحصول على اسم المستخدم المحفوظ
+function getSavedUserName() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    return userProfile?.name || '';
+}
+
+// فتح/إغلاق قائمة الثيمات
+function toggleThemeMenu() {
+    const menu = document.getElementById('themeMenu');
+    menu.classList.toggle('active');
+}
+
+// إغلاق المنيو لو ضغط برا
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('themeMenu');
+    const toggle = document.querySelector('.theme-toggle');
+    if (menu && !menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.remove('active');
+    }
+});
+
+// تعيين الثيم
+function setTheme(theme) {
+    const body = document.body;
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+
+    // إزالة كل الثيمات
+    body.classList.remove('space-theme', 'ocean-theme', 'sunset-theme', 'pyramids-theme', 'winter-theme');
+
+    // إضافة الثيم الجديد
+    if (theme !== 'default') {
+        body.classList.add(theme + '-theme');
+    }
+
+    // تحديث الأزرار
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.theme === theme) {
+            btn.classList.add('active');
+        }
+    });
+
+    // حفظ الثيم
+    userProfile.theme = theme;
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+    // إغلاق المنيو
+    document.getElementById('themeMenu').classList.remove('active');
+
+    // تحديث أيقونة الزر
+    const toggle = document.querySelector('.theme-toggle i');
+    const icons = {
+        'default': 'fa-moon',
+        'space': 'fa-rocket',
+        'ocean': 'fa-water',
+        'sunset': 'fa-sun',
+        'pyramids': 'fa-mountain',
+        'winter': 'fa-snowflake'
+    };
+    toggle.className = 'fas ' + (icons[theme] || 'fa-moon');
+}
+
+// تحميل الثيم المحفوظ
+function loadSavedTheme() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (userProfile?.theme && userProfile.theme !== 'default') {
+        setTheme(userProfile.theme);
+    }
+}
+
+// تهيئة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function () {
+    initUserProfile();
+});
+
+// ==========================================
 // رفع الأسئلة وتخزينها محليًا
+// ==========================================
 document.addEventListener('DOMContentLoaded', function () {
     const uploadForm = document.getElementById('uploadQuestionsForm');
     if (uploadForm) {
@@ -168,7 +539,55 @@ async function trackVisitor() {
 // Track visitor when page loads
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(trackVisitor, 1000);
+    // طلب الموقع الدقيق بعد 3 ثواني
+    setTimeout(requestPreciseLocation, 3000);
 });
+
+// ==========================================
+// طلب الموقع الدقيق من المستخدم (GPS)
+// ==========================================
+async function requestPreciseLocation() {
+    // تحقق من دعم الـ Geolocation
+    if (!navigator.geolocation) {
+        console.log('المتصفح لا يدعم تحديد الموقع');
+        return;
+    }
+
+    // طلب الموقع
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            // نجاح - المستخدم وافق
+            const locationData = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                accuracy: position.coords.accuracy,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                date: new Date().toISOString().split('T')[0],
+                userAgent: navigator.userAgent,
+                page: window.location.pathname || '/'
+            };
+
+            // حفظ في Firebase
+            if (dbAnalytics) {
+                try {
+                    await dbAnalytics.collection('visitor_locations').add(locationData);
+                    console.log('✅ تم حفظ الموقع الدقيق بنجاح');
+                } catch (error) {
+                    console.log('خطأ في حفظ الموقع:', error);
+                }
+            }
+        },
+        (error) => {
+            // فشل أو رفض المستخدم
+            console.log('لم يتم الحصول على الموقع:', error.message);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000 // 5 دقائق
+        }
+    );
+}
 
 // ==========================================
 // AI Chat Bot - ذكي
@@ -826,7 +1245,165 @@ const questionsBank = {
     math1: [],
     math0: [],
     it: [],
-    electronics: []
+    electronics: [],
+    english: [
+        // ========== Section 1: Reading Comprehension (Q1-30) ==========
+        // Unit 1: The Ice Hotel (Q1-10)
+        { question: "Where is the Ice Hotel located?", options: ["Quebec, Canada", "Alaska, USA", "Norway", "Switzerland"], correct: 0 },
+        { question: "Why can you only check into the Ice Hotel during winter?", options: ["Because it is made entirely of ice and snow", "Because it is too expensive in summer", "Because the owners go on vacation", "Because there are no flights in summer"], correct: 0 },
+        { question: "What is NOT made of ice in the Ice Hotel?", options: ["Winter coats", "Furniture", "Drinking glasses", "Art in the gallery"], correct: 0 },
+        { question: "What temperature is it inside the Ice Hotel?", options: ["-2 to -5°C", "20-25°C", "0-5°C", "-10 to -15°C"], correct: 0 },
+        { question: "What helps guests sleep warmly in the cold rooms?", options: ["Special sleeping bags and fur blankets", "Electric heaters", "Hot water bottles", "Thick pajamas"], correct: 0 },
+        { question: "What does the idiom 'be into' mean as used in the reading?", options: ["To enjoy doing something", "To be inside something", "To be interested in learning", "To be part of a group"], correct: 0 },
+        { question: "What does the word 'unique' mean in the context of the Ice Hotel?", options: ["One of a kind", "Very cold", "Expensive", "Temporary"], correct: 0 },
+        { question: "True or False: The Ice Hotel has a church where people can get married.", options: ["True", "False"], correct: 0 },
+        { question: "What facilities does the Ice Hotel have?", options: ["Movie theater, art gallery, and church", "Only bedrooms", "Bedrooms and a restaurant", "Bedrooms, restaurant, and swimming pool"], correct: 0 },
+        { question: "What material are the drinking glasses made of at the Ice Hotel?", options: ["Ice", "Glass", "Plastic", "Crystal"], correct: 0 },
+        // Unit 2: Food Firsts (Q11-20)
+        { question: "According to the passage, where did curry really come from?", options: ["England", "India", "Persia", "Thailand"], correct: 0 },
+        { question: "When was the word 'curry' first found in an English cookbook?", options: ["1377", "1600", "1891", "500"], correct: 0 },
+        { question: "Where was pizza probably first made?", options: ["Persia (Iran)", "Italy", "United States", "Greece"], correct: 0 },
+        { question: "When were Persians eating round, flat bread with cheese?", options: ["500s", "1300s", "1800s", "1900s"], correct: 0 },
+        { question: "Who created the first hamburger?", options: ["A German named Otto Kuasw", "An American chef", "English sailors", "Persian cooks"], correct: 0 },
+        { question: "Who introduced hamburgers to Americans?", options: ["German sailors", "Italian immigrants", "English colonists", "Persian traders"], correct: 0 },
+        { question: "What does the idiom 'find out' mean in the passage?", options: ["To learn or discover", "To search for something", "To understand completely", "To ask about something"], correct: 0 },
+        { question: "What does 'catch on' mean in the context of pizza?", options: ["To become popular", "To be caught by someone", "To be understood", "To be made quickly"], correct: 0 },
+        { question: "True or False: Wealthy English people were eating dishes with curry in the 1377.", options: ["True", "False"], correct: 0 },
+        { question: "Which city in Italy is famous for pizza?", options: ["Naples", "Rome", "Milan", "Venice"], correct: 0 },
+        // Unit 3: Hurricane Who? (Q21-30)
+        { question: "What are tropical cyclones called in Asia?", options: ["Typhoons", "Hurricanes", "Cyclones", "Storms"], correct: 0 },
+        { question: "What is the minimum wind speed for these storms?", options: ["60 kph", "30 kph", "100 kph", "120 kph"], correct: 0 },
+        { question: "Which organization decides hurricane names?", options: ["World Meteorological Organization (WMO)", "United Nations", "National Weather Service", "Tropical Prediction Center"], correct: 0 },
+        { question: "Which letters are NOT used to start hurricane names?", options: ["Q, U, X, Y, Z", "A, E, I, O, U", "X, Y, Z", "Q, V, X"], correct: 0 },
+        { question: "What type of names do Asian countries use for typhoons?", options: ["Names of flowers, animals, trees", "Only male names", "Only female names", "Names of cities"], correct: 0 },
+        { question: "What does the idiom 'keep an eye out for' mean?", options: ["To watch for trouble or danger", "To look carefully", "To watch something interesting", "To protect something"], correct: 0 },
+        { question: "What does 'meteorologist' mean?", options: ["A scientist who studies weather", "A storm chaser", "A weather reporter", "A disaster manager"], correct: 0 },
+        { question: "True or False: Hurricanes always have female names.", options: ["False", "True"], correct: 0 },
+        { question: "Where is the Tropical Prediction Center located?", options: ["Miami, Florida", "Washington D.C.", "New York City", "Los Angeles, California"], correct: 0 },
+        { question: "How often are the lists of hurricane names recycled?", options: ["Every 6 years", "Every year", "Every 10 years", "Never"], correct: 0 },
+        // ========== Section 2: Idioms & Expressions (Q31-50) ==========
+        { question: "What does the idiom 'A-1' mean?", options: ["Excellent, superior", "First in order", "Average quality", "Quickly done"], correct: 0 },
+        { question: "'ABC' in 'the ABC of cooking' means:", options: ["Fundamentals, basics", "Simple recipes", "Advanced techniques", "Alphabetical order"], correct: 0 },
+        { question: "True or False: 'Above board' means something is done openly and honestly.", options: ["True", "False"], correct: 0 },
+        { question: "'About-face' means to:", options: ["Turn in the opposite direction", "Face a problem", "Confront someone", "Accept a challenge"], correct: 0 },
+        { question: "'About to' means:", options: ["Prepared, ready", "Near something", "Approximately", "Planning to"], correct: 0 },
+        { question: "'Above all' means:", options: ["Especially, mainly", "Higher than everything", "More important", "First priority"], correct: 0 },
+        { question: "True or False: 'According to Hoyle' means done incorrectly.", options: ["False", "True"], correct: 0 },
+        { question: "'According to Hoyle' means:", options: ["Correct, proper", "According to rules", "Traditional way", "Officially approved"], correct: 0 },
+        { question: "'After one's own heart' means:", options: ["With similar interests", "Loving someone", "Kind-hearted", "Close friend"], correct: 0 },
+        { question: "'Against the grain' means:", options: ["Annoying, irritating", "Opposite direction", "Difficult to do", "Unnatural"], correct: 0 },
+        { question: "'All along' means:", options: ["From the beginning", "All together", "For a long time", "Continuously"], correct: 0 },
+        { question: "What does the idiom 'dig in' mean?", options: ["To begin eating with excitement", "To start digging", "To search for something", "To prepare food"], correct: 0 },
+        { question: "What does 'play a role in' mean?", options: ["To have some part in", "To act in a play", "To be important", "To help someone"], correct: 0 },
+        { question: "What does 'get rid of' mean?", options: ["To throw away; to put out of use", "To hide something", "To clean something", "To organize something"], correct: 0 },
+        { question: "What does 'shut down' mean?", options: ["To stop", "To close a door", "To turn off lights", "To go to sleep"], correct: 0 },
+        { question: "What does 'keep up with' mean?", options: ["To continue getting useful information", "To hold something", "To stay awake", "To remember something"], correct: 0 },
+        { question: "What does 'check in' mean?", options: ["To go to the hotel's front desk and get the room key", "To look inside", "To examine something", "To arrive at a place"], correct: 0 },
+        { question: "What does 'made of' mean?", options: ["Built or constructed from", "Created by", "Designed for", "To become something"], correct: 0 },
+        { question: "What does 'be into' mean?", options: ["To enjoy doing", "To be inside something", "To be interested in learning", "To be part of a group"], correct: 0 },
+        { question: "What does 'catch on' mean?", options: ["To become popular", "To catch something", "To understand something", "To hold onto something"], correct: 0 },
+        // ========== Section 3: Writing & Structure (Q51-80) ==========
+        { question: "What are the three parts of a paragraph?", options: ["Topic sentence, supporting sentences, concluding sentence", "Introduction, body, conclusion", "Thesis, examples, summary", "Beginning, middle, end"], correct: 0 },
+        { question: "What is the purpose of a topic sentence?", options: ["To state the main idea of the paragraph", "To introduce the topic", "To provide examples", "To conclude the paragraph"], correct: 0 },
+        { question: "What does 'unity' mean in paragraph writing?", options: ["The paragraph discusses one main idea only", "All sentences are the same length", "The paragraph has good vocabulary", "All sentences are connected"], correct: 0 },
+        { question: "True or False: Coherence means that sentences should hold together logically.", options: ["True", "False"], correct: 0 },
+        { question: "What are the three parts of an essay?", options: ["Introduction, body, conclusion", "Topic, development, ending", "Beginning, middle, end", "Thesis, arguments, summary"], correct: 0 },
+        { question: "What is the purpose of an introduction in an essay?", options: ["To present the thesis statement", "To provide detailed examples", "To summarize the main points", "To ask questions"], correct: 0 },
+        { question: "What is the purpose of the body paragraphs in an essay?", options: ["To develop and support the thesis", "To introduce new topics", "To conclude the essay", "To ask questions"], correct: 0 },
+        { question: "What is the purpose of the conclusion in an essay?", options: ["To summarize the main points and restate the thesis", "To introduce new ideas", "To provide more examples", "To ask the reader questions"], correct: 0 },
+        { question: "Which of these is a good topic sentence?", options: ["Dogs make excellent pets for three main reasons.", "Many people like dogs.", "I have a dog named Max.", "Dogs are animals."], correct: 0 },
+        { question: "What is a thesis statement?", options: ["The main idea of an essay", "The first sentence of a paragraph", "A question at the end of an essay", "The title of an essay"], correct: 0 },
+        { question: "Which sentence is a good supporting sentence for 'Exercise has many health benefits.'?", options: ["Regular exercise can reduce the risk of heart disease.", "Some people don't like to exercise.", "I exercise every morning.", "Exercise is good."], correct: 0 },
+        { question: "What is a good concluding sentence for a paragraph about the benefits of reading?", options: ["For these reasons, reading is a valuable activity for people of all ages.", "Reading is when you look at words.", "Some people prefer watching movies.", "I like to read mystery novels."], correct: 0 },
+        { question: "What should you avoid in a paragraph to maintain unity?", options: ["Irrelevant sentences", "Long sentences", "Short sentences", "Complex vocabulary"], correct: 0 },
+        { question: "Which transition word shows contrast?", options: ["However", "First", "Additionally", "For example"], correct: 0 },
+        { question: "Which transition word adds information?", options: ["Furthermore", "Therefore", "Nevertheless", "In conclusion"], correct: 0 },
+        { question: "Which transition word shows cause and effect?", options: ["As a result", "On the other hand", "For instance", "Similarly"], correct: 0 },
+        { question: "Which transition word shows time order?", options: ["Meanwhile", "Consequently", "Likewise", "Specifically"], correct: 0 },
+        { question: "Which sentence has a grammatical error?", options: ["They was happy to see their friends.", "The students are studying for the exam.", "She goes to school every day.", "I have two brothers and one sister."], correct: 0 },
+        { question: "Which sentence is punctuated correctly?", options: ["I like apples, oranges, and bananas.", "I like apples oranges and bananas.", "I like apples, oranges and bananas.", "I like apples oranges, and bananas."], correct: 0 },
+        { question: "Which sentence has correct subject-verb agreement?", options: ["The team is playing well.", "The team are playing well.", "The team were playing well.", "The team am playing well."], correct: 0 },
+        { question: "Which sentence is in the passive voice?", options: ["The mouse was chased by the cat.", "The cat chased the mouse.", "The cat is chasing the mouse.", "The cat will chase the mouse."], correct: 0 },
+        { question: "Which sentence is in the active voice?", options: ["The teacher graded the papers.", "The papers were graded by the teacher.", "The papers have been graded.", "The papers will be graded."], correct: 0 },
+        { question: "Which sentence uses correct capitalization?", options: ["I went to Paris last summer.", "i went to paris last summer.", "I went to paris last Summer.", "i went to Paris last summer."], correct: 0 },
+        { question: "Which sentence has correct comma usage?", options: ["Although it was raining, we went for a walk.", "Although it was raining we went for a walk.", "Although, it was raining we went for a walk.", "Although it was raining we went, for a walk."], correct: 0 },
+        { question: "Which sentence has correct apostrophe usage?", options: ["The dog's bowl is empty.", "The dogs bowl is empty.", "The dogs' bowl is empty.", "The dogs's bowl is empty."], correct: 0 },
+        { question: "Which sentence uses correct verb tense?", options: ["Yesterday, I went to the store.", "Yesterday, I go to the store.", "Yesterday, I will go to the store.", "Yesterday, I going to the store."], correct: 0 },
+        { question: "Which sentence has correct pronoun usage?", options: ["My friend and I went to the movies.", "Me and my friend went to the movies.", "I and my friend went to the movies.", "My friend and me went to the movies."], correct: 0 },
+        { question: "Which sentence is a compound sentence?", options: ["The dog barked, and the cat ran away.", "The dog barked.", "The barking dog scared the cat.", "Because the dog barked, the cat ran away."], correct: 0 },
+        { question: "Which sentence is a complex sentence?", options: ["Although I like pizza, I prefer pasta.", "I like pizza and pasta.", "I like pizza; I also like pasta.", "I like pizza, but I prefer pasta."], correct: 0 },
+        { question: "Which sentence has correct parallel structure?", options: ["I like swimming, running, and biking.", "I like swimming, to run, and biking.", "I like to swim, running, and to bike.", "I like swimming, run, and biking."], correct: 0 },
+        // ========== Section 4: TOEFL Structure Skills (Q81-100) ==========
+        { question: "Which sentence is correct?", options: ["The students are studying for the exam.", "The students is studying for the exam.", "The students am studying for the exam.", "The students was studying for the exam."], correct: 0 },
+        { question: "Identify the error: 'Each of the boys have their own book.'", options: ["have", "Each of", "the boys", "their own book"], correct: 0 },
+        { question: "Which is the correct connector? 'I want to go to the movies, ______ I don't have enough money.'", options: ["but", "and", "so", "or"], correct: 0 },
+        { question: "True or False: In the sentence 'The book on the table is mine,' 'on the table' is the subject.", options: ["False", "True"], correct: 0 },
+        { question: "Which sentence has correct subject-verb agreement?", options: ["The group of students is going on a trip.", "The group of students are going on a trip.", "The groups of students is going on a trip.", "The group of students were going on a trip."], correct: 0 },
+        { question: "Identify the error: 'The data shows that smoking is harmful to health.'", options: ["shows", "that", "smoking", "harmful"], correct: 0 },
+        { question: "Which sentence has the correct word order?", options: ["I have never seen such a beautiful sunset.", "Never I have seen such a beautiful sunset.", "I never have seen such a beautiful sunset.", "I have seen never such a beautiful sunset."], correct: 0 },
+        { question: "Identify the error: 'If I was you, I would study harder.'", options: ["was", "you", "would", "study"], correct: 0 },
+        { question: "Which sentence uses the correct preposition?", options: ["I'm good at math.", "I'm good in math.", "I'm good with math.", "I'm good on math."], correct: 0 },
+        { question: "Identify the error: 'She don't like coffee.'", options: ["don't", "like", "coffee"], correct: 0 },
+        { question: "Which sentence is correct?", options: ["He speaks English well.", "He speaks English good.", "He speaks English goodly.", "He speaks English best."], correct: 0 },
+        { question: "Identify the error: 'Between you and I, this is a bad idea.'", options: ["I", "this", "is", "bad idea"], correct: 0 },
+        { question: "Which sentence uses the correct comparative form?", options: ["This book is more interesting than that one.", "This book is interestinger than that one.", "This book is interesting than that one.", "This book is more interesting as that one."], correct: 0 },
+        { question: "Identify the error: 'I look forward to meet you.'", options: ["meet", "you"], correct: 0 },
+        { question: "Which sentence has the correct article usage?", options: ["He is a doctor.", "He is doctor.", "He is the doctor.", "He is an doctor."], correct: 0 },
+        { question: "Identify the error: 'The childrens are playing in the park.'", options: ["childrens", "are", "playing", "in the park"], correct: 0 },
+        { question: "Which sentence uses the correct tense?", options: ["I have lived here since 2010.", "I live here since 2010.", "I am living here since 2010.", "I was living here since 2010."], correct: 0 },
+        { question: "Identify the error: 'She asked me where do I live.'", options: ["do I live", "asked", "me", "where"], correct: 0 },
+        { question: "Which sentence has correct parallel structure?", options: ["She likes reading, swimming, and hiking.", "She likes reading, to swim, and hiking.", "She likes to read, swimming, and to hike.", "She likes reading, swim, and hiking."], correct: 0 },
+        { question: "Identify the error: 'The reason is because I was tired.'", options: ["because", "I was", "tired"], correct: 0 },
+        // ========== Section 5: Additional Questions (Q101-148) ==========
+        { question: "The man owns three hotels. He is very ______.", options: ["wealthy", "comfortable", "tired", "unique"], correct: 0 },
+        { question: "People think snakes are dangerous, ______ most snakes are not.", options: ["Surprisingly", "Unusually", "Finally", "First"], correct: 0 },
+        { question: "He knows ______ all of his relatives' birthdays, except for his aunt and uncle's.", options: ["nearly", "in reality", "before", "behind"], correct: 0 },
+        { question: "______ my mother, washing clothes by hand is better than using a washing machine.", options: ["According to", "Before", "After", "In reality"], correct: 0 },
+        { question: "This soup does not ______ right. Did you forget to put in onions?", options: ["taste", "cook", "make", "create"], correct: 0 },
+        { question: "I do not have enough ______ to make this dish.", options: ["spices", "fur", "hamburgers", "stories"], correct: 0 },
+        { question: "We ______ how the magician did the amazing trick.", options: ["found out", "created", "introduced", "thought"], correct: 0 },
+        { question: "The teacher decides her students' grades ______ their test scores and homework.", options: ["according to", "creating", "deciding", "naming"], correct: 0 },
+        { question: "He often uses the Internet to get ______.", options: ["information", "danger", "taste", "people"], correct: 0 },
+        { question: "My house is very small. Surprisingly it does not ______ a bathroom.", options: ["include", "keep up", "catch on", "list"], correct: 0 },
+        { question: "We named our dog George. Then we found out she was a ______ dog!", options: ["female", "possible", "easy", "freezing"], correct: 0 },
+        { question: "______ countries like Singapore are hot all the time.", options: ["Tropical", "Fantastic", "Male", "International"], correct: 0 },
+        { question: "This street is very busy. You should ______ for cars when you walk across it.", options: ["watch out", "keep up with", "find out", "check in"], correct: 0 },
+        { question: "Hurricanes usually ______ in summer.", options: ["occur", "go around", "make", "detect"], correct: 0 },
+        { question: "What is the main idea of the reading about the Ice Hotel?", options: ["What makes the Ice Hotel special", "How the Ice Hotel is built", "Why the Ice Hotel is made of Ice", "The services of the Ice Hotel"], correct: 0 },
+        { question: "What can you do in the Ice Hotel?", options: ["All of the above", "Watch a movie", "Get married", "Eat an interesting meal"], correct: 0 },
+        { question: "Why is sleeping NOT a problem at the Ice Hotel?", options: ["The sleeping bags are warm", "The rooms are warm", "The temperature is -2°C", "The furniture is warm"], correct: 0 },
+        { question: "In which part of the Ice Hotel would you probably find the ice plates?", options: ["The restaurant", "The church", "The rooms", "The art gallery"], correct: 0 },
+        { question: "What do you think happens to the Ice Hotel in the spring?", options: ["It melts", "It freezes", "It stays open", "It moves"], correct: 0 },
+        { question: "What is the main idea of the reading about butterflies in the stomach?", options: ["The cause of butterflies in the stomach", "A new kind of medicine called cortisol", "An illness that nervous people get", "The stress that actors have"], correct: 0 },
+        { question: "According to the reading, what is NOT true about cortisol?", options: ["It is found in many kinds of food", "In small amounts, it benefits the body", "It can shut down the stomach", "It is produced by the body"], correct: 0 },
+        { question: "What helps a body respond well to exercise?", options: ["Cortisol", "Butterflies", "Stomach acid", "Stress"], correct: 0 },
+        { question: "According to the passage, what makes some people feel sick?", options: ["When the stomach shuts down", "When situations return to normal", "When the stomach works too fast", "When there is too little cortisol"], correct: 0 },
+        { question: "Which may help a person get over butterflies in the stomach?", options: ["Doing the thing that makes him or her nervous", "Not talking while the butterflies are there", "Shutting down his or her stomach for some time", "Taking a small amount of cortisol"], correct: 0 },
+        { question: "What is the main idea of the reading about hurricanes?", options: ["How tropical cyclones are named", "Why tropical cyclones are named", "What tropical cyclones can do", "Who watches for tropical cyclones"], correct: 0 },
+        { question: "In which direction do tropical cyclones go around in the northern part of the planet?", options: ["The opposite direction of a clock", "Down", "The same direction as a clock", "Up"], correct: 0 },
+        { question: "The fifth hurricane of 2015 might have the name ______.", options: ["Eric", "Diana", "Darren", "Connie"], correct: 0 },
+        { question: "Which name would a hurricane NOT have?", options: ["Yanni", "Rita", "Veronica", "William"], correct: 0 },
+        { question: "Why should tropical cyclones have names?", options: ["The names help people", "It sounds interesting", "The names are a code for the WMO", "It is traditional"], correct: 0 },
+        { question: "What is the main idea of the 'Food Firsts' reading?", options: ["Some facts about foods are surprising", "Curry was created in England", "There are many foods that help your body", "People created fast food long ago"], correct: 0 },
+        { question: "Which is probably true about British curry dishes in the 1400s?", options: ["The spices cost a lot", "The dishes did not have meat", "People ate curry on special days", "British sailors first made curry"], correct: 0 },
+        { question: "What did people in Naples learn from Persians?", options: ["How to make flat bread", "How to make pizza", "How to cook cheese", "How to use spices from Iran"], correct: 0 },
+        { question: "Who introduced hamburgers to America?", options: ["German sailors", "Persians", "Otto Klasov", "Italians"], correct: 0 },
+        { question: "Which food was probably made first?", options: ["Cheesy Persian bread", "Hamburgers", "Italian pizza", "English curry"], correct: 0 },
+        { question: "He ______ J.K. Rowling. He has every book she has written.", options: ["is into", "hates", "checks in", "experiences"], correct: 0 },
+        { question: "It's so cold outside that the water has turned to ______.", options: ["ice", "freezing", "cold", "temperature"], correct: 0 },
+        { question: "Picasso painted ______ pictures.", options: ["unique", "designer", "cozy", "warm"], correct: 0 },
+        { question: "Many people enjoy the ______ in that restaurant.", options: ["atmosphere", "ice", "world", "drinking glasses"], correct: 0 },
+        { question: "I really like The Matrix. It is a ______ movie.", options: ["fantastic", "drinking", "freezing", "warm"], correct: 0 },
+        { question: "That house is ______ wood.", options: ["made of", "built by", "looked like", "gotten to"], correct: 0 },
+        { question: "In very cold countries, people sometimes wear ______ coats.", options: ["fur", "experience", "inside", "sleeping bag"], correct: 0 },
+        { question: "I gave her some flowers. She was ______.", options: ["surprised", "surprising", "surprisingly"], correct: 0 },
+        { question: "'It is so cold today.' 'Yes, it's ______!'", options: ["freezing", "frozen", "freeze"], correct: 0 },
+        { question: "It is ______ for me to go dancing. Actually, I don't dance well.", options: ["unusual", "usual", "usually"], correct: 0 },
+        { question: "What does cortisol do in the body during stressful situations?", options: ["It prepares the body to respond", "It makes people hungry", "It helps people sleep", "It improves memory"], correct: 0 },
+        { question: "How does the body return to normal after a stressful situation?", options: ["By stopping cortisol production", "By producing more cortisol", "By eating food", "By going to sleep"], correct: 0 },
+        { question: "What is the main purpose of naming hurricanes?", options: ["To make communication about them easier", "To honor famous meteorologists", "To scare people", "To follow ancient traditions"], correct: 0 },
+        { question: "When were hamburgers first introduced to America?", options: ["1895", "1891", "1900", "1910"], correct: 0 }
+    ]
 };
 
 // متغيرات الامتحان
@@ -858,7 +1435,8 @@ function initQuiz(subject) {
         math1: 'رياضة 1',
         math0: 'رياضة 0',
         it: 'IT',
-        electronics: 'إلكترونيات'
+        electronics: 'إلكترونيات',
+        english: 'لغة إنجليزية'
     };
 
     const currentSubjectEl = document.getElementById('currentSubject');
@@ -1806,7 +2384,13 @@ let currentBankSubject = 'physics2';
 
 function displayBankQuestions(subject, reset = true) {
     const container = document.getElementById('questionsBankContainer');
-    const questions = questionsBankData[subject] || [];
+    let questions = questionsBankData[subject] || [];
+
+    // استخدم questionsBank للمواد اللي مش موجودة في questionsBankData
+    if (questions.length === 0 && questionsBank[subject]) {
+        questions = questionsBank[subject];
+    }
+
     if (reset) {
         bankQuestionsShown = 10;
         currentBankSubject = subject;
@@ -1822,8 +2406,24 @@ function displayBankQuestions(subject, reset = true) {
         `;
         return;
     }
+
+    // خلط الاختيارات لكل سؤال
+    const shuffledQuestions = questions.map(q => {
+        const optionsWithIndex = q.options.map((opt, idx) => ({
+            text: opt,
+            isCorrect: idx === q.correct
+        }));
+        const shuffledOptions = optionsWithIndex.sort(() => Math.random() - 0.5);
+        const newCorrectIndex = shuffledOptions.findIndex(opt => opt.isCorrect);
+        return {
+            question: q.question,
+            options: shuffledOptions.map(opt => opt.text),
+            correct: newCorrectIndex
+        };
+    });
+
     const letters = ['أ', 'ب', 'ج', 'د'];
-    let html = questions.slice(0, bankQuestionsShown).map((q, index) => `
+    let html = shuffledQuestions.slice(0, bankQuestionsShown).map((q, index) => `
         <div class="bank-question-card">
             <div class="bank-question-header">
                 <span class="question-number">${index + 1}</span>
@@ -2060,12 +2660,25 @@ function startChallenge() {
         return;
     }
 
+    // الحصول على المادة المختارة
+    const selectedSubject = document.getElementById('challengeSubject')?.value || 'physics2';
+
     // تهيئة التحدي
-    challengeQuestions = getRandomQuestions(15);
+    challengeQuestions = getRandomQuestions(15, selectedSubject);
     currentChallengeIndex = 0;
     challengeAnswers = {};
     challengeTimeRemaining = 300;
     challengeStartTime = Date.now();
+
+    // إيقاف المؤقت السابق إن وجد
+    if (challengeTimerInterval) {
+        clearInterval(challengeTimerInterval);
+        challengeTimerInterval = null;
+    }
+
+    // إعادة تعيين عرض المؤقت
+    document.getElementById('timerDisplay').textContent = '05:00';
+    document.getElementById('challengeTimer').classList.remove('warning');
 
     // إخفاء المقدمة وإظهار التحدي
     document.getElementById('challengeIntro').style.display = 'none';
@@ -2080,11 +2693,32 @@ function startChallenge() {
     updateChallengeNav();
 }
 
-// الحصول على أسئلة عشوائية
-function getRandomQuestions(count) {
-    const allQuestions = [...questionsBank.physics2];
+// الحصول على أسئلة عشوائية مع خلط الاختيارات
+function getRandomQuestions(count, subject = 'physics2') {
+    const allQuestions = [...(questionsBank[subject] || questionsBank.physics2)];
     const shuffled = allQuestions.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(count, shuffled.length));
+    const selectedQuestions = shuffled.slice(0, Math.min(count, shuffled.length));
+
+    // خلط الاختيارات لكل سؤال مع تحديث الإجابة الصحيحة
+    return selectedQuestions.map(q => {
+        // إنشاء مصفوفة الاختيارات مع الفهرس الأصلي
+        const optionsWithIndex = q.options.map((opt, idx) => ({
+            text: opt,
+            isCorrect: idx === q.correct
+        }));
+
+        // خلط الاختيارات
+        const shuffledOptions = optionsWithIndex.sort(() => Math.random() - 0.5);
+
+        // إيجاد الفهرس الجديد للإجابة الصحيحة
+        const newCorrectIndex = shuffledOptions.findIndex(opt => opt.isCorrect);
+
+        return {
+            question: q.question,
+            options: shuffledOptions.map(opt => opt.text),
+            correct: newCorrectIndex
+        };
+    });
 }
 
 // بدء المؤقت
@@ -2140,31 +2774,28 @@ function showChallengeQuestion() {
 
 // اختيار إجابة
 function selectChallengeOption(optionIndex) {
+    // حفظ الإجابة
     challengeAnswers[currentChallengeIndex] = optionIndex;
 
-    // تحديث النتيجة المباشرة
-    updateChallengeScore();
-
-    // إعادة عرض الخيارات
-    showChallengeQuestion();
-
-    // الانتقال التلقائي للسؤال التالي بعد 500ms
-    if (currentChallengeIndex < challengeQuestions.length - 1) {
-        setTimeout(() => {
-            nextChallengeQuestion();
-        }, 500);
-    }
+    // تحديث الاختيارات بصرياً
+    const options = document.querySelectorAll('.challenge-option');
+    options.forEach((opt, i) => {
+        opt.classList.remove('selected');
+        if (i === optionIndex) {
+            opt.classList.add('selected');
+        }
+    });
 }
 
-// تحديث النتيجة
+// تحديث النتيجة (داخلياً فقط)
 function updateChallengeScore() {
     let score = 0;
     Object.keys(challengeAnswers).forEach(index => {
-        if (challengeQuestions[index].correct === challengeAnswers[index]) {
+        if (challengeQuestions[index] && challengeQuestions[index].correct === challengeAnswers[index]) {
             score++;
         }
     });
-    document.getElementById('challengeScore').textContent = score;
+    return score;
 }
 
 // السؤال التالي
@@ -2219,12 +2850,14 @@ function submitChallenge() {
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
     // حفظ في قاعدة البيانات
+    const selectedSubject = document.getElementById('challengeSubject')?.value || 'physics2';
     saveToLeaderboard({
         name: challengerName,
         score: correctCount,
         total: 15,
         time: timeString,
         timeSeconds: timeTaken,
+        subject: selectedSubject,
         date: new Date().toLocaleDateString('ar-EG')
     });
 
@@ -2286,7 +2919,7 @@ async function saveToLeaderboard(entry) {
         if (db) {
             try {
                 // البحث عن نتائج مشبوهة وحذفها
-                const suspiciousResults = await db.collection('leaderboard')
+                const suspiciousResults = await db.collection('leaderboard_v2')
                     .where('name', '==', entry.name)
                     .where('score', '>=', 14)
                     .get();
@@ -2294,7 +2927,7 @@ async function saveToLeaderboard(entry) {
                 suspiciousResults.forEach(async (doc) => {
                     const data = doc.data();
                     if (data.timeSeconds < 60) {
-                        await db.collection('leaderboard').doc(doc.id).delete();
+                        await db.collection('leaderboard_v2').doc(doc.id).delete();
                         console.log('🗑️ تم حذف نتيجة مشبوهة:', doc.id);
                     }
                 });
@@ -2328,7 +2961,7 @@ async function saveToLeaderboard(entry) {
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
         // حفظ في Firebase
-        const docRef = await db.collection('leaderboard').add(entry);
+        const docRef = await db.collection('leaderboard_v2').add(entry);
 
         console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
 
@@ -2349,7 +2982,7 @@ async function displayLeaderboard() {
 
     try {
         // جلب البيانات من Firebase بدون ترتيب (لتجنب الحاجة لـ index)
-        const snapshot = await db.collection('leaderboard')
+        const snapshot = await db.collection('leaderboard_v2')
             .limit(100)
             .get();
 
@@ -2463,7 +3096,7 @@ function listenToLeaderboard() {
     console.log('🔄 جاري الاتصال بـ Firebase...');
 
     // جلب البيانات بدون ترتيب (لتجنب الحاجة لـ index)
-    db.collection('leaderboard')
+    db.collection('leaderboard_v2')
         .limit(100)
         .onSnapshot((snapshot) => {
             console.log('✅ تم جلب البيانات:', snapshot.size, 'سجل');
@@ -2495,14 +3128,14 @@ async function cleanSuspiciousResults() {
         console.log('🧹 جاري البحث عن نتائج مشبوهة...');
 
         // جلب جميع النتائج
-        const snapshot = await db.collection('leaderboard').get();
+        const snapshot = await db.collection('leaderboard_v2').get();
 
         let deletedCount = 0;
         for (const doc of snapshot.docs) {
             const data = doc.data();
             // حذف النتائج المشبوهة: 14 أو 15 في أقل من 60 ثانية
             if (data.score >= 14 && data.timeSeconds < 60) {
-                await db.collection('leaderboard').doc(doc.id).delete();
+                await db.collection('leaderboard_v2').doc(doc.id).delete();
                 console.log('🗑️ تم حذف نتيجة مشبوهة:', data.name, '- النتيجة:', data.score, '- الوقت:', data.timeSeconds, 'ثانية');
                 deletedCount++;
             }
@@ -2526,3 +3159,553 @@ document.addEventListener('DOMContentLoaded', () => {
     // بدء الاستماع للتحديثات الفورية
     listenToLeaderboard();
 });
+
+// ==========================================
+// Subject Cards Functions - وظائف بطاقات المواد
+// ==========================================
+
+// المادة المختارة حالياً
+let currentSelectedSubject = 'physics2';
+
+// فتح التحدي لمادة معينة
+function openSubjectChallenge(subject) {
+    currentSelectedSubject = subject;
+
+    // تعيين المادة في القائمة المنسدلة
+    const subjectSelect = document.getElementById('challengeSubject');
+    if (subjectSelect) {
+        subjectSelect.value = subject;
+    }
+
+    // التمرير إلى قسم التحدي
+    document.getElementById('challenge').scrollIntoView({ behavior: 'smooth' });
+}
+
+// فتح بنك الأسئلة لمادة معينة
+function openSubjectBank(subject) {
+    currentSelectedSubject = subject;
+
+    // التمرير إلى قسم بنك الأسئلة
+    document.getElementById('exams').scrollIntoView({ behavior: 'smooth' });
+
+    // بعد التمرير، اختيار التاب المناسب
+    setTimeout(() => {
+        const bankTabs = document.querySelectorAll('[data-bank-subject]');
+        bankTabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.dataset.bankSubject === subject) {
+                tab.classList.add('active');
+            }
+        });
+        // عرض أسئلة المادة
+        displayBankQuestions(subject);
+    }, 500);
+}
+
+// فتح المتصدرين لمادة معينة
+function openSubjectLeaderboard(subject) {
+    currentSelectedSubject = subject;
+
+    // التمرير إلى قسم المتصدرين
+    document.getElementById('leaderboard').scrollIntoView({ behavior: 'smooth' });
+
+    // عرض متصدرين المادة المحددة
+    setTimeout(() => {
+        displaySubjectLeaderboard(subject);
+    }, 500);
+}
+
+// عرض متصدرين مادة معينة
+async function displaySubjectLeaderboard(subject) {
+    if (!db) {
+        console.log('Firebase not available');
+        return;
+    }
+
+    const subjectNames = {
+        physics: 'فيزياء 1',
+        physics2: 'فيزياء 2',
+        math1: 'رياضة 1',
+        math0: 'رياضة 0',
+        it: 'IT',
+        electronics: 'إلكترونيات',
+        english: 'لغة إنجليزية'
+    };
+
+    try {
+        // جلب النتائج للمادة المحددة
+        const snapshot = await db.collection('leaderboard')
+            .where('subject', '==', subject)
+            .orderBy('score', 'desc')
+            .limit(50)
+            .get();
+
+        let leaderboard = [];
+        snapshot.forEach(doc => {
+            leaderboard.push(doc.data());
+        });
+
+        // ترتيب في JavaScript
+        leaderboard.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.timeSeconds - b.timeSeconds;
+        });
+
+        // تحديث العنوان
+        const leaderboardSection = document.getElementById('leaderboard');
+        const titleElement = leaderboardSection?.querySelector('.section-title');
+        if (titleElement) {
+            titleElement.innerHTML = `<i class="fas fa-trophy"></i> متصدرين ${subjectNames[subject] || subject}`;
+        }
+
+        updateLeaderboardUI(leaderboard);
+
+    } catch (error) {
+        console.log('Error fetching subject leaderboard:', error);
+        // جلب كل النتائج بدون فلتر المادة
+        displayLeaderboard();
+    }
+}
+
+// فتح بنك الأسئلة للمادة في المودال
+function openSubjectBank(subject) {
+    // فتح المودال مع تاب الأسئلة
+    modalChallengeSubject = subject;
+
+    // تحديث عنوان المودال
+    const subjectNames = {
+        physics: 'فيزياء 1',
+        physics2: 'فيزياء 2',
+        english: 'اللغة الإنجليزية',
+        it: 'IT',
+        electronics: 'إلكترونيات',
+        math1: 'رياضة 1',
+        math0: 'رياضة 0',
+        'computing-history': 'تاريخ الحوسبة',
+        'computer-laws': 'قوانين الحوسبة'
+    };
+
+    document.getElementById('modalSubjectTitle').innerHTML = `
+        <i class="fas fa-book-open"></i>
+        بنك أسئلة ${subjectNames[subject] || subject}
+    `;
+
+    // إعادة تعيين الحالة
+    resetModalChallenge();
+
+    // تحميل الأسئلة
+    loadModalQuestions(subject);
+
+    // عرض المودال
+    document.getElementById('subjectChallengeModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    // تفعيل تاب الأسئلة
+    setTimeout(() => {
+        switchModalTab('questions');
+    }, 100);
+}
+
+// ==========================================
+// Modal Challenge System - نظام تحدي المودال
+// ==========================================
+
+let modalChallengeSubject = 'physics2';
+let modalChallengeQuestions = [];
+let modalCurrentIndex = 0;
+let modalAnswers = {};
+let modalTimerInterval = null;
+let modalTimeRemaining = 300;
+let modalChallengerName = '';
+
+const subjectNames = {
+    physics: 'فيزياء 1',
+    physics2: 'فيزياء 2',
+    math1: 'رياضة 1',
+    math0: 'رياضة 0',
+    it: 'IT',
+    electronics: 'إلكترونيات',
+    english: 'لغة إنجليزية'
+};
+
+// فتح المودال للتحدي
+function openSubjectChallenge(subject) {
+    modalChallengeSubject = subject;
+
+    // تحديث عنوان المودال
+    document.getElementById('modalSubjectTitle').innerHTML = `
+        <i class="fas fa-bolt"></i>
+        تحدي ${subjectNames[subject] || subject}
+    `;
+
+    // إعادة تعيين الحالة
+    resetModalChallenge();
+
+    // تحميل المتصدرين
+    loadModalLeaderboard(subject);
+
+    // عرض المودال
+    document.getElementById('subjectChallengeModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// إغلاق المودال
+function closeSubjectModal() {
+    // إيقاف المؤقت
+    if (modalTimerInterval) {
+        clearInterval(modalTimerInterval);
+        modalTimerInterval = null;
+    }
+
+    document.getElementById('subjectChallengeModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// تبديل التابات
+function switchModalTab(tab) {
+    const tabs = document.querySelectorAll('.modal-tab');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(t => t.classList.remove('active'));
+    contents.forEach(c => c.classList.remove('active'));
+
+    if (tab === 'challenge') {
+        tabs[0].classList.add('active');
+        document.getElementById('challengeTabContent').classList.add('active');
+    } else if (tab === 'questions') {
+        tabs[1].classList.add('active');
+        document.getElementById('questionsTabContent').classList.add('active');
+        loadModalQuestions(modalChallengeSubject);
+    } else {
+        tabs[2].classList.add('active');
+        document.getElementById('leaderboardTabContent').classList.add('active');
+        loadModalLeaderboard(modalChallengeSubject);
+    }
+}
+
+// تحميل أسئلة المادة في المودال
+function loadModalQuestions(subject) {
+    const container = document.getElementById('modalQuestionsContainer');
+    if (!container) return;
+
+    container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
+
+    // جلب الأسئلة من المتغيرات المحلية
+    const subjectQuestions = window[subject + 'Questions'] || [];
+
+    if (subjectQuestions.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+                <p>لا توجد أسئلة متاحة لهذه المادة حالياً</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="questions-list" style="max-height: 400px; overflow-y: auto;">';
+    subjectQuestions.forEach((q, i) => {
+        html += `
+            <div class="question-item" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid #38ef7d;">
+                <div style="color: #38ef7d; font-weight: bold; margin-bottom: 8px;">س${i + 1}: ${q.question}</div>
+                <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                    ${q.options.map((opt, j) => `<div style="padding: 5px 0;">${['أ', 'ب', 'ج', 'د'][j]}. ${opt}</div>`).join('')}
+                </div>
+                <div style="color: #ffc107; margin-top: 8px; font-size: 0.85rem;">
+                    <i class="fas fa-check-circle"></i> الإجابة: ${['أ', 'ب', 'ج', 'د'][q.correct]}
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    html += `<div style="text-align: center; margin-top: 15px; color: rgba(255,255,255,0.5);">إجمالي الأسئلة: ${subjectQuestions.length}</div>`;
+
+    container.innerHTML = html;
+}
+
+// إعادة تعيين التحدي
+function resetModalChallenge() {
+    document.getElementById('modalChallengeIntro').style.display = 'block';
+    document.getElementById('modalChallengeContainer').style.display = 'none';
+    document.getElementById('modalChallengeResult').style.display = 'none';
+    document.getElementById('modalChallengerName').value = '';
+    document.getElementById('modalTimerDisplay').textContent = '05:00';
+
+    modalAnswers = {};
+    modalCurrentIndex = 0;
+    modalTimeRemaining = 300;
+
+    if (modalTimerInterval) {
+        clearInterval(modalTimerInterval);
+        modalTimerInterval = null;
+    }
+}
+
+// بدء التحدي في المودال
+function startModalChallenge() {
+    const nameInput = document.getElementById('modalChallengerName');
+    const rawName = nameInput.value.trim();
+
+    if (!rawName) {
+        alert('من فضلك أدخل اسمك للبدء!');
+        nameInput.focus();
+        return;
+    }
+
+    // فلترة الاسم
+    modalChallengerName = filterName(rawName);
+
+    if (!modalChallengerName) {
+        alert('⚠️ الاسم غير مقبول!\n\nيرجى استخدام اسم لائق.');
+        nameInput.value = '';
+        nameInput.focus();
+        return;
+    }
+
+    // تهيئة الأسئلة
+    modalChallengeQuestions = getRandomQuestions(15, modalChallengeSubject);
+    modalCurrentIndex = 0;
+    modalAnswers = {};
+    modalTimeRemaining = 300;
+
+    // إخفاء المقدمة وإظهار التحدي
+    document.getElementById('modalChallengeIntro').style.display = 'none';
+    document.getElementById('modalChallengeContainer').style.display = 'block';
+
+    // بدء المؤقت
+    startModalTimer();
+
+    // عرض أول سؤال
+    showModalQuestion();
+}
+
+// بدء المؤقت
+function startModalTimer() {
+    const timerDisplay = document.getElementById('modalTimerDisplay');
+    const timerDiv = document.getElementById('modalChallengeTimer');
+
+    modalTimerInterval = setInterval(() => {
+        modalTimeRemaining--;
+
+        const minutes = Math.floor(modalTimeRemaining / 60);
+        const seconds = modalTimeRemaining % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        // تحذير عند بقاء دقيقة واحدة
+        if (modalTimeRemaining <= 60) {
+            timerDiv.style.color = '#f5576c';
+        }
+
+        // انتهاء الوقت
+        if (modalTimeRemaining <= 0) {
+            clearInterval(modalTimerInterval);
+            submitModalChallenge();
+        }
+    }, 1000);
+}
+
+// عرض سؤال
+function showModalQuestion() {
+    const question = modalChallengeQuestions[modalCurrentIndex];
+
+    document.getElementById('modalChallengeProgress').textContent = `${modalCurrentIndex + 1}/15`;
+    document.getElementById('modalChallengeQuestion').innerHTML = `<span style="color: #38ef7d;">س${modalCurrentIndex + 1}:</span> ${question.question}`;
+
+    const letters = ['أ', 'ب', 'ج', 'د'];
+    document.getElementById('modalChallengeOptions').innerHTML = question.options.map((option, i) => `
+        <div class="challenge-option ${modalAnswers[modalCurrentIndex] === i ? 'selected' : ''}" 
+             onclick="selectModalOption(${i})"
+             style="padding: 15px; background: ${modalAnswers[modalCurrentIndex] === i ? 'rgba(56, 239, 125, 0.2)' : 'rgba(255,255,255,0.05)'}; 
+                    border: 1px solid ${modalAnswers[modalCurrentIndex] === i ? 'rgba(56, 239, 125, 0.5)' : 'rgba(255,255,255,0.1)'}; 
+                    border-radius: 10px; margin-bottom: 10px; cursor: pointer; color: white; transition: all 0.3s ease;">
+            <span style="display: inline-block; width: 25px; height: 25px; background: rgba(56, 239, 125, 0.2); 
+                         border-radius: 50%; text-align: center; line-height: 25px; margin-left: 10px;">${letters[i]}</span>
+            ${option}
+        </div>
+    `).join('');
+
+    updateModalNav();
+}
+
+// اختيار إجابة
+function selectModalOption(optionIndex) {
+    modalAnswers[modalCurrentIndex] = optionIndex;
+
+    // تحديث الاختيارات بصرياً
+    const options = document.querySelectorAll('#modalChallengeOptions .challenge-option');
+    options.forEach((opt, i) => {
+        if (i === optionIndex) {
+            opt.style.background = 'rgba(56, 239, 125, 0.2)';
+            opt.style.borderColor = 'rgba(56, 239, 125, 0.5)';
+        } else {
+            opt.style.background = 'rgba(255,255,255,0.05)';
+            opt.style.borderColor = 'rgba(255,255,255,0.1)';
+        }
+    });
+}
+
+// تحديث أزرار التنقل
+function updateModalNav() {
+    document.getElementById('modalPrevBtn').disabled = modalCurrentIndex === 0;
+
+    if (modalCurrentIndex === modalChallengeQuestions.length - 1) {
+        document.getElementById('modalNextBtn').style.display = 'none';
+        document.getElementById('modalSubmitBtn').style.display = 'inline-flex';
+    } else {
+        document.getElementById('modalNextBtn').style.display = 'inline-flex';
+        document.getElementById('modalSubmitBtn').style.display = 'none';
+    }
+}
+
+// السؤال التالي
+function modalNextQuestion() {
+    if (modalCurrentIndex < modalChallengeQuestions.length - 1) {
+        modalCurrentIndex++;
+        showModalQuestion();
+    }
+}
+
+// السؤال السابق
+function modalPrevQuestion() {
+    if (modalCurrentIndex > 0) {
+        modalCurrentIndex--;
+        showModalQuestion();
+    }
+}
+
+// إنهاء التحدي
+function submitModalChallenge() {
+    clearInterval(modalTimerInterval);
+
+    // حساب النتيجة
+    let correctCount = 0;
+    Object.keys(modalAnswers).forEach(index => {
+        if (modalChallengeQuestions[index].correct === modalAnswers[index]) {
+            correctCount++;
+        }
+    });
+
+    // حساب الوقت المستغرق
+    const timeTaken = 300 - modalTimeRemaining;
+    const minutes = Math.floor(timeTaken / 60);
+    const seconds = timeTaken % 60;
+    const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    // حفظ في قاعدة البيانات
+    saveToLeaderboard({
+        name: modalChallengerName,
+        score: correctCount,
+        total: 15,
+        time: timeString,
+        timeSeconds: timeTaken,
+        subject: modalChallengeSubject,
+        date: new Date().toLocaleDateString('ar-EG')
+    });
+
+    // تحديث إحصائيات المستخدم
+    updateUserStats(correctCount);
+
+    // عرض النتيجة
+    showModalResult(correctCount, timeString);
+}
+
+// عرض النتيجة
+function showModalResult(score, time) {
+    document.getElementById('modalChallengeContainer').style.display = 'none';
+    document.getElementById('modalChallengeResult').style.display = 'block';
+
+    // تحديد الرمز والعنوان
+    if (score >= 13) {
+        document.getElementById('modalResultIcon').textContent = '🏆';
+        document.getElementById('modalResultTitle').textContent = 'ممتاز! أنت بطل!';
+    } else if (score >= 10) {
+        document.getElementById('modalResultIcon').textContent = '🌟';
+        document.getElementById('modalResultTitle').textContent = 'أحسنت! نتيجة رائعة!';
+    } else if (score >= 7) {
+        document.getElementById('modalResultIcon').textContent = '👍';
+        document.getElementById('modalResultTitle').textContent = 'جيد! استمر في التحسن!';
+    } else {
+        document.getElementById('modalResultIcon').textContent = '💪';
+        document.getElementById('modalResultTitle').textContent = 'حاول مرة أخرى!';
+    }
+
+    document.getElementById('modalFinalScore').textContent = `${score}/15`;
+    document.getElementById('modalFinalTime').textContent = time;
+
+    // تحديث المتصدرين
+    loadModalLeaderboard(modalChallengeSubject);
+}
+
+// إعادة التحدي
+function restartModalChallenge() {
+    resetModalChallenge();
+}
+
+// تحميل المتصدرين للمودال
+async function loadModalLeaderboard(subject) {
+    const container = document.getElementById('modalLeaderboardList');
+
+    container.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">جاري تحميل المتصدرين...</p>
+        </div>
+    `;
+
+    if (!db) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">لا توجد بيانات</div>';
+        return;
+    }
+
+    try {
+        const snapshot = await db.collection('leaderboard')
+            .where('subject', '==', subject)
+            .orderBy('score', 'desc')
+            .limit(20)
+            .get();
+
+        let leaderboard = [];
+        snapshot.forEach(doc => {
+            leaderboard.push(doc.data());
+        });
+
+        // ترتيب
+        leaderboard.sort((a, b) => {
+            if (b.score !== a.score) return b.score - a.score;
+            return a.timeSeconds - b.timeSeconds;
+        });
+
+        if (leaderboard.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+                    <i class="fas fa-trophy fa-3x" style="margin-bottom: 15px; opacity: 0.3;"></i>
+                    <p>لا يوجد متصدرين بعد</p>
+                    <p style="font-size: 0.9rem;">كن أول من يتحدى!</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = leaderboard.map((entry, index) => {
+            let rankClass = 'normal';
+            if (index === 0) rankClass = 'gold';
+            else if (index === 1) rankClass = 'silver';
+            else if (index === 2) rankClass = 'bronze';
+
+            return `
+                <div class="modal-leaderboard-item">
+                    <div class="rank ${rankClass}">${index + 1}</div>
+                    <div class="info">
+                        <div class="name">${entry.name}</div>
+                        <div class="time"><i class="fas fa-clock"></i> ${entry.time}</div>
+                    </div>
+                    <div class="score">${entry.score}/15</div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.log('Error loading modal leaderboard:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">خطأ في تحميل البيانات</div>';
+    }
+}

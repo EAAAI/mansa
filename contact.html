@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل معنا - ليالي الامتحان</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            margin-top: 80px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header h1 i {
+            color: #38ef7d;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: #38ef7d;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #38ef7d;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(56, 239, 125, 0.2);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(56, 239, 125, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-message i {
+            font-size: 4rem;
+            color: #38ef7d;
+            margin-bottom: 20px;
+        }
+
+        .success-message h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .contact-info {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .contact-item i {
+            font-size: 2rem;
+            color: #38ef7d;
+            margin-bottom: 10px;
+        }
+
+        .contact-item h4 {
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .contact-item p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .contact-item a {
+            color: #38ef7d;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 60px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .contact-card {
+                padding: 25px;
+            }
+
+            .back-btn {
+                padding: 10px 18px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-right"></i>
+        العودة للرئيسية
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-envelope"></i>
+                تواصل معنا
+            </h1>
+            <p>نحن هنا لسماع اقتراحاتك وملاحظاتك</p>
+        </div>
+
+        <div class="contact-card">
+            <form id="contactForm">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-user"></i>
+                        الاسم *
+                    </label>
+                    <input type="text" id="userName" placeholder="اكتب اسمك هنا..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-phone"></i>
+                        رقم الهاتف
+                    </label>
+                    <input type="tel" id="userPhone" placeholder="01xxxxxxxxx">
+                    <small style="color: rgba(255,255,255,0.5); margin-top: 5px; display: block;">
+                        * يجب إدخال رقم الهاتف أو رابط التواصل (واحد منهم على الأقل)
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-link"></i>
+                        رابط التواصل (فيسبوك، انستجرام، لينكد إن...)
+                    </label>
+                    <input type="url" id="userSocialLink" placeholder="https://facebook.com/username">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-tag"></i>
+                        نوع الرسالة
+                    </label>
+                    <select id="messageType">
+                        <option value="suggestion">💡 اقتراح</option>
+                        <option value="complaint">⚠️ شكوى</option>
+                        <option value="question">❓ استفسار</option>
+                        <option value="bug">🐛 إبلاغ عن مشكلة</option>
+                        <option value="thanks">❤️ شكر وتقدير</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-comment-dots"></i>
+                        رسالتك *
+                    </label>
+                    <textarea id="userMessage" placeholder="اكتب رسالتك هنا..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    إرسال الرسالة
+                </button>
+            </form>
+
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                <h2>تم الإرسال بنجاح!</h2>
+                <p>شكراً لتواصلك معنا، سنقوم بمراجعة رسالتك قريباً</p>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fab fa-linkedin"></i>
+                <h4>LinkedIn</h4>
+                <p><a href="https://www.linkedin.com/in/ibrahim-mohamed-8393a5323/" target="_blank">Ibrahim Mohamed</a>
+                </p>
+            </div>
+            <div class="contact-item">
+                <i class="fab fa-github"></i>
+                <h4>GitHub</h4>
+                <p><a href="https://github.com/ibrahim88887" target="_blank">ibrahim88887</a></p>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-globe"></i>
+                <h4>EAAAI</h4>
+                <p><a href="https://ibrahim88887.github.io/EAAAI/" target="_blank">زيارة الموقع</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdIW3mf2yv9KWzEVTgb62Yquu8oHMWj7g",
+            authDomain: "manasa-2.firebaseapp.com",
+            projectId: "manasa-2",
+            storageBucket: "manasa-2.firebasestorage.app",
+            messagingSenderId: "713731774832",
+            appId: "1:713731774832:web:bd33be9764c350b62997b5"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // التحقق من صحة الرابط
+        function isValidUrl(string) {
+            try {
+                const url = new URL(string);
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch (_) {
+                return false;
+            }
+        }
+
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('contactForm');
+            const successMessage = document.getElementById('successMessage');
+
+            // Get form data
+            const name = document.getElementById('userName').value.trim();
+            const phone = document.getElementById('userPhone').value.trim();
+            const socialLink = document.getElementById('userSocialLink').value.trim();
+            const type = document.getElementById('messageType').value;
+            const message = document.getElementById('userMessage').value.trim();
+
+            // التحقق من الاسم
+            if (!name) {
+                alert('⚠️ من فضلك أدخل اسمك');
+                document.getElementById('userName').focus();
+                return;
+            }
+
+            // التحقق من وجود رقم هاتف أو رابط تواصل
+            if (!phone && !socialLink) {
+                alert('⚠️ من فضلك أدخل رقم الهاتف أو رابط التواصل (واحد منهم على الأقل)');
+                document.getElementById('userPhone').focus();
+                return;
+            }
+
+            // التحقق من صحة الرابط إذا تم إدخاله
+            if (socialLink && !isValidUrl(socialLink)) {
+                alert('⚠️ الرابط غير صحيح!\n\nيجب أن يبدأ بـ https:// أو http://\n\nمثال: https://facebook.com/username');
+                document.getElementById('userSocialLink').focus();
+                return;
+            }
+
+            // التحقق من الرسالة
+            if (!message) {
+                alert('⚠️ من فضلك اكتب رسالتك');
+                document.getElementById('userMessage').focus();
+                return;
+            }
+
+            // Disable button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+            try {
+                // Save to Firebase
+                await db.collection('contact_messages').add({
+                    name: name,
+                    phone: phone || 'غير محدد',
+                    socialLink: socialLink || 'غير محدد',
+                    type: type,
+                    message: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    date: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    read: false
+                });
+
+                // Show success message
+                form.style.display = 'none';
+                successMessage.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء الإرسال، حاول مرة أخرى');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الرسالة';
+            }
+        });
+    </script>
+</body>
+
+</html>
