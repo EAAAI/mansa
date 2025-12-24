@@ -45,9 +45,11 @@ const GEMINI_CONFIG = {
 };
 
 // ==========================================
-// Firebase Configuration
+// Firebase Configuration - Two Databases
 // ==========================================
-const firebaseConfig = {
+
+// Database 1: للـ Leaderboard والتحديات
+const firebaseConfig1 = {
     apiKey: "AIzaSyCFhUdOI9IqFCjBkg8zytanD5O1_67vCr4",
     authDomain: "manasa-ceaa2.firebaseapp.com",
     projectId: "manasa-ceaa2",
@@ -57,18 +59,41 @@ const firebaseConfig = {
     measurementId: "G-CYX6QKJZSR"
 };
 
-// Initialize Firebase
-let db;
+// Database 2: للـ Analytics وتتبع الزوار
+const firebaseConfig2 = {
+    apiKey: "AIzaSyAdIW3mf2yv9KWzEVTgb62Yquu8oHMWj7g",
+    authDomain: "manasa-2.firebaseapp.com",
+    projectId: "manasa-2",
+    storageBucket: "manasa-2.firebasestorage.app",
+    messagingSenderId: "713731774832",
+    appId: "1:713731774832:web:bd33be9764c350b62997b5",
+    measurementId: "G-LHVFYC2GQH"
+};
+
+// Initialize Both Firebase Apps
+let db1, db2;
+let dbLeaderboard, dbAnalytics;
 try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    console.log('✅ Firebase initialized successfully');
+    // Primary app for Leaderboard
+    const app1 = firebase.initializeApp(firebaseConfig1, 'leaderboard-app');
+    db1 = firebase.firestore(app1);
+    dbLeaderboard = db1;
+    console.log('✅ Firebase Leaderboard DB initialized successfully');
+
+    // Secondary app for Analytics
+    const app2 = firebase.initializeApp(firebaseConfig2, 'analytics-app');
+    db2 = firebase.firestore(app2);
+    dbAnalytics = db2;
+    console.log('✅ Firebase Analytics DB initialized successfully');
 } catch (error) {
     console.error('❌ Firebase initialization error:', error);
 }
 
+// Backward compatibility - db points to leaderboard database
+let db = dbLeaderboard;
+
 // ==========================================
-// Visitor Analytics Tracking - تتبع الزوار
+// Visitor Analytics Tracking - تتبع الزوار (Using Database 2)
 // ==========================================
 async function trackVisitor() {
     try {
@@ -97,13 +122,13 @@ async function trackVisitor() {
         const today = new Date().toISOString().split('T')[0];
         const visitorId = `${geoData.ip}_${today}`;
 
-        // Save visit to Firebase
-        if (db) {
+        // Save visit to Firebase Analytics Database (Database 2)
+        if (dbAnalytics) {
             // Add to visits collection
-            await db.collection('analytics_visits').add(visitorData);
+            await dbAnalytics.collection('analytics_visits').add(visitorData);
 
             // Update daily stats
-            const statsRef = db.collection('analytics_stats').doc(today);
+            const statsRef = dbAnalytics.collection('analytics_stats').doc(today);
             const statsDoc = await statsRef.get();
 
             if (statsDoc.exists) {
@@ -113,8 +138,8 @@ async function trackVisitor() {
                 });
 
                 // Check if unique visitor
-                const existingVisitor = await db.collection('analytics_visits')
-                    .where('ip', '==', geoData.query)
+                const existingVisitor = await dbAnalytics.collection('analytics_visits')
+                    .where('ip', '==', geoData.ip)
                     .where('date', '==', today)
                     .limit(2)
                     .get();
@@ -133,7 +158,7 @@ async function trackVisitor() {
                 });
             }
 
-            console.log('✅ Visitor tracked successfully');
+            console.log('✅ Visitor tracked successfully (Database 2)');
         }
     } catch (error) {
         console.log('Analytics tracking error:', error);
