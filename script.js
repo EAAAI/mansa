@@ -1,8 +1,5 @@
-// ==========================================
-// User Profile & Theme System - نظام المستخدم والثيم
-// ==========================================
 
-// توليد رقم مميز للمستخدم
+
 function generateUserId() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let id = '';
@@ -12,7 +9,6 @@ function generateUserId() {
     return id;
 }
 
-// تهيئة بيانات المستخدم
 function initUserProfile() {
     let userProfile = JSON.parse(localStorage.getItem('userProfile'));
 
@@ -30,24 +26,21 @@ function initUserProfile() {
         };
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
     } else {
-        // تحديث عدد الزيارات
+
         userProfile.visits = (userProfile.visits || 0) + 1;
         userProfile.lastVisit = new Date().toISOString();
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
     }
 
-    // تطبيق الثيم المحفوظ
     if (userProfile.theme === 'space') {
         document.body.classList.add('space-theme');
     }
 
-    // عرض رسالة الترحيب
     displayWelcomeGreeting(userProfile);
 
     return userProfile;
 }
 
-// عرض رسالة ترحيب
 function displayWelcomeGreeting(userProfile) {
     const greetingEl = document.getElementById('welcomeGreeting');
     if (!greetingEl) return;
@@ -66,11 +59,9 @@ function displayWelcomeGreeting(userProfile) {
     }
 }
 
-// فتح مودال البروفايل
 function openUserProfile() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
 
-    // عرض الاسم مع اللقب إن وجد
     if (userProfile.name && userProfile.nickname) {
         document.getElementById('profileDisplayName').innerHTML = `${userProfile.name} <span style="color: #ffc107; font-size: 0.9rem;">(${userProfile.nickname})</span>`;
     } else {
@@ -87,12 +78,10 @@ function openUserProfile() {
     document.getElementById('userProfileModal').classList.add('active');
 }
 
-// إغلاق مودال البروفايل
 function closeUserProfile() {
     document.getElementById('userProfileModal').classList.remove('active');
 }
 
-// توليد لقب/دلع بالذكاء الاصطناعي
 async function generateNickname(name) {
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -129,29 +118,26 @@ async function generateNickname(name) {
     }
 }
 
-// حفظ بيانات البروفايل
 async function saveUserProfile() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
     const newName = document.getElementById('profileNameInput').value.trim();
 
     if (newName) {
-        // عرض رسالة انتظار
+
         const saveBtn = document.querySelector('.profile-btn.save-btn');
         const originalText = saveBtn.innerHTML;
         saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> حفظ ومزامنة...';
         saveBtn.disabled = true;
 
-        // توليد لقب بالذكاء الاصطناعي
         const nickname = await generateNickname(newName);
 
         userProfile.name = newName;
         userProfile.nickname = nickname || '';
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
 
-        // مزامنة مع Firebase (بدون الثيم)
         if (dbLeaderboard) {
             try {
-                // ننسخ البيانات ونشيل منها الثيم قبل الرفع
+
                 const profileToSync = { ...userProfile };
                 delete profileToSync.theme; // لا نحفظ الثيم أونلاين
 
@@ -162,7 +148,6 @@ async function saveUserProfile() {
             }
         }
 
-        // عرض الاسم مع اللقب
         if (nickname) {
             document.getElementById('profileDisplayName').innerHTML = `${newName} <span style="color: #ffc107; font-size: 0.9rem;">(${nickname})</span>`;
             alert(`✅ تم حفظ البيانات ومزامنتها!\n\n🏷️ لقبك: ${nickname}\n🆔 المعرف الخاص بك: ${userProfile.id}\n(احتفظ بهذا الكود لاسترجاع حسابك)`);
@@ -178,7 +163,6 @@ async function saveUserProfile() {
     }
 }
 
-// استرجاع بروفايل موجود
 async function restoreProfile() {
     const idInput = prompt("أدخل كود المعرف (User ID) الخاص بك لاسترجاع بياناتك:");
     if (!idInput) return;
@@ -190,7 +174,7 @@ async function restoreProfile() {
             const doc = await dbLeaderboard.collection('users').doc(userId).get();
             if (doc.exists) {
                 const data = doc.data();
-                // دمج البيانات المسترجعة مع البيانات المحلية (مع الحفاظ على الثيم المحلي)
+
                 const currentLocal = JSON.parse(localStorage.getItem('userProfile')) || {};
                 const mergedProfile = { ...data, theme: currentLocal.theme || 'default' };
 
@@ -208,7 +192,6 @@ async function restoreProfile() {
     }
 }
 
-// تحديث إحصائيات المستخدم بعد التحدي
 async function updateUserStats(score) {
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
 
@@ -221,7 +204,6 @@ async function updateUserStats(score) {
 
     localStorage.setItem('userProfile', JSON.stringify(userProfile));
 
-    // مزامنة الإحصائيات مع Firebase
     if (dbLeaderboard) {
         try {
             const statsToSync = {
@@ -237,7 +219,6 @@ async function updateUserStats(score) {
     }
 }
 
-// تبديل الثيم الفضائي
 function toggleSpaceTheme() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
 
@@ -252,20 +233,19 @@ function toggleSpaceTheme() {
     localStorage.setItem('userProfile', JSON.stringify(userProfile));
 }
 
-// زر الصاروخ للتنقل
 let scrollGoingDown = true;
 
 function toggleScrollDirection() {
     const scrollRocket = document.getElementById('scrollRocket');
 
     if (scrollGoingDown) {
-        // انزل لآخر الصفحة
+
         window.scrollTo({
             top: document.body.scrollHeight,
             behavior: 'smooth'
         });
     } else {
-        // اطلع لأول الصفحة
+
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -273,7 +253,6 @@ function toggleScrollDirection() {
     }
 }
 
-// تحديث اتجاه الصاروخ بناءً على الموقع
 window.addEventListener('scroll', () => {
     const scrollRocket = document.getElementById('scrollRocket');
     if (!scrollRocket) return;
@@ -282,29 +261,26 @@ window.addEventListener('scroll', () => {
     const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
 
     if (scrollTop > scrollHeight / 2) {
-        // لو في النص الأسفل، الصاروخ بيطلع
+
         scrollRocket.classList.remove('going-down');
         scrollGoingDown = false;
     } else {
-        // لو في النص الأعلى، الصاروخ بينزل
+
         scrollRocket.classList.add('going-down');
         scrollGoingDown = true;
     }
 });
 
-// الحصول على اسم المستخدم المحفوظ
 function getSavedUserName() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
     return userProfile?.name || '';
 }
 
-// فتح/إغلاق قائمة الثيمات
 function toggleThemeMenu() {
     const menu = document.getElementById('themeMenu');
     menu.classList.toggle('active');
 }
 
-// إغلاق المنيو لو ضغط برا
 document.addEventListener('click', (e) => {
     const menu = document.getElementById('themeMenu');
     const toggle = document.querySelector('.theme-toggle');
@@ -313,20 +289,16 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// تعيين الثيم
 function setTheme(theme) {
     const body = document.body;
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
 
-    // إزالة كل الثيمات
     body.classList.remove('space-theme', 'ocean-theme', 'sunset-theme', 'pyramids-theme', 'winter-theme');
 
-    // إضافة الثيم الجديد
     if (theme !== 'default') {
         body.classList.add(theme + '-theme');
     }
 
-    // تحديث الأزرار
     document.querySelectorAll('.theme-option').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.theme === theme) {
@@ -334,14 +306,11 @@ function setTheme(theme) {
         }
     });
 
-    // حفظ الثيم
     userProfile.theme = theme;
     localStorage.setItem('userProfile', JSON.stringify(userProfile));
 
-    // إغلاق المنيو
     document.getElementById('themeMenu').classList.remove('active');
 
-    // تحديث أيقونة الزر
     const toggle = document.querySelector('.theme-toggle i');
     const icons = {
         'default': 'fa-moon',
@@ -354,7 +323,6 @@ function setTheme(theme) {
     toggle.className = 'fas ' + (icons[theme] || 'fa-moon');
 }
 
-// تحميل الثيم المحفوظ
 function loadSavedTheme() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile'));
     if (userProfile?.theme && userProfile.theme !== 'default') {
@@ -362,14 +330,10 @@ function loadSavedTheme() {
     }
 }
 
-// تهيئة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function () {
     initUserProfile();
 });
 
-// ==========================================
-// رفع الأسئلة وتخزينها محليًا
-// ==========================================
 document.addEventListener('DOMContentLoaded', function () {
     const uploadForm = document.getElementById('uploadQuestionsForm');
     if (uploadForm) {
@@ -387,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function () {
             reader.onload = function (event) {
                 try {
                     const questions = JSON.parse(event.target.result);
-                    // حفظ في localStorage (أو يمكن استخدام IndexedDB)
+
                     localStorage.setItem('uploadedQuestions', JSON.stringify(questions));
                     status.textContent = 'تم رفع الأسئلة بنجاح!';
                     status.style.color = 'green';
@@ -400,26 +364,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-// ==========================================
-// Configuration - Groq API
-// ==========================================
+
 const API_CONFIG = {
     apiKey: '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',
     apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
     model: 'llama-3.3-70b-versatile'
 };
 
-// Gemini API for Vision (Images)
 const GEMINI_CONFIG = {
     apiKey: 'AIzaSyAErOl-9MrM_A-HLRxvxFqx5b6WJWwi2Zs',
     apiUrl: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
 };
 
-// ==========================================
-// Firebase Configuration - Two Databases
-// ==========================================
-
-// Database 1: للـ Leaderboard والتحديات
 const firebaseConfig1 = {
     apiKey: "AIzaSyCFhUdOI9IqFCjBkg8zytanD5O1_67vCr4",
     authDomain: "manasa-ceaa2.firebaseapp.com",
@@ -430,7 +386,6 @@ const firebaseConfig1 = {
     measurementId: "G-CYX6QKJZSR"
 };
 
-// Database 2: للـ Analytics وتتبع الزوار
 const firebaseConfig2 = {
     apiKey: "AIzaSyAdIW3mf2yv9KWzEVTgb62Yquu8oHMWj7g",
     authDomain: "manasa-2.firebaseapp.com",
@@ -441,17 +396,15 @@ const firebaseConfig2 = {
     measurementId: "G-LHVFYC2GQH"
 };
 
-// Initialize Both Firebase Apps
 let db1, db2;
 let dbLeaderboard, dbAnalytics;
 try {
-    // Primary app for Leaderboard
+
     const app1 = firebase.initializeApp(firebaseConfig1, 'leaderboard-app');
     db1 = firebase.firestore(app1);
     dbLeaderboard = db1;
     console.log('✅ Firebase Leaderboard DB initialized successfully');
 
-    // Secondary app for Analytics
     const app2 = firebase.initializeApp(firebaseConfig2, 'analytics-app');
     db2 = firebase.firestore(app2);
     dbAnalytics = db2;
@@ -460,15 +413,11 @@ try {
     console.error('❌ Firebase initialization error:', error);
 }
 
-// Backward compatibility - db points to leaderboard database
 let db = dbLeaderboard;
 
-// ==========================================
-// Visitor Analytics Tracking - تتبع الزوار (Using Database 2)
-// ==========================================
 async function trackVisitor() {
     try {
-        // Get visitor's location from IP (using HTTPS API)
+
         const geoResponse = await fetch('https://ipapi.co/json/');
         const geoData = await geoResponse.json();
 
@@ -489,16 +438,13 @@ async function trackVisitor() {
             date: new Date().toISOString().split('T')[0]
         };
 
-        // Check if this is a unique visitor today
         const today = new Date().toISOString().split('T')[0];
         const visitorId = `${geoData.ip}_${today}`;
 
-        // Save visit to Firebase Analytics Database (Database 2)
         if (dbAnalytics) {
-            // Add to visits collection
+
             await dbAnalytics.collection('analytics_visits').add(visitorData);
 
-            // Update daily stats
             const statsRef = dbAnalytics.collection('analytics_stats').doc(today);
             const statsDoc = await statsRef.get();
 
@@ -508,7 +454,6 @@ async function trackVisitor() {
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
                 });
 
-                // Check if unique visitor
                 const existingVisitor = await dbAnalytics.collection('analytics_visits')
                     .where('ip', '==', geoData.ip)
                     .where('date', '==', today)
@@ -536,27 +481,22 @@ async function trackVisitor() {
     }
 }
 
-// Track visitor when page loads
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(trackVisitor, 1000);
-    // طلب الموقع الدقيق بعد 3 ثواني
+
     setTimeout(requestPreciseLocation, 3000);
 });
 
-// ==========================================
-// طلب الموقع الدقيق من المستخدم (GPS)
-// ==========================================
 async function requestPreciseLocation() {
-    // تحقق من دعم الـ Geolocation
+
     if (!navigator.geolocation) {
         console.log('المتصفح لا يدعم تحديد الموقع');
         return;
     }
 
-    // طلب الموقع
     navigator.geolocation.getCurrentPosition(
         async (position) => {
-            // نجاح - المستخدم وافق
+
             const locationData = {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude,
@@ -567,7 +507,6 @@ async function requestPreciseLocation() {
                 page: window.location.pathname || '/'
             };
 
-            // حفظ في Firebase
             if (dbAnalytics) {
                 try {
                     await dbAnalytics.collection('visitor_locations').add(locationData);
@@ -578,7 +517,7 @@ async function requestPreciseLocation() {
             }
         },
         (error) => {
-            // فشل أو رفض المستخدم
+
             console.log('لم يتم الحصول على الموقع:', error.message);
         },
         {
@@ -589,20 +528,15 @@ async function requestPreciseLocation() {
     );
 }
 
-// ==========================================
-// AI Chat Bot - ذكي
-// ==========================================
 let chatHistory = [];
 let userName = '';
 let isFirstMessage = true;
 let pendingImage = null;
 
-// فتح/إغلاق البوت
 function toggleChatBot() {
     const container = document.getElementById('chatBotContainer');
     container.classList.toggle('active');
 
-    // إرسال رسالة الترحيب عند أول فتح
     if (container.classList.contains('active') && isFirstMessage) {
         setTimeout(() => {
             addBotMessage(`أهلاً وسهلاً بك! 👋
@@ -624,7 +558,6 @@ function toggleChatBot() {
     }
 }
 
-// إضافة رسالة من البوت
 function addBotMessage(message) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
@@ -640,7 +573,6 @@ function addBotMessage(message) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// إضافة رسالة من المستخدم
 function addUserMessage(message) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
@@ -650,7 +582,6 @@ function addUserMessage(message) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// إظهار مؤشر الكتابة
 function showTypingIndicator() {
     const chatMessages = document.getElementById('chatMessages');
     const typingDiv = document.createElement('div');
@@ -661,24 +592,20 @@ function showTypingIndicator() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// إخفاء مؤشر الكتابة
 function hideTypingIndicator() {
     const typing = document.getElementById('typingIndicator');
     if (typing) typing.remove();
 }
 
-// إرسال رسالة
 async function sendMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
 
     if (!message) return;
 
-    // إضافة رسالة المستخدم
     addUserMessage(message);
     input.value = '';
 
-    // حفظ الاسم لو لسه مقالوش
     if (!userName && chatHistory.length === 0) {
         userName = message;
         chatHistory.push({ role: 'user', content: message });
@@ -703,10 +630,8 @@ async function sendMessage() {
         return;
     }
 
-    // إضافة للتاريخ
     chatHistory.push({ role: 'user', content: message });
 
-    // إظهار مؤشر الكتابة
     showTypingIndicator();
 
     try {
@@ -720,7 +645,6 @@ async function sendMessage() {
     }
 }
 
-// الحصول على رد من AI
 async function getAIResponse(userMessage) {
     const systemPrompt = `أنت "ذكي"، نموذج لغوي ذكي مطور من شركة EAAAI.
 موقع الشركة: https://ibrahim88887.github.io/EAAAI/
@@ -774,10 +698,6 @@ ${userName ? `اسم الطالب الذي تتحدث معه: ${userName}` : ''}
     return data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
 }
 
-// ==========================================
-// Ask AI - اسأل الذكاء الاصطناعي
-// ==========================================
-
 async function askAI() {
     const questionInput = document.getElementById('askAiQuestion');
     const responseDiv = document.getElementById('askAiResponse');
@@ -792,7 +712,6 @@ async function askAI() {
         return;
     }
 
-    // إظهار حالة التحميل
     askBtn.disabled = true;
     askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التفكير...';
     responseDiv.style.display = 'block';
@@ -842,7 +761,6 @@ async function askAI() {
         const data = await response.json();
         const answer = data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
 
-        // تنسيق الإجابة
         const formattedAnswer = answer
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\n/g, '<br>');
@@ -854,12 +772,10 @@ async function askAI() {
         responseContent.innerHTML = '❌ حدث خطأ. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.';
     }
 
-    // إعادة الزر لحالته الطبيعية
     askBtn.disabled = false;
     askBtn.innerHTML = '<i class="fas fa-paper-plane"></i> اسأل ذكي';
 }
 
-// التعامل مع Enter في Ask AI
 document.addEventListener('DOMContentLoaded', () => {
     const askAiTextarea = document.getElementById('askAiQuestion');
     if (askAiTextarea) {
@@ -872,14 +788,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// التعامل مع Enter
 function handleChatKeyPress(event) {
     if (event.key === 'Enter') {
         sendMessage();
     }
 }
 
-// التعامل مع رفع الصور
 function handleChatImage(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -894,15 +808,12 @@ function handleChatImage(event) {
         return;
     }
 
-    // تحويل الصورة لـ base64
     const reader = new FileReader();
     reader.onload = async (e) => {
         const base64Image = e.target.result;
 
-        // عرض الصورة في الشات
         addUserImageMessage(base64Image);
 
-        // إظهار مؤشر الكتابة
         showTypingIndicator();
 
         try {
@@ -916,11 +827,9 @@ function handleChatImage(event) {
     };
     reader.readAsDataURL(file);
 
-    // إعادة تعيين الـ input
     event.target.value = '';
 }
 
-// إضافة صورة المستخدم للشات
 function addUserImageMessage(imageSrc) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
@@ -933,7 +842,6 @@ function addUserImageMessage(imageSrc) {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// تحليل الصورة بالـ AI (باستخدام Google Gemini)
 async function analyzeImageWithAI(imageData) {
     const base64Data = imageData.split(',')[1];
     const mimeType = imageData.split(';')[0].split(':')[1];
@@ -991,7 +899,6 @@ ${userName ? `اسم الطالب: ${userName}` : ''}
     }
 }
 
-// فتح الصورة بحجم كبير
 function openImagePreview(src) {
     const overlay = document.createElement('div');
     overlay.className = 'image-preview-overlay';
@@ -1009,15 +916,10 @@ function openImagePreview(src) {
     document.body.appendChild(overlay);
 }
 
-// ==========================================
-// Quiz System - الامتحانات التفاعلية
-// ==========================================
-
-// بنك الأسئلة لكل مادة - أسئلة امتحانات السنوات السابقة
 const questionsBank = {
     physics: [],
     physics2: [
-        // ========== امتحان 2024 ==========
+
         {
             question: "In Young's double-slit experiment, constructive interference occurs when the path difference is...",
             options: ["mλ", "(m+1/2)λ", "1/2 mλ", "Zero"],
@@ -1103,7 +1005,7 @@ const questionsBank = {
             options: ["Perpendicular", "Parallel", "Helical", "Intersect"],
             correct: 0
         },
-        // ========== امتحان 2022-2023 ==========
+
         {
             question: "A semiconductor has generally ... valence electrons",
             options: ["4", "5", "2", "8"],
@@ -1164,7 +1066,7 @@ const questionsBank = {
             options: ["Ultrasonic waves", "Radio waves", "Ultraviolet rays", "X-rays"],
             correct: 0
         },
-        // ========== امتحان 2021-2022 ==========
+
         {
             question: "In the depletion region of a pn junction, there is a shortage of",
             options: ["Holes and electrons", "Acceptor ions", "Donor ions", "None of the above"],
@@ -1185,7 +1087,7 @@ const questionsBank = {
             options: ["Lλ/d", "λd/L", "d/Lλ", "L/λd"],
             correct: 0
         },
-        // ========== امتحان 2018-2019 ==========
+
         {
             question: "Type-II of superconductors are usually...",
             options: ["Alloys", "Semiconductors", "Insulators", "Pure metals"],
@@ -1247,8 +1149,7 @@ const questionsBank = {
     it: [],
     electronics: [],
     english: [
-        // ========== Section 1: Reading Comprehension (Q1-30) ==========
-        // Unit 1: The Ice Hotel (Q1-10)
+
         { question: "Where is the Ice Hotel located?", options: ["Quebec, Canada", "Alaska, USA", "Norway", "Switzerland"], correct: 0 },
         { question: "Why can you only check into the Ice Hotel during winter?", options: ["Because it is made entirely of ice and snow", "Because it is too expensive in summer", "Because the owners go on vacation", "Because there are no flights in summer"], correct: 0 },
         { question: "What is NOT made of ice in the Ice Hotel?", options: ["Winter coats", "Furniture", "Drinking glasses", "Art in the gallery"], correct: 0 },
@@ -1259,7 +1160,7 @@ const questionsBank = {
         { question: "True or False: The Ice Hotel has a church where people can get married.", options: ["True", "False"], correct: 0 },
         { question: "What facilities does the Ice Hotel have?", options: ["Movie theater, art gallery, and church", "Only bedrooms", "Bedrooms and a restaurant", "Bedrooms, restaurant, and swimming pool"], correct: 0 },
         { question: "What material are the drinking glasses made of at the Ice Hotel?", options: ["Ice", "Glass", "Plastic", "Crystal"], correct: 0 },
-        // Unit 2: Food Firsts (Q11-20)
+
         { question: "According to the passage, where did curry really come from?", options: ["England", "India", "Persia", "Thailand"], correct: 0 },
         { question: "When was the word 'curry' first found in an English cookbook?", options: ["1377", "1600", "1891", "500"], correct: 0 },
         { question: "Where was pizza probably first made?", options: ["Persia (Iran)", "Italy", "United States", "Greece"], correct: 0 },
@@ -1270,7 +1171,7 @@ const questionsBank = {
         { question: "What does 'catch on' mean in the context of pizza?", options: ["To become popular", "To be caught by someone", "To be understood", "To be made quickly"], correct: 0 },
         { question: "True or False: Wealthy English people were eating dishes with curry in the 1377.", options: ["True", "False"], correct: 0 },
         { question: "Which city in Italy is famous for pizza?", options: ["Naples", "Rome", "Milan", "Venice"], correct: 0 },
-        // Unit 3: Hurricane Who? (Q21-30)
+
         { question: "What are tropical cyclones called in Asia?", options: ["Typhoons", "Hurricanes", "Cyclones", "Storms"], correct: 0 },
         { question: "What is the minimum wind speed for these storms?", options: ["60 kph", "30 kph", "100 kph", "120 kph"], correct: 0 },
         { question: "Which organization decides hurricane names?", options: ["World Meteorological Organization (WMO)", "United Nations", "National Weather Service", "Tropical Prediction Center"], correct: 0 },
@@ -1281,7 +1182,7 @@ const questionsBank = {
         { question: "True or False: Hurricanes always have female names.", options: ["False", "True"], correct: 0 },
         { question: "Where is the Tropical Prediction Center located?", options: ["Miami, Florida", "Washington D.C.", "New York City", "Los Angeles, California"], correct: 0 },
         { question: "How often are the lists of hurricane names recycled?", options: ["Every 6 years", "Every year", "Every 10 years", "Never"], correct: 0 },
-        // ========== Section 2: Idioms & Expressions (Q31-50) ==========
+
         { question: "What does the idiom 'A-1' mean?", options: ["Excellent, superior", "First in order", "Average quality", "Quickly done"], correct: 0 },
         { question: "'ABC' in 'the ABC of cooking' means:", options: ["Fundamentals, basics", "Simple recipes", "Advanced techniques", "Alphabetical order"], correct: 0 },
         { question: "True or False: 'Above board' means something is done openly and honestly.", options: ["True", "False"], correct: 0 },
@@ -1302,7 +1203,7 @@ const questionsBank = {
         { question: "What does 'made of' mean?", options: ["Built or constructed from", "Created by", "Designed for", "To become something"], correct: 0 },
         { question: "What does 'be into' mean?", options: ["To enjoy doing", "To be inside something", "To be interested in learning", "To be part of a group"], correct: 0 },
         { question: "What does 'catch on' mean?", options: ["To become popular", "To catch something", "To understand something", "To hold onto something"], correct: 0 },
-        // ========== Section 3: Writing & Structure (Q51-80) ==========
+
         { question: "What are the three parts of a paragraph?", options: ["Topic sentence, supporting sentences, concluding sentence", "Introduction, body, conclusion", "Thesis, examples, summary", "Beginning, middle, end"], correct: 0 },
         { question: "What is the purpose of a topic sentence?", options: ["To state the main idea of the paragraph", "To introduce the topic", "To provide examples", "To conclude the paragraph"], correct: 0 },
         { question: "What does 'unity' mean in paragraph writing?", options: ["The paragraph discusses one main idea only", "All sentences are the same length", "The paragraph has good vocabulary", "All sentences are connected"], correct: 0 },
@@ -1333,7 +1234,7 @@ const questionsBank = {
         { question: "Which sentence is a compound sentence?", options: ["The dog barked, and the cat ran away.", "The dog barked.", "The barking dog scared the cat.", "Because the dog barked, the cat ran away."], correct: 0 },
         { question: "Which sentence is a complex sentence?", options: ["Although I like pizza, I prefer pasta.", "I like pizza and pasta.", "I like pizza; I also like pasta.", "I like pizza, but I prefer pasta."], correct: 0 },
         { question: "Which sentence has correct parallel structure?", options: ["I like swimming, running, and biking.", "I like swimming, to run, and biking.", "I like to swim, running, and to bike.", "I like swimming, run, and biking."], correct: 0 },
-        // ========== Section 4: TOEFL Structure Skills (Q81-100) ==========
+
         { question: "Which sentence is correct?", options: ["The students are studying for the exam.", "The students is studying for the exam.", "The students am studying for the exam.", "The students was studying for the exam."], correct: 0 },
         { question: "Identify the error: 'Each of the boys have their own book.'", options: ["have", "Each of", "the boys", "their own book"], correct: 0 },
         { question: "Which is the correct connector? 'I want to go to the movies, ______ I don't have enough money.'", options: ["but", "and", "so", "or"], correct: 0 },
@@ -1354,7 +1255,7 @@ const questionsBank = {
         { question: "Identify the error: 'She asked me where do I live.'", options: ["do I live", "asked", "me", "where"], correct: 0 },
         { question: "Which sentence has correct parallel structure?", options: ["She likes reading, swimming, and hiking.", "She likes reading, to swim, and hiking.", "She likes to read, swimming, and to hike.", "She likes reading, swim, and hiking."], correct: 0 },
         { question: "Identify the error: 'The reason is because I was tired.'", options: ["because", "I was", "tired"], correct: 0 },
-        // ========== Section 5: Additional Questions (Q101-148) ==========
+
         { question: "The man owns three hotels. He is very ______.", options: ["wealthy", "comfortable", "tired", "unique"], correct: 0 },
         { question: "People think snakes are dangerous, ______ most snakes are not.", options: ["Surprisingly", "Unusually", "Finally", "First"], correct: 0 },
         { question: "He knows ______ all of his relatives' birthdays, except for his aunt and uncle's.", options: ["nearly", "in reality", "before", "behind"], correct: 0 },
@@ -1406,7 +1307,6 @@ const questionsBank = {
     ]
 };
 
-// متغيرات الامتحان
 let currentQuiz = {
     subject: 'physics',
     questions: [],
@@ -1416,11 +1316,9 @@ let currentQuiz = {
     timerInterval: null
 };
 
-// تهيئة الامتحان
 function initQuiz(subject) {
     currentQuiz.subject = subject;
 
-    // خلط الأسئلة واختيار 15 سؤال عشوائي
     const allQuestions = [...questionsBank[subject]];
     const shuffled = allQuestions.sort(() => Math.random() - 0.5);
     currentQuiz.questions = shuffled.slice(0, Math.min(15, shuffled.length));
@@ -1428,7 +1326,6 @@ function initQuiz(subject) {
     currentQuiz.currentIndex = 0;
     currentQuiz.answers = new Array(currentQuiz.questions.length).fill(null);
 
-    // تحديث العنوان
     const subjectNames = {
         physics: 'فيزياء 1',
         physics2: 'فيزياء 2',
@@ -1444,13 +1341,11 @@ function initQuiz(subject) {
     if (currentSubjectEl) currentSubjectEl.textContent = subjectNames[subject];
     if (totalQEl) totalQEl.textContent = currentQuiz.questions.length;
 
-    // إخفاء النتيجة وإظهار الامتحان
     const quizResult = document.getElementById('quizResult');
     const quizContainer = document.getElementById('quizContainer');
     if (quizResult) quizResult.style.display = 'none';
     if (quizContainer) quizContainer.style.display = 'block';
 
-    // التحقق من وجود أسئلة
     if (currentQuiz.questions.length === 0) {
         document.getElementById('questionText').textContent = 'لا توجد أسئلة لهذه المادة حالياً';
         document.getElementById('quizOptions').innerHTML = '';
@@ -1459,14 +1354,11 @@ function initQuiz(subject) {
         return;
     }
 
-    // بدء المؤقت
     startTimer();
 
-    // عرض السؤال الأول
     showQuestion(0);
 }
 
-// عرض سؤال
 function showQuestion(index) {
     const question = currentQuiz.questions[index];
     document.getElementById('currentQ').textContent = index + 1;
@@ -1491,7 +1383,6 @@ function showQuestion(index) {
         optionsContainer.appendChild(optionBtn);
     });
 
-    // تحديث الأزرار
     document.getElementById('prevBtn').disabled = index === 0;
 
     if (index === currentQuiz.questions.length - 1) {
@@ -1503,7 +1394,6 @@ function showQuestion(index) {
     }
 }
 
-// اختيار إجابة
 function selectOption(optionIndex) {
     currentQuiz.answers[currentQuiz.currentIndex] = optionIndex;
 
@@ -1516,7 +1406,6 @@ function selectOption(optionIndex) {
     });
 }
 
-// السؤال التالي
 function nextQuestion() {
     if (currentQuiz.currentIndex < currentQuiz.questions.length - 1) {
         currentQuiz.currentIndex++;
@@ -1524,7 +1413,6 @@ function nextQuestion() {
     }
 }
 
-// السؤال السابق
 function prevQuestion() {
     if (currentQuiz.currentIndex > 0) {
         currentQuiz.currentIndex--;
@@ -1532,7 +1420,6 @@ function prevQuestion() {
     }
 }
 
-// المؤقت
 function startTimer() {
     currentQuiz.timer = 0;
     if (currentQuiz.timerInterval) clearInterval(currentQuiz.timerInterval);
@@ -1545,7 +1432,6 @@ function startTimer() {
     }, 1000);
 }
 
-// إنهاء الامتحان
 function submitQuiz() {
     clearInterval(currentQuiz.timerInterval);
 
@@ -1558,7 +1444,6 @@ function submitQuiz() {
 
     const percentage = Math.round((score / currentQuiz.questions.length) * 100);
 
-    // عرض النتيجة
     document.getElementById('quizContainer').style.display = 'none';
     document.getElementById('quizResult').style.display = 'block';
 
@@ -1566,7 +1451,6 @@ function submitQuiz() {
     document.getElementById('maxScore').textContent = currentQuiz.questions.length;
     document.getElementById('resultPercentage').textContent = percentage + '%';
 
-    // رسالة النتيجة
     let message = '';
     const percentageEl = document.getElementById('resultPercentage');
 
@@ -1590,20 +1474,17 @@ function submitQuiz() {
     document.getElementById('resultMessage').textContent = message;
 }
 
-// متغير لحفظ اسم المستخدم في الامتحان
 let quizUserName = '';
 let selectedQuizSubject = 'physics2';
 
-// تهيئة أزرار الامتحان
 function initQuizButtons() {
-    // أزرار اختيار المادة
+
     document.querySelectorAll('.quiz-subject-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.quiz-subject-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedQuizSubject = btn.dataset.quizSubject;
 
-            // تحديث اسم المادة في شاشة البداية
             const subjectNames = {
                 physics: 'فيزياء 1',
                 physics2: 'فيزياء 2',
@@ -1615,7 +1496,6 @@ function initQuizButtons() {
             const subjectNameEl = document.getElementById('selectedSubjectName');
             if (subjectNameEl) subjectNameEl.textContent = subjectNames[selectedQuizSubject];
 
-            // إظهار شاشة البداية وإخفاء الامتحان
             const startScreen = document.getElementById('quizStartScreen');
             const container = document.getElementById('quizContainer');
             const result = document.getElementById('quizResult');
@@ -1625,19 +1505,15 @@ function initQuizButtons() {
         });
     });
 
-    // زر التالي (مع فحص وجوده)
     const nextBtn = document.getElementById('nextBtn');
     if (nextBtn) nextBtn.addEventListener('click', nextQuestion);
 
-    // زر السابق (مع فحص وجوده)
     const prevBtn = document.getElementById('prevBtn');
     if (prevBtn) prevBtn.addEventListener('click', prevQuestion);
 
-    // زر إنهاء الامتحان (مع فحص وجوده)
     const submitBtn = document.getElementById('submitQuiz');
     if (submitBtn) submitBtn.addEventListener('click', submitQuiz);
 
-    // زر إعادة الامتحان (مع فحص وجوده)
     const retryBtn = document.getElementById('retryQuiz');
     if (retryBtn) {
         retryBtn.addEventListener('click', () => {
@@ -1651,7 +1527,6 @@ function initQuizButtons() {
     }
 }
 
-// بدء الامتحان مع الاسم
 function startQuizWithName() {
     const nameInput = document.getElementById('quizUserName');
     quizUserName = nameInput.value.trim();
@@ -1662,16 +1537,10 @@ function startQuizWithName() {
         return;
     }
 
-    // إخفاء شاشة البداية وبدء الامتحان
     document.getElementById('quizStartScreen').style.display = 'none';
     initQuiz(selectedQuizSubject);
 }
 
-// ==========================================
-// Bicycle Competitions Management
-// ==========================================
-
-// Store participants data
 let participantsData = {
     1: [
         { name: 'أحمد محمد', score: 48 },
@@ -1696,7 +1565,6 @@ let participantsData = {
     ]
 };
 
-// Load from localStorage if available
 function loadParticipants() {
     const saved = localStorage.getItem('bicycleParticipants');
     if (saved) {
@@ -1705,12 +1573,10 @@ function loadParticipants() {
     }
 }
 
-// Save to localStorage
 function saveParticipants() {
     localStorage.setItem('bicycleParticipants', JSON.stringify(participantsData));
 }
 
-// Add participant to a level
 function addParticipant(level) {
     const nameInput = document.getElementById(`name${level}`);
     const scoreInput = document.getElementById(`time${level}`);
@@ -1728,27 +1594,20 @@ function addParticipant(level) {
         return;
     }
 
-    // Add to data
     participantsData[level].push({ name, score });
 
-    // Sort by score (highest first)
     participantsData[level].sort((a, b) => b.score - a.score);
 
-    // Update UI
     updateParticipantsList(level);
 
-    // Save to localStorage
     saveParticipants();
 
-    // Clear inputs
     nameInput.value = '';
     scoreInput.value = '';
 
-    // Show success message
     showNotification(`تم إضافة ${name} بنجاح!`);
 }
 
-// Update participants list in UI
 function updateParticipantsList(level) {
     const list = document.getElementById(`level${level}Participants`);
     list.innerHTML = '';
@@ -1773,14 +1632,12 @@ function updateParticipantsList(level) {
     });
 }
 
-// Update all lists
 function updateAllLists() {
     updateParticipantsList(1);
     updateParticipantsList(2);
     updateParticipantsList(3);
 }
 
-// Delete participant
 function deleteParticipant(level, index) {
     const participant = participantsData[level][index];
     if (confirm(`هل تريد حذف ${participant.name}؟`)) {
@@ -1791,7 +1648,6 @@ function deleteParticipant(level, index) {
     }
 }
 
-// Show notification
 function showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
@@ -1817,7 +1673,6 @@ function showNotification(message) {
     }, 2000);
 }
 
-// Add CSS for delete button
 const style = document.createElement('style');
 style.textContent = `
     .delete-btn {
@@ -1864,9 +1719,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// ==========================================
-// Smooth Scrolling
-// ==========================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -1880,9 +1732,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// ==========================================
-// Navigation Active State
-// ==========================================
 window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-links a');
@@ -1904,9 +1753,6 @@ window.addEventListener('scroll', () => {
     });
 });
 
-// ==========================================
-// Initialize
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadParticipants();
     initBankTabs();
@@ -1915,13 +1761,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuiz('physics2'); // بدء بامتحان فيزياء 2
 });
 
-// ==========================================
-// Questions Bank - بنك الأسئلة
-// ==========================================
-
-// ==========================================
-// الأسئلة المقالية - Essay Questions (عربي + English)
-// ==========================================
 const essayQuestionsData = {
     physics: [],
     physics2: [
@@ -2141,11 +1980,10 @@ L = L₀ × √(1 − v²/c²)`
     electronics: []
 };
 
-// بنك الأسئلة لكل مادة (للعرض مع الإجابات) - أسئلة امتحانات السنوات السابقة
 const questionsBankData = {
     physics: [],
     physics2: [
-        // ========== امتحان 2024 ==========
+
         {
             question: "In Young's double-slit experiment, constructive interference occurs when the path difference is...",
             options: ["mλ", "(m+1/2)λ", "1/2 mλ", "Zero"],
@@ -2231,7 +2069,7 @@ const questionsBankData = {
             options: ["Perpendicular", "Parallel", "Helical", "Intersect"],
             correct: 0
         },
-        // ========== امتحان 2022-2023 ==========
+
         {
             question: "A semiconductor has generally ... valence electrons",
             options: ["4", "5", "2", "8"],
@@ -2292,7 +2130,7 @@ const questionsBankData = {
             options: ["Ultrasonic waves", "Radio waves", "Ultraviolet rays", "X-rays"],
             correct: 0
         },
-        // ========== امتحان 2021-2022 ==========
+
         {
             question: "In the depletion region of a pn junction, there is a shortage of",
             options: ["Holes and electrons", "Acceptor ions", "Donor ions", "None of the above"],
@@ -2313,7 +2151,7 @@ const questionsBankData = {
             options: ["Lλ/d", "λd/L", "d/Lλ", "L/λd"],
             correct: 0
         },
-        // ========== امتحان 2018-2019 ==========
+
         {
             question: "Type-II of superconductors are usually...",
             options: ["Alloys", "Semiconductors", "Insulators", "Pure metals"],
@@ -2378,7 +2216,6 @@ const questionsBankData = {
     electronics: []
 };
 
-// عرض أسئلة بنك الأسئلة مع زر عرض المزيد
 let bankQuestionsShown = 10;
 let currentBankSubject = 'physics2';
 
@@ -2386,7 +2223,6 @@ function displayBankQuestions(subject, reset = true) {
     const container = document.getElementById('questionsBankContainer');
     let questions = questionsBankData[subject] || [];
 
-    // استخدم questionsBank للمواد اللي مش موجودة في questionsBankData
     if (questions.length === 0 && questionsBank[subject]) {
         questions = questionsBank[subject];
     }
@@ -2407,7 +2243,6 @@ function displayBankQuestions(subject, reset = true) {
         return;
     }
 
-    // خلط الاختيارات لكل سؤال
     const shuffledQuestions = questions.map(q => {
         const optionsWithIndex = q.options.map((opt, idx) => ({
             text: opt,
@@ -2442,7 +2277,7 @@ function displayBankQuestions(subject, reset = true) {
             </div>
         </div>
     `).join('');
-    // زر عرض المزيد
+
     if (bankQuestionsShown < questions.length) {
         html += `<div style="text-align:center;margin:1.5rem 0;">
             <button class="btn btn-secondary" onclick="showMoreBankQuestions()">عرض المزيد</button>
@@ -2451,7 +2286,6 @@ function displayBankQuestions(subject, reset = true) {
     container.innerHTML = html;
 }
 
-// زر عرض المزيد
 function showMoreBankQuestions() {
     const questions = questionsBankData[currentBankSubject] || [];
     bankQuestionsShown += 10;
@@ -2459,7 +2293,6 @@ function showMoreBankQuestions() {
     displayBankQuestions(currentBankSubject, false);
 }
 
-// إظهار/إخفاء الإجابة
 function toggleAnswer(btn, correctIndex) {
     const card = btn.closest('.bank-question-card');
     const options = card.querySelectorAll('.bank-option');
@@ -2476,7 +2309,6 @@ function toggleAnswer(btn, correctIndex) {
     }
 }
 
-// تهيئة tabs بنك الأسئلة
 function initBankTabs() {
     const tabs = document.querySelectorAll('[data-bank-subject]');
 
@@ -2488,11 +2320,9 @@ function initBankTabs() {
         });
     });
 
-    // عرض فيزياء 2 افتراضياً
     displayBankQuestions('physics2');
 }
 
-// عرض الأسئلة المقالية
 function displayEssayQuestions(subject) {
     const container = document.getElementById('essayQuestionsContainer');
     if (!container) return;
@@ -2536,7 +2366,6 @@ function displayEssayQuestions(subject) {
     `).join('');
 }
 
-// إظهار/إخفاء إجابة السؤال المقالي
 function toggleEssayAnswer(btn) {
     const card = btn.closest('.essay-question-card');
     const answer = card.querySelector('.essay-answer');
@@ -2553,7 +2382,6 @@ function toggleEssayAnswer(btn) {
     }
 }
 
-// تهيئة tabs الأسئلة المقالية
 function initEssayTabs() {
     const tabs = document.querySelectorAll('[data-essay-subject]');
 
@@ -2565,13 +2393,8 @@ function initEssayTabs() {
         });
     });
 
-    // عرض فيزياء 2 افتراضياً
     displayEssayQuestions('physics2');
 }
-
-// ==========================================
-// Challenge Mode - وضع التحدي
-// ==========================================
 
 let challengeQuestions = [];
 let currentChallengeIndex = 0;
@@ -2581,30 +2404,27 @@ let challengeTimeRemaining = 300; // 5 دقائق بالثواني
 let challengeStartTime = null;
 let challengerName = '';
 
-// قائمة الكلمات الممنوعة (الشتائم والألفاظ غير اللائقة)
 const bannedWords = [
-    // شتائم عربية
+
     'كس', 'طيز', 'زب', 'شرموط', 'عرص', 'متناك', 'منيك', 'لبوه', 'قحب', 'عاهر',
     'خول', 'ابن الكلب', 'ابن الحرام', 'ابن العرص', 'ابن الشرموطه', 'كسم',
     'احا', 'ينعل', 'يلعن', 'زانيه', 'زاني', 'فاجر', 'فاجره', 'وسخ', 'وسخه',
     'حمار', 'غبي', 'احمق', 'معفن', 'قذر', 'نجس', 'حقير', 'تافه', 'واطي',
     'كلب', 'خنزير', 'حيوان', 'بهيم', 'ديوث', 'قواد',
-    // شتائم إنجليزية
+
     'fuck', 'shit', 'bitch', 'ass', 'dick', 'pussy', 'bastard', 'whore',
     'slut', 'cunt', 'cock', 'damn', 'hell', 'nigger', 'fag', 'gay',
     'stupid', 'idiot', 'dumb', 'retard', 'loser', 'sucker', 'motherfucker',
-    // أسماء غير لائقة
+
     'ابليس', 'شيطان', 'satan', 'devil', 'demon'
 ];
 
-// فلترة الاسم من الشتائم
 function filterName(name) {
     if (!name) return '';
 
     let filteredName = name.trim();
     const lowerName = filteredName.toLowerCase();
 
-    // التحقق من الكلمات الممنوعة
     for (const word of bannedWords) {
         const regex = new RegExp(word, 'gi');
         if (regex.test(lowerName) || regex.test(filteredName)) {
@@ -2612,26 +2432,21 @@ function filterName(name) {
         }
     }
 
-    // التحقق من الأسماء القصيرة جداً أو الطويلة جداً
     if (filteredName.length < 2 || filteredName.length > 30) {
         return null;
     }
 
-    // رفض الأسماء التي كلها أرقام أو كلها رموز
     const onlyNumbers = /^[0-9]+$/;
     const onlySymbols = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
     if (onlyNumbers.test(filteredName) || onlySymbols.test(filteredName)) {
         return null;
     }
 
-    // رفض الأسماء التي تحتوي على أرقام أو رموز أو حروف مكررة بشكل غير طبيعي
-    // يسمح فقط بحروف عربية أو إنجليزية ومسافة
     const validName = /^[\u0600-\u06FFa-zA-Z ]+$/;
     if (!validName.test(filteredName)) {
         return null;
     }
 
-    // رفض الأسماء التي فيها أكثر من 3 حروف متكررة متتالية (مثل aaa أو ممممم)
     if (/(.)\1{2,}/.test(filteredName)) {
         return null;
     }
@@ -2639,7 +2454,6 @@ function filterName(name) {
     return filteredName;
 }
 
-// بدء التحدي
 function startChallenge() {
     const nameInput = document.getElementById('challengerName');
     const rawName = nameInput.value.trim();
@@ -2650,7 +2464,6 @@ function startChallenge() {
         return;
     }
 
-    // فلترة الاسم
     challengerName = filterName(rawName);
 
     if (!challengerName) {
@@ -2660,57 +2473,46 @@ function startChallenge() {
         return;
     }
 
-    // الحصول على المادة المختارة
     const selectedSubject = document.getElementById('challengeSubject')?.value || 'physics2';
 
-    // تهيئة التحدي
     challengeQuestions = getRandomQuestions(15, selectedSubject);
     currentChallengeIndex = 0;
     challengeAnswers = {};
     challengeTimeRemaining = 300;
     challengeStartTime = Date.now();
 
-    // إيقاف المؤقت السابق إن وجد
     if (challengeTimerInterval) {
         clearInterval(challengeTimerInterval);
         challengeTimerInterval = null;
     }
 
-    // إعادة تعيين عرض المؤقت
     document.getElementById('timerDisplay').textContent = '05:00';
     document.getElementById('challengeTimer').classList.remove('warning');
 
-    // إخفاء المقدمة وإظهار التحدي
     document.getElementById('challengeIntro').style.display = 'none';
     document.getElementById('challengeContainer').style.display = 'block';
     document.getElementById('challengeResult').style.display = 'none';
 
-    // بدء المؤقت
     startChallengeTimer();
 
-    // عرض أول سؤال
     showChallengeQuestion();
     updateChallengeNav();
 }
 
-// الحصول على أسئلة عشوائية مع خلط الاختيارات
 function getRandomQuestions(count, subject = 'physics2') {
     const allQuestions = [...(questionsBank[subject] || questionsBank.physics2)];
     const shuffled = allQuestions.sort(() => Math.random() - 0.5);
     const selectedQuestions = shuffled.slice(0, Math.min(count, shuffled.length));
 
-    // خلط الاختيارات لكل سؤال مع تحديث الإجابة الصحيحة
     return selectedQuestions.map(q => {
-        // إنشاء مصفوفة الاختيارات مع الفهرس الأصلي
+
         const optionsWithIndex = q.options.map((opt, idx) => ({
             text: opt,
             isCorrect: idx === q.correct
         }));
 
-        // خلط الاختيارات
         const shuffledOptions = optionsWithIndex.sort(() => Math.random() - 0.5);
 
-        // إيجاد الفهرس الجديد للإجابة الصحيحة
         const newCorrectIndex = shuffledOptions.findIndex(opt => opt.isCorrect);
 
         return {
@@ -2721,7 +2523,6 @@ function getRandomQuestions(count, subject = 'physics2') {
     });
 }
 
-// بدء المؤقت
 function startChallengeTimer() {
     const timerDisplay = document.getElementById('timerDisplay');
     const timerDiv = document.getElementById('challengeTimer');
@@ -2733,12 +2534,10 @@ function startChallengeTimer() {
         const seconds = challengeTimeRemaining % 60;
         timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-        // تحذير عند بقاء دقيقة واحدة
         if (challengeTimeRemaining <= 60) {
             timerDiv.classList.add('warning');
         }
 
-        // انتهاء الوقت
         if (challengeTimeRemaining <= 0) {
             clearInterval(challengeTimerInterval);
             submitChallenge();
@@ -2746,20 +2545,16 @@ function startChallengeTimer() {
     }, 1000);
 }
 
-// عرض سؤال التحدي الحالي
 function showChallengeQuestion() {
     const question = challengeQuestions[currentChallengeIndex];
     const questionDiv = document.getElementById('challengeQuestion');
     const optionsDiv = document.getElementById('challengeOptions');
     const progressSpan = document.getElementById('challengeProgress');
 
-    // تحديث التقدم
     progressSpan.textContent = `${currentChallengeIndex + 1}/15`;
 
-    // عرض السؤال
     questionDiv.innerHTML = `<span class="question-number">س${currentChallengeIndex + 1}:</span> ${question.question}`;
 
-    // عرض الخيارات
     const letters = ['أ', 'ب', 'ج', 'د'];
     optionsDiv.innerHTML = question.options.map((option, i) => `
         <div class="challenge-option ${challengeAnswers[currentChallengeIndex] === i ? 'selected' : ''}" 
@@ -2772,12 +2567,10 @@ function showChallengeQuestion() {
     updateChallengeNav();
 }
 
-// اختيار إجابة
 function selectChallengeOption(optionIndex) {
-    // حفظ الإجابة
+
     challengeAnswers[currentChallengeIndex] = optionIndex;
 
-    // تحديث الاختيارات بصرياً
     const options = document.querySelectorAll('.challenge-option');
     options.forEach((opt, i) => {
         opt.classList.remove('selected');
@@ -2787,7 +2580,6 @@ function selectChallengeOption(optionIndex) {
     });
 }
 
-// تحديث النتيجة (داخلياً فقط)
 function updateChallengeScore() {
     let score = 0;
     Object.keys(challengeAnswers).forEach(index => {
@@ -2798,7 +2590,6 @@ function updateChallengeScore() {
     return score;
 }
 
-// السؤال التالي
 function nextChallengeQuestion() {
     if (currentChallengeIndex < challengeQuestions.length - 1) {
         currentChallengeIndex++;
@@ -2806,7 +2597,6 @@ function nextChallengeQuestion() {
     }
 }
 
-// السؤال السابق
 function prevChallengeQuestion() {
     if (currentChallengeIndex > 0) {
         currentChallengeIndex--;
@@ -2814,7 +2604,6 @@ function prevChallengeQuestion() {
     }
 }
 
-// تحديث أزرار التنقل
 function updateChallengeNav() {
     const prevBtn = document.getElementById('prevChallengeBtn');
     const nextBtn = document.getElementById('nextChallengeBtn');
@@ -2831,11 +2620,9 @@ function updateChallengeNav() {
     }
 }
 
-// إنهاء التحدي
 function submitChallenge() {
     clearInterval(challengeTimerInterval);
 
-    // حساب النتيجة
     let correctCount = 0;
     Object.keys(challengeAnswers).forEach(index => {
         if (challengeQuestions[index].correct === challengeAnswers[index]) {
@@ -2843,13 +2630,11 @@ function submitChallenge() {
         }
     });
 
-    // حساب الوقت المستغرق
     const timeTaken = 300 - challengeTimeRemaining;
     const minutes = Math.floor(timeTaken / 60);
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-    // حفظ في قاعدة البيانات
     const selectedSubject = document.getElementById('challengeSubject')?.value || 'physics2';
     saveToLeaderboard({
         name: challengerName,
@@ -2861,11 +2646,9 @@ function submitChallenge() {
         date: new Date().toLocaleDateString('ar-EG')
     });
 
-    // عرض النتيجة
     showChallengeResult(correctCount, timeString);
 }
 
-// عرض نتيجة التحدي
 function showChallengeResult(score, time) {
     document.getElementById('challengeContainer').style.display = 'none';
     document.getElementById('challengeResult').style.display = 'block';
@@ -2873,7 +2656,6 @@ function showChallengeResult(score, time) {
     const resultIcon = document.getElementById('resultIcon');
     const resultTitle = document.getElementById('resultTitle');
 
-    // تحديد الرمز والعنوان حسب النتيجة
     if (score >= 13) {
         resultIcon.textContent = '🏆';
         resultTitle.textContent = 'ممتاز! أنت بطل!';
@@ -2892,33 +2674,27 @@ function showChallengeResult(score, time) {
     document.getElementById('finalTime').textContent = time;
     document.getElementById('correctAnswers').textContent = `${score}/15`;
 
-    // تحديث لوحة المتصدرين
     displayLeaderboard();
 }
 
-// إعادة التحدي
 function restartChallenge() {
     document.getElementById('challengeResult').style.display = 'none';
     document.getElementById('challengeIntro').style.display = 'block';
     document.getElementById('challengerName').value = '';
 
-    // إعادة تعيين المؤقت
     document.getElementById('timerDisplay').textContent = '05:00';
     document.getElementById('challengeTimer').classList.remove('warning');
 }
 
-// حفظ في قاعدة البيانات (Firebase Firestore)
 async function saveToLeaderboard(entry) {
-    // 🚫 كشف الغش: رفض النتائج المثالية في وقت قصير جداً
-    // إذا حصل على 14 أو 15 في أقل من 60 ثانية، فهذا مشبوه
+
     if (entry.score >= 14 && entry.timeSeconds < 60) {
         console.warn('🚫 تم اكتشاف نتيجة مشبوهة - غش محتمل');
         alert('⚠️ تم اكتشاف نشاط مشبوه!\n\nلا يمكن حفظ نتيجتك.\n\nإذا كنت تعتقد أن هذا خطأ، يرجى إعادة المحاولة بشكل طبيعي.');
 
-        // حذف النتيجة من Firebase إذا كانت موجودة
         if (db) {
             try {
-                // البحث عن نتائج مشبوهة وحذفها
+
                 const suspiciousResults = await db.collection('leaderboard_v2')
                     .where('name', '==', entry.name)
                     .where('score', '>=', 14)
@@ -2939,7 +2715,6 @@ async function saveToLeaderboard(entry) {
         return; // لا تحفظ النتيجة
     }
 
-    // حفظ في localStorage أولاً كاحتياط
     let localLeaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
     localLeaderboard.push({ ...entry });
     localLeaderboard.sort((a, b) => {
@@ -2949,7 +2724,6 @@ async function saveToLeaderboard(entry) {
     localLeaderboard = localLeaderboard.slice(0, 50);
     localStorage.setItem('challengeLeaderboard', JSON.stringify(localLeaderboard));
 
-    // محاولة الحفظ في Firebase
     if (!db) {
         console.error('❌ Firebase غير متصل، تم الحفظ محلياً فقط');
         updateLeaderboardUI(localLeaderboard);
@@ -2957,22 +2731,20 @@ async function saveToLeaderboard(entry) {
     }
 
     try {
-        // إضافة timestamp للترتيب
+
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
-        // حفظ في Firebase
         const docRef = await db.collection('leaderboard_v2').add(entry);
 
         console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
 
     } catch (error) {
         console.error('❌ خطأ في حفظ النتيجة:', error);
-        // البيانات محفوظة محلياً بالفعل
+
         updateLeaderboardUI(localLeaderboard);
     }
 }
 
-// عرض لوحة المتصدرين من Firebase
 async function displayLeaderboard() {
     if (!db) {
         const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
@@ -2981,7 +2753,7 @@ async function displayLeaderboard() {
     }
 
     try {
-        // جلب البيانات من Firebase بدون ترتيب (لتجنب الحاجة لـ index)
+
         const snapshot = await db.collection('leaderboard_v2')
             .limit(100)
             .get();
@@ -2991,30 +2763,25 @@ async function displayLeaderboard() {
             leaderboard.push(doc.data());
         });
 
-        // ترتيب في JavaScript: الأعلى نتيجة أولاً، ثم الأسرع وقتاً
         leaderboard.sort((a, b) => {
             if (b.score !== a.score) return b.score - a.score;
             return a.timeSeconds - b.timeSeconds;
         });
 
-        // أخذ أفضل 50 فقط
         leaderboard = leaderboard.slice(0, 50);
 
-        // تحديث لوحة المتصدرين في قسم التحدي
         updateLeaderboardUI(leaderboard);
 
     } catch (error) {
         console.error('❌ خطأ في جلب البيانات:', error);
 
-        // استخدام localStorage كاحتياط
         const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
         updateLeaderboardUI(leaderboard);
     }
 }
 
-// تحديث واجهة لوحة المتصدرين
 function updateLeaderboardUI(leaderboard) {
-    // تحديث لوحة المتصدرين في قسم التحدي
+
     const tbody = document.getElementById('leaderboardBody');
     const noRecords = document.getElementById('noRecords');
 
@@ -3026,7 +2793,7 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecords) noRecords.style.display = 'none';
             tbody.innerHTML = leaderboard.map((entry, index) => {
                 let rowClass = '';
-                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
+
                 const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
                 if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
                     rowClass = 'ibrahim-leader';
@@ -3048,7 +2815,6 @@ function updateLeaderboardUI(leaderboard) {
         }
     }
 
-    // تحديث لوحة المتصدرين الرئيسية
     const mainTbody = document.getElementById('mainLeaderboardBody');
     const noRecordsMain = document.getElementById('noRecordsMain');
 
@@ -3060,7 +2826,7 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecordsMain) noRecordsMain.style.display = 'none';
             mainTbody.innerHTML = leaderboard.map((entry, index) => {
                 let rowClass = '';
-                // تمييز ابراهيم بأي شكل (عربي أو إنجليزي)
+
                 const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
                 if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
                     rowClass = 'ibrahim-leader';
@@ -3083,11 +2849,10 @@ function updateLeaderboardUI(leaderboard) {
     }
 }
 
-// الاستماع للتحديثات في الوقت الحقيقي
 function listenToLeaderboard() {
     if (!db) {
         console.error('❌ Firebase غير متصل');
-        // استخدام localStorage كاحتياط
+
         const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
         updateLeaderboardUI(leaderboard);
         return;
@@ -3095,7 +2860,6 @@ function listenToLeaderboard() {
 
     console.log('🔄 جاري الاتصال بـ Firebase...');
 
-    // جلب البيانات بدون ترتيب (لتجنب الحاجة لـ index)
     db.collection('leaderboard_v2')
         .limit(100)
         .onSnapshot((snapshot) => {
@@ -3104,36 +2868,34 @@ function listenToLeaderboard() {
             snapshot.forEach(doc => {
                 leaderboard.push(doc.data());
             });
-            // ترتيب في JavaScript: الأعلى نتيجة أولاً، ثم الأسرع وقتاً
+
             leaderboard.sort((a, b) => {
                 if (b.score !== a.score) return b.score - a.score;
                 return a.timeSeconds - b.timeSeconds;
             });
-            // أخذ أفضل 50 فقط
+
             leaderboard = leaderboard.slice(0, 50);
             updateLeaderboardUI(leaderboard);
         }, (error) => {
             console.error('❌ خطأ في الاستماع للتحديثات:', error);
-            // استخدام localStorage كاحتياط
+
             const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
             updateLeaderboardUI(leaderboard);
         });
 }
 
-// 🧹 تنظيف النتائج المشبوهة من قاعدة البيانات
 async function cleanSuspiciousResults() {
     if (!db) return;
 
     try {
         console.log('🧹 جاري البحث عن نتائج مشبوهة...');
 
-        // جلب جميع النتائج
         const snapshot = await db.collection('leaderboard_v2').get();
 
         let deletedCount = 0;
         for (const doc of snapshot.docs) {
             const data = doc.data();
-            // حذف النتائج المشبوهة: 14 أو 15 في أقل من 60 ثانية
+
             if (data.score >= 14 && data.timeSeconds < 60) {
                 await db.collection('leaderboard_v2').doc(doc.id).delete();
                 console.log('🗑️ تم حذف نتيجة مشبوهة:', data.name, '- النتيجة:', data.score, '- الوقت:', data.timeSeconds, 'ثانية');
@@ -3151,44 +2913,31 @@ async function cleanSuspiciousResults() {
     }
 }
 
-// تهيئة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-    // تنظيف النتائج المشبوهة أولاً
+
     setTimeout(cleanSuspiciousResults, 2000);
 
-    // بدء الاستماع للتحديثات الفورية
     listenToLeaderboard();
 });
 
-// ==========================================
-// Subject Cards Functions - وظائف بطاقات المواد
-// ==========================================
-
-// المادة المختارة حالياً
 let currentSelectedSubject = 'physics2';
 
-// فتح التحدي لمادة معينة
 function openSubjectChallenge(subject) {
     currentSelectedSubject = subject;
 
-    // تعيين المادة في القائمة المنسدلة
     const subjectSelect = document.getElementById('challengeSubject');
     if (subjectSelect) {
         subjectSelect.value = subject;
     }
 
-    // التمرير إلى قسم التحدي
     document.getElementById('challenge').scrollIntoView({ behavior: 'smooth' });
 }
 
-// فتح بنك الأسئلة لمادة معينة
 function openSubjectBank(subject) {
     currentSelectedSubject = subject;
 
-    // التمرير إلى قسم بنك الأسئلة
     document.getElementById('exams').scrollIntoView({ behavior: 'smooth' });
 
-    // بعد التمرير، اختيار التاب المناسب
     setTimeout(() => {
         const bankTabs = document.querySelectorAll('[data-bank-subject]');
         bankTabs.forEach(tab => {
@@ -3197,25 +2946,21 @@ function openSubjectBank(subject) {
                 tab.classList.add('active');
             }
         });
-        // عرض أسئلة المادة
+
         displayBankQuestions(subject);
     }, 500);
 }
 
-// فتح المتصدرين لمادة معينة
 function openSubjectLeaderboard(subject) {
     currentSelectedSubject = subject;
 
-    // التمرير إلى قسم المتصدرين
     document.getElementById('leaderboard').scrollIntoView({ behavior: 'smooth' });
 
-    // عرض متصدرين المادة المحددة
     setTimeout(() => {
         displaySubjectLeaderboard(subject);
     }, 500);
 }
 
-// عرض متصدرين مادة معينة
 async function displaySubjectLeaderboard(subject) {
     if (!db) {
         console.log('Firebase not available');
@@ -3233,7 +2978,7 @@ async function displaySubjectLeaderboard(subject) {
     };
 
     try {
-        // جلب النتائج للمادة المحددة
+
         const snapshot = await db.collection('leaderboard')
             .where('subject', '==', subject)
             .orderBy('score', 'desc')
@@ -3245,13 +2990,11 @@ async function displaySubjectLeaderboard(subject) {
             leaderboard.push(doc.data());
         });
 
-        // ترتيب في JavaScript
         leaderboard.sort((a, b) => {
             if (b.score !== a.score) return b.score - a.score;
             return a.timeSeconds - b.timeSeconds;
         });
 
-        // تحديث العنوان
         const leaderboardSection = document.getElementById('leaderboard');
         const titleElement = leaderboardSection?.querySelector('.section-title');
         if (titleElement) {
@@ -3262,17 +3005,15 @@ async function displaySubjectLeaderboard(subject) {
 
     } catch (error) {
         console.log('Error fetching subject leaderboard:', error);
-        // جلب كل النتائج بدون فلتر المادة
+
         displayLeaderboard();
     }
 }
 
-// فتح بنك الأسئلة للمادة في المودال
 function openSubjectBank(subject) {
-    // فتح المودال مع تاب الأسئلة
+
     modalChallengeSubject = subject;
 
-    // تحديث عنوان المودال
     const subjectNames = {
         physics: 'فيزياء 1',
         physics2: 'فيزياء 2',
@@ -3290,25 +3031,17 @@ function openSubjectBank(subject) {
         بنك أسئلة ${subjectNames[subject] || subject}
     `;
 
-    // إعادة تعيين الحالة
     resetModalChallenge();
 
-    // تحميل الأسئلة
     loadModalQuestions(subject);
 
-    // عرض المودال
     document.getElementById('subjectChallengeModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 
-    // تفعيل تاب الأسئلة
     setTimeout(() => {
         switchModalTab('questions');
     }, 100);
 }
-
-// ==========================================
-// Modal Challenge System - نظام تحدي المودال
-// ==========================================
 
 let modalChallengeSubject = 'physics2';
 let modalChallengeQuestions = [];
@@ -3328,30 +3061,24 @@ const subjectNames = {
     english: 'لغة إنجليزية'
 };
 
-// فتح المودال للتحدي
 function openSubjectChallenge(subject) {
     modalChallengeSubject = subject;
 
-    // تحديث عنوان المودال
     document.getElementById('modalSubjectTitle').innerHTML = `
         <i class="fas fa-bolt"></i>
         تحدي ${subjectNames[subject] || subject}
     `;
 
-    // إعادة تعيين الحالة
     resetModalChallenge();
 
-    // تحميل المتصدرين
     loadModalLeaderboard(subject);
 
-    // عرض المودال
     document.getElementById('subjectChallengeModal').classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
-// إغلاق المودال
 function closeSubjectModal() {
-    // إيقاف المؤقت
+
     if (modalTimerInterval) {
         clearInterval(modalTimerInterval);
         modalTimerInterval = null;
@@ -3361,7 +3088,6 @@ function closeSubjectModal() {
     document.body.style.overflow = 'auto';
 }
 
-// تبديل التابات
 function switchModalTab(tab) {
     const tabs = document.querySelectorAll('.modal-tab');
     const contents = document.querySelectorAll('.tab-content');
@@ -3383,14 +3109,12 @@ function switchModalTab(tab) {
     }
 }
 
-// تحميل أسئلة المادة في المودال
 function loadModalQuestions(subject) {
     const container = document.getElementById('modalQuestionsContainer');
     if (!container) return;
 
     container.innerHTML = '<div style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</div>';
 
-    // جلب الأسئلة من المتغيرات المحلية
     const subjectQuestions = window[subject + 'Questions'] || [];
 
     if (subjectQuestions.length === 0) {
@@ -3423,7 +3147,6 @@ function loadModalQuestions(subject) {
     container.innerHTML = html;
 }
 
-// إعادة تعيين التحدي
 function resetModalChallenge() {
     document.getElementById('modalChallengeIntro').style.display = 'block';
     document.getElementById('modalChallengeContainer').style.display = 'none';
@@ -3441,7 +3164,6 @@ function resetModalChallenge() {
     }
 }
 
-// بدء التحدي في المودال
 function startModalChallenge() {
     const nameInput = document.getElementById('modalChallengerName');
     const rawName = nameInput.value.trim();
@@ -3452,7 +3174,6 @@ function startModalChallenge() {
         return;
     }
 
-    // فلترة الاسم
     modalChallengerName = filterName(rawName);
 
     if (!modalChallengerName) {
@@ -3462,24 +3183,19 @@ function startModalChallenge() {
         return;
     }
 
-    // تهيئة الأسئلة
     modalChallengeQuestions = getRandomQuestions(15, modalChallengeSubject);
     modalCurrentIndex = 0;
     modalAnswers = {};
     modalTimeRemaining = 300;
 
-    // إخفاء المقدمة وإظهار التحدي
     document.getElementById('modalChallengeIntro').style.display = 'none';
     document.getElementById('modalChallengeContainer').style.display = 'block';
 
-    // بدء المؤقت
     startModalTimer();
 
-    // عرض أول سؤال
     showModalQuestion();
 }
 
-// بدء المؤقت
 function startModalTimer() {
     const timerDisplay = document.getElementById('modalTimerDisplay');
     const timerDiv = document.getElementById('modalChallengeTimer');
@@ -3491,12 +3207,10 @@ function startModalTimer() {
         const seconds = modalTimeRemaining % 60;
         timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-        // تحذير عند بقاء دقيقة واحدة
         if (modalTimeRemaining <= 60) {
             timerDiv.style.color = '#f5576c';
         }
 
-        // انتهاء الوقت
         if (modalTimeRemaining <= 0) {
             clearInterval(modalTimerInterval);
             submitModalChallenge();
@@ -3504,7 +3218,6 @@ function startModalTimer() {
     }, 1000);
 }
 
-// عرض سؤال
 function showModalQuestion() {
     const question = modalChallengeQuestions[modalCurrentIndex];
 
@@ -3527,11 +3240,9 @@ function showModalQuestion() {
     updateModalNav();
 }
 
-// اختيار إجابة
 function selectModalOption(optionIndex) {
     modalAnswers[modalCurrentIndex] = optionIndex;
 
-    // تحديث الاختيارات بصرياً
     const options = document.querySelectorAll('#modalChallengeOptions .challenge-option');
     options.forEach((opt, i) => {
         if (i === optionIndex) {
@@ -3544,7 +3255,6 @@ function selectModalOption(optionIndex) {
     });
 }
 
-// تحديث أزرار التنقل
 function updateModalNav() {
     document.getElementById('modalPrevBtn').disabled = modalCurrentIndex === 0;
 
@@ -3557,7 +3267,6 @@ function updateModalNav() {
     }
 }
 
-// السؤال التالي
 function modalNextQuestion() {
     if (modalCurrentIndex < modalChallengeQuestions.length - 1) {
         modalCurrentIndex++;
@@ -3565,7 +3274,6 @@ function modalNextQuestion() {
     }
 }
 
-// السؤال السابق
 function modalPrevQuestion() {
     if (modalCurrentIndex > 0) {
         modalCurrentIndex--;
@@ -3573,11 +3281,9 @@ function modalPrevQuestion() {
     }
 }
 
-// إنهاء التحدي
 function submitModalChallenge() {
     clearInterval(modalTimerInterval);
 
-    // حساب النتيجة
     let correctCount = 0;
     Object.keys(modalAnswers).forEach(index => {
         if (modalChallengeQuestions[index].correct === modalAnswers[index]) {
@@ -3585,13 +3291,11 @@ function submitModalChallenge() {
         }
     });
 
-    // حساب الوقت المستغرق
     const timeTaken = 300 - modalTimeRemaining;
     const minutes = Math.floor(timeTaken / 60);
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-    // حفظ في قاعدة البيانات
     saveToLeaderboard({
         name: modalChallengerName,
         score: correctCount,
@@ -3602,19 +3306,15 @@ function submitModalChallenge() {
         date: new Date().toLocaleDateString('ar-EG')
     });
 
-    // تحديث إحصائيات المستخدم
     updateUserStats(correctCount);
 
-    // عرض النتيجة
     showModalResult(correctCount, timeString);
 }
 
-// عرض النتيجة
 function showModalResult(score, time) {
     document.getElementById('modalChallengeContainer').style.display = 'none';
     document.getElementById('modalChallengeResult').style.display = 'block';
 
-    // تحديد الرمز والعنوان
     if (score >= 13) {
         document.getElementById('modalResultIcon').textContent = '🏆';
         document.getElementById('modalResultTitle').textContent = 'ممتاز! أنت بطل!';
@@ -3632,16 +3332,13 @@ function showModalResult(score, time) {
     document.getElementById('modalFinalScore').textContent = `${score}/15`;
     document.getElementById('modalFinalTime').textContent = time;
 
-    // تحديث المتصدرين
     loadModalLeaderboard(modalChallengeSubject);
 }
 
-// إعادة التحدي
 function restartModalChallenge() {
     resetModalChallenge();
 }
 
-// تحميل المتصدرين للمودال
 async function loadModalLeaderboard(subject) {
     const container = document.getElementById('modalLeaderboardList');
 
@@ -3669,7 +3366,6 @@ async function loadModalLeaderboard(subject) {
             leaderboard.push(doc.data());
         });
 
-        // ترتيب
         leaderboard.sort((a, b) => {
             if (b.score !== a.score) return b.score - a.score;
             return a.timeSeconds - b.timeSeconds;

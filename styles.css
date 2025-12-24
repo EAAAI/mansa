@@ -38,7 +38,6 @@
     }
 }
 
-/* تمييز خاص لـ Ibrahim mohamed */
 .leaderboard-table tr.ibrahim-leader td,
 .main-leaderboard-table tr.ibrahim-leader td {
     position: relative;
@@ -56,9 +55,6 @@
     text-shadow: 0 0 6px #fffbe6, 0 0 2px #FFD700;
 }
 
-/* المتصدر الأول - بدون تمييز خاص */
-
-/* Top Scorer Alert */
 .top-scorer-alert {
     background: linear-gradient(90deg, #ffb347 0%, #ff6b6b 100%);
     color: #222;
@@ -92,7 +88,6 @@
     line-height: 1;
 }
 
-/* Notifications Bar */
 .notifications-bar {
     width: 100%;
     background: linear-gradient(90deg, #00d9ff 0%, #ff6b6b 100%);
@@ -125,7 +120,6 @@ body {
     min-height: 100vh;
 }
 
-/* Navbar */
 .navbar {
     background: rgba(26, 26, 46, 0.95);
     padding: 1rem 2rem;
@@ -179,7 +173,6 @@ body {
     background: rgba(0, 217, 255, 0.1);
 }
 
-/* Hero Section */
 .hero {
     min-height: 100vh;
     display: flex;
@@ -214,7 +207,6 @@ body {
     flex-wrap: wrap;
 }
 
-/* Buttons */
 .btn {
     padding: 12px 30px;
     border: none;
@@ -272,7 +264,6 @@ body {
     padding: 10px 20px;
 }
 
-/* Sections */
 .section {
     padding: 100px 2rem;
 }
@@ -296,7 +287,6 @@ body {
     color: #00d9ff;
 }
 
-/* Upload Area */
 .questions-section {
     background: rgba(22, 33, 62, 0.5);
 }
@@ -332,7 +322,6 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* Preview Container */
 .preview-container {
     margin-top: 2rem;
     text-align: center;
@@ -345,7 +334,6 @@ body {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
-/* AI Response */
 .ai-response {
     margin-top: 2rem;
     background: rgba(255, 255, 255, 0.05);
@@ -391,7 +379,6 @@ body {
     }
 }
 
-/* Quiz Section */
 .quiz-section {
     background: rgba(22, 33, 62, 0.5);
 }
@@ -436,7 +423,6 @@ body {
     font-size: 1.5rem;
 }
 
-/* Quiz Start Screen */
 .quiz-start-screen {
     max-width: 500px;
     margin: 0 auto;
@@ -721,7 +707,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* Essay Section */
 .essay-section {
     background: rgba(22, 33, 62, 0.3);
 }
@@ -890,7 +875,6 @@ body {
     white-space: pre-wrap;
 }
 
-/* Exams Section */
 .exams-section {
     background: rgba(16, 24, 48, 0.5);
 }
@@ -1004,7 +988,6 @@ body {
     border-radius: 10px;
 }
 
-/* Questions Bank */
 .questions-bank-container {
     display: flex;
     flex-direction: column;
@@ -1128,7 +1111,6 @@ body {
     opacity: 0.5;
 }
 
-/* Subject Colors */
 .exam-card[data-subject="physics"] .exam-icon,
 .exam-card[data-subject="physics2"] .exam-icon {
     background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 168, 204, 0.2));
@@ -1181,7 +1163,6 @@ body {
     color: #ff5722;
 }
 
-/* Competitions Section */
 .levels-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -1367,7 +1348,6 @@ body {
     background: rgba(255, 255, 255, 0.15);
 }
 
-/* Footer */
 .footer {
     background: linear-gradient(180deg, #0a0a15 0%, #000 100%);
     padding: 60px 0 30px;
@@ -1539,7 +1519,6 @@ body {
     }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
@@ -1566,7 +1545,6 @@ body {
     }
 }
 
-/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -1591,7 +1569,6 @@ body {
     animation-delay: 0.4s;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
 }
@@ -1608,10 +1585,6 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #00a8cc;
 }
-
-/* ==========================================
-   Essay Questions Section
-   ========================================== */
 
 .essay-section {
     background: rgba(22, 33, 62, 0.5);
@@ -1786,7 +1759,6 @@ body {
     border-right: 4px solid #38ef7d;
 }
 
-/* Essay Section Card */
 .essay-section-card {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 20px;
@@ -1812,7 +1784,6 @@ body {
     animation-delay: 0.4s;
 }
 
-/* Responsive Essay Section */
 @media (max-width: 768px) {
     .essay-header {
         flex-direction: column;
@@ -1835,10 +1806,6 @@ body {
         font-size: 1.1rem;
     }
 }
-
-/* ==========================================
-   Ask AI Section
-   ========================================== */
 
 .ask-ai-section {
     margin-top: 60px;
@@ -1998,11 +1965,6 @@ body {
     }
 }
 
-/* ==========================================
-   AI Chat Bot Styles
-   ========================================== */
-
-/* Chat Bot Button */
 .chat-bot-btn {
     position: fixed;
     bottom: 30px;
@@ -2065,7 +2027,6 @@ body {
     }
 }
 
-/* Chat Bot Container */
 .chat-bot-container {
     position: fixed;
     bottom: 110px;
@@ -2099,7 +2060,6 @@ body {
     }
 }
 
-/* Chat Header */
 .chat-header {
     background: linear-gradient(135deg, #667eea, #764ba2);
     padding: 20px;
@@ -2171,7 +2131,6 @@ body {
     font-size: 1rem;
 }
 
-/* Chat Messages */
 .chat-messages {
     flex: 1;
     padding: 20px;
@@ -2231,7 +2190,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* Typing Indicator */
 .typing-indicator {
     display: flex;
     gap: 5px;
@@ -2269,7 +2227,6 @@ body {
     }
 }
 
-/* Chat Input */
 .chat-input-container {
     padding: 15px 20px;
     background: rgba(0, 0, 0, 0.3);
@@ -2323,7 +2280,6 @@ body {
     font-size: 1rem;
 }
 
-/* Upload Image Button */
 .upload-image-btn {
     width: 45px;
     height: 45px;
@@ -2347,7 +2303,6 @@ body {
     font-size: 1rem;
 }
 
-/* Image Message */
 .chat-message.image-message {
     padding: 8px;
     background: linear-gradient(135deg, #667eea, #764ba2);
@@ -2372,7 +2327,6 @@ body {
     opacity: 0.8;
 }
 
-/* Image Preview Overlay */
 .image-preview-overlay {
     position: fixed;
     top: 0;
@@ -2428,7 +2382,6 @@ body {
     transform: scale(1.05);
 }
 
-/* Responsive Chat Bot */
 @media (max-width: 480px) {
     .chat-bot-container {
         width: calc(100% - 20px);
@@ -2461,10 +2414,6 @@ body {
         max-height: 150px;
     }
 }
-
-/* ==========================================
-   Challenge Section Styles
-   ========================================== */
 
 .challenge-section {
     background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f28 100%);
@@ -2705,7 +2654,6 @@ body {
     box-shadow: 0 15px 40px rgba(255, 193, 7, 0.4);
 }
 
-/* Challenge Container */
 .challenge-container {
     max-width: 850px;
     margin: 0 auto;
@@ -2841,7 +2789,6 @@ body {
     flex-wrap: wrap;
 }
 
-/* Challenge Result */
 .challenge-result {
     text-align: center;
     max-width: 500px;
@@ -2891,7 +2838,6 @@ body {
     margin-top: 10px;
 }
 
-/* Leaderboard */
 .leaderboard-section {
     margin-top: 60px;
     max-width: 800px;
@@ -2964,7 +2910,6 @@ body {
     font-size: 1.1rem;
 }
 
-/* Responsive Challenge */
 @media (max-width: 768px) {
     .challenge-intro {
         padding: 25px;
@@ -3002,10 +2947,6 @@ body {
         font-size: 0.9rem;
     }
 }
-
-/* ==========================================
-   Main Leaderboard Section
-   ========================================== */
 
 .leaderboard-main-section {
     background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f28 100%);
@@ -3118,9 +3059,6 @@ body {
         font-size: 0.9rem;
     }
 }
-/* ==========================================
-   Essay Challenge Section - ���� �������
-   ========================================== */
 
 .essay-challenge-section {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
@@ -3231,7 +3169,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* Essay Grading Loading */
 .essay-grading-loading {
     max-width: 500px;
     margin: 0 auto;
@@ -3284,7 +3221,6 @@ body {
     50% { opacity: 0.7; }
 }
 
-/* Essay Challenge Result */
 .essay-challenge-result {
     max-width: 800px;
     margin: 0 auto;
@@ -3306,7 +3242,6 @@ body {
     margin-bottom: 25px;
 }
 
-/* Essay Feedback Container */
 .essay-feedback-container {
     display: flex;
     flex-direction: column;

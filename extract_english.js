@@ -11,38 +11,35 @@ if (!fs.existsSync(outputDir)) {
 const html = fs.readFileSync(htmlPath, 'utf8');
 const questions = [];
 
-// Regex to find question blocks
 const blockRegex = /<div class="question-block"[\s\S]*?<\/div>\s*<\/div>/g; // approximate, might need more robustness
-// Better: Split by "question-block" class
+
 const parts = html.split('class="question-block"');
 
 parts.slice(1).forEach((part, index) => {
-    // Extract Question Text
+
     const qMatch = part.match(/<span class="question-text">([\s\S]*?)<\/span>/);
     if (!qMatch) return;
     const questionText = qMatch[1].trim();
 
-    // Extract Options
     const options = [];
     let correctIndex = -1;
 
-    // Check for standard options
     const optionMatches = [...part.matchAll(/<div class="option"[^>]*data-correct="([^"]*)"[^>]*>([\s\S]*?)<\/div>/g)];
 
     if (optionMatches.length > 0) {
         optionMatches.forEach((match, i) => {
             const isCorrect = match[1] === 'true';
             let text = match[2].trim();
-            // Remove <span class="option-label">A</span>
+
             text = text.replace(/<span class="option-label">[^<]*<\/span>/, '').trim();
             options.push(text);
             if (isCorrect) correctIndex = i;
         });
     } else {
-        // Check for True/False
+
         if (part.includes('class="true-false-options"')) {
             options.push('True', 'False');
-            // Find answer
+
             const ansMatch = part.match(/<div class="answer">([\s\S]*?)<\/div>/);
             if (ansMatch) {
                 const ansText = ansMatch[1].toLowerCase();

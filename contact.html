@@ -351,12 +351,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // Firebase Configuration
+
         const firebaseConfig = {
             apiKey: "AIzaSyAdIW3mf2yv9KWzEVTgb62Yquu8oHMWj7g",
             authDomain: "manasa-2.firebaseapp.com",
@@ -366,11 +365,9 @@
             appId: "1:713731774832:web:bd33be9764c350b62997b5"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // التحقق من صحة الرابط
         function isValidUrl(string) {
             try {
                 const url = new URL(string);
@@ -380,7 +377,6 @@
             }
         }
 
-        // Form submission
         document.getElementById('contactForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
@@ -388,47 +384,41 @@
             const form = document.getElementById('contactForm');
             const successMessage = document.getElementById('successMessage');
 
-            // Get form data
             const name = document.getElementById('userName').value.trim();
             const phone = document.getElementById('userPhone').value.trim();
             const socialLink = document.getElementById('userSocialLink').value.trim();
             const type = document.getElementById('messageType').value;
             const message = document.getElementById('userMessage').value.trim();
 
-            // التحقق من الاسم
             if (!name) {
                 alert('⚠️ من فضلك أدخل اسمك');
                 document.getElementById('userName').focus();
                 return;
             }
 
-            // التحقق من وجود رقم هاتف أو رابط تواصل
             if (!phone && !socialLink) {
                 alert('⚠️ من فضلك أدخل رقم الهاتف أو رابط التواصل (واحد منهم على الأقل)');
                 document.getElementById('userPhone').focus();
                 return;
             }
 
-            // التحقق من صحة الرابط إذا تم إدخاله
             if (socialLink && !isValidUrl(socialLink)) {
                 alert('⚠️ الرابط غير صحيح!\n\nيجب أن يبدأ بـ https:// أو http://\n\nمثال: https://facebook.com/username');
                 document.getElementById('userSocialLink').focus();
                 return;
             }
 
-            // التحقق من الرسالة
             if (!message) {
                 alert('⚠️ من فضلك اكتب رسالتك');
                 document.getElementById('userMessage').focus();
                 return;
             }
 
-            // Disable button
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
 
             try {
-                // Save to Firebase
+
                 await db.collection('contact_messages').add({
                     name: name,
                     phone: phone || 'غير محدد',
@@ -441,7 +431,6 @@
                     read: false
                 });
 
-                // Show success message
                 form.style.display = 'none';
                 successMessage.style.display = 'block';
 
