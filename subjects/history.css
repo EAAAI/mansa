@@ -1,0 +1,14 @@
+@import url('physics2.css');
+/* History Theme - Brown/Gold */
+.subject-badge, .nav-link.active, .btn-primary, .start-btn, .restart-btn, .nav-btn.primary, .question-number { background: linear-gradient(135deg, #8B4513, #DAA520) !important; }
+.nav-subject-title { background: linear-gradient(90deg, #8B4513, #DAA520) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+.hero-content h1 { background: linear-gradient(90deg, #fff, #DAA520) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+.hero-background { background: radial-gradient(ellipse at center, rgba(139, 69, 19, 0.15) 0%, transparent 70%) !important; }
+.subject-badge { box-shadow: 0 20px 50px rgba(139, 69, 19, 0.4) !important; }
+.btn-primary { box-shadow: 0 10px 30px rgba(139, 69, 19, 0.4) !important; }
+.hero-stat i, .rule i, .section-title i { color: #DAA520 !important; }
+.leaderboard-table th { background: rgba(139, 69, 19, 0.2) !important; color: #DAA520 !important; }
+.message-avatar, .ai-send-btn { background: linear-gradient(135deg, #8B4513, #DAA520) !important; }
+.option-btn:hover, .option-btn.selected { border-color: #DAA520 !important; background: rgba(139, 69, 19, 0.1) !important; }
+.option-btn.selected .option-letter { background: #DAA520 !important; }
+.search-box input:focus { border-color: #DAA520 !important; }
