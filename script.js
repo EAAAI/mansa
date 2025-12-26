@@ -2916,3 +2916,152 @@ async function loadModalLeaderboard(subject) {
         container.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">خطأ في تحميل البيانات</div>';
     }
 }
+
+// ============================================
+// UNIFIED LEADERBOARD TABS
+// ============================================
+
+const leaderboardSubjectInfo = {
+    'all': { name: 'الإجمالي', icon: 'fa-star', desc: 'مجموع النقاط من جميع المواد' },
+    'physics2': { name: 'فيزياء 2', icon: 'fa-atom', desc: 'Physics 2' },
+    'english': { name: 'لغة إنجليزية', icon: 'fa-language', desc: 'English' },
+    'it': { name: 'IT', icon: 'fa-laptop-code', desc: 'Information Technology' },
+    'electronics': { name: 'إلكترونيات', icon: 'fa-microchip', desc: 'Electronics' },
+    'math1': { name: 'رياضة 1', icon: 'fa-calculator', desc: 'Mathematics 1' },
+    'math0': { name: 'رياضة 0', icon: 'fa-square-root-alt', desc: 'Mathematics 0' },
+    'history': { name: 'تاريخ الحوسبة', icon: 'fa-history', desc: 'Computing History' },
+    'law': { name: 'قوانين الحاسب', icon: 'fa-gavel', desc: 'Computer Law' }
+};
+
+let currentLeaderboardSubject = 'all';
+
+function switchLeaderboardTab(subject) {
+    currentLeaderboardSubject = subject;
+    
+    // Update active tab
+    document.querySelectorAll('.lb-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.subject === subject) {
+            tab.classList.add('active');
+        }
+    });
+    
+    // Update title
+    const titleEl = document.getElementById('currentSubjectTitle');
+    if (titleEl && leaderboardSubjectInfo[subject]) {
+        const info = leaderboardSubjectInfo[subject];
+        titleEl.innerHTML = `<i class="fas ${info.icon}"></i> ${info.name} - ${info.desc}`;
+    }
+    
+    // Load leaderboard data
+    loadUnifiedLeaderboard(subject);
+}
+
+async function loadUnifiedLeaderboard(subject) {
+    console.log('Loading leaderboard for:', subject);
+    
+    const tbody = document.getElementById('mainLeaderboardBody');
+    const noRecords = document.getElementById('noRecordsMain');
+    
+    if (!tbody) {
+        console.error('mainLeaderboardBody element not found');
+        return;
+    }
+    
+    // Check if Firebase is available
+    if (!dbLeaderboard) {
+        console.error('dbLeaderboard is not initialized');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #ffc107;">⚠️ قاعدة البيانات غير متصلة</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>';
+    if (noRecords) noRecords.style.display = 'none';
+    
+    try {
+        let entries = [];
+        
+        if (subject === 'all') {
+            // Load from all subjects and aggregate by user
+            const allSubjects = ['physics2', 'english', 'it', 'electronics', 'math1', 'math0', 'history', 'law'];
+            const userTotals = {};
+            
+            for (const subj of allSubjects) {
+                try {
+                    const snapshot = await dbLeaderboard.collection(`leaderboard_${subj}`).get();
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const name = data.name || 'مجهول';
+                        if (!userTotals[name]) {
+                            userTotals[name] = { name, totalScore: 0, attempts: 0, lastDate: '' };
+                        }
+                        userTotals[name].totalScore += (data.score || 0);
+                        userTotals[name].attempts += 1;
+                        if (!userTotals[name].lastDate || data.date > userTotals[name].lastDate) {
+                            userTotals[name].lastDate = data.date || '';
+                        }
+                    });
+                } catch (e) {
+                    console.log(`No data for ${subj}`);
+                }
+            }
+            
+            entries = Object.values(userTotals)
+                .sort((a, b) => b.totalScore - a.totalScore)
+                .slice(0, 20)
+                .map(u => ({
+                    name: u.name,
+                    score: u.totalScore,
+                    time: `${u.attempts} تحدي`,
+                    date: u.lastDate
+                }));
+        } else {
+            // Load from specific subject
+            const snapshot = await dbLeaderboard.collection(`leaderboard_${subject}`)
+                .orderBy('score', 'desc')
+                .limit(20)
+                .get();
+            
+            snapshot.forEach(doc => {
+                entries.push(doc.data());
+            });
+        }
+        
+        if (entries.length === 0) {
+            tbody.innerHTML = '';
+            if (noRecords) noRecords.style.display = 'block';
+            return;
+        }
+        
+        if (noRecords) noRecords.style.display = 'none';
+        
+        tbody.innerHTML = entries.map((entry, index) => {
+            let rankDisplay = index + 1;
+            let rankClass = '';
+            if (index === 0) { rankDisplay = '🥇'; rankClass = 'gold'; }
+            else if (index === 1) { rankDisplay = '🥈'; rankClass = 'silver'; }
+            else if (index === 2) { rankDisplay = '🥉'; rankClass = 'bronze'; }
+            
+            return `
+                <tr class="${rankClass}">
+                    <td>${rankDisplay}</td>
+                    <td>${entry.name || 'مجهول'}</td>
+                    <td>${entry.score || 0}</td>
+                    <td>${entry.time || '-'}</td>
+                    <td>${entry.date || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error loading unified leaderboard:', error);
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #ff6b6b;">خطأ في تحميل البيانات</td></tr>';
+    }
+}
+
+// Load default leaderboard on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('leaderboardTabs')) {
+        loadUnifiedLeaderboard('all');
+    }
+});
