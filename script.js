@@ -415,9 +415,10 @@ try {
 
 let db = dbLeaderboard;
 
-
-
-
+// ==========================================
+// Visitor Analytics Tracking - تتبع الزوار (Using Database 2)
+// ==========================================
+   
 
 let chatHistory = [];
 let userName = '';
