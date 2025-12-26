@@ -1,4 +1,4 @@
-// service-worker.js
+
 const CACHE_NAME = 'dashboard-cache-v1';
 const urlsToCache = [
   '/',

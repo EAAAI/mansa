@@ -1,0 +1,12 @@
+@import url('physics2.css');
+.subject-badge, .nav-link.active, .btn-primary, .start-btn, .restart-btn, .nav-btn.primary, .question-number { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
+.nav-subject-title { background: linear-gradient(90deg, #11998e, #38ef7d) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+.hero-content h1 { background: linear-gradient(90deg, #fff, #38ef7d) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+.hero-background { background: radial-gradient(ellipse at center, rgba(56, 239, 125, 0.15) 0%, transparent 70%) !important; }
+.subject-badge { box-shadow: 0 20px 50px rgba(56, 239, 125, 0.4) !important; }
+.btn-primary { box-shadow: 0 10px 30px rgba(56, 239, 125, 0.4) !important; }
+.hero-stat i, .rule i, .section-title i { color: #38ef7d !important; }
+.leaderboard-table th { background: rgba(56, 239, 125, 0.2) !important; color: #38ef7d !important; }
+.message-avatar, .ai-send-btn { background: linear-gradient(135deg, #11998e, #38ef7d) !important; }
+.option-btn:hover, .option-btn.selected { border-color: #38ef7d !important; background: rgba(56, 239, 125, 0.1) !important; }
+.option-btn.selected .option-letter { background: #38ef7d !important; }

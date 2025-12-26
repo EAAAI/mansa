@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
@@ -1265,26 +1264,94 @@
             background: rgba(255, 255, 255, 0.1);
             color: white;
         }
+
+        /* Leaderboard Tabs */
+        .leaderboard-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .lb-tab {
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lb-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .lb-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .lb-tab i {
+            font-size: 1rem;
+        }
+
+        .current-subject-title {
+            text-align: center;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboard-tabs {
+                padding: 15px;
+            }
+            .lb-tab {
+                padding: 10px 15px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <!-- الكواكب للثيم الفضائي -->
+    
     <div class="space-planet planet-1"></div>
     <div class="space-planet planet-2"></div>
     <div class="space-planet planet-3"></div>
 
-    <!-- الأهرامات لثيم الأهرامات -->
     <div class="pyramid-3d pyramid-1"></div>
     <div class="pyramid-3d pyramid-2"></div>
     <div class="pyramid-3d pyramid-3"></div>
 
-    <!-- Scroll Rocket Button -->
     <button class="scroll-rocket" id="scrollRocket" onclick="toggleScrollDirection()" title="اضغط للتنقل">
         <i class="fas fa-rocket"></i>
     </button>
 
-    <!-- Theme Menu -->
     <div class="theme-menu" id="themeMenu">
         <div class="theme-menu-title">🎨 اختر الثيم</div>
         <button class="theme-option active" onclick="setTheme('default')" data-theme="default">
@@ -1307,7 +1374,6 @@
         </button>
     </div>
 
-    <!-- Snowflakes for Winter Theme -->
     <div class="snowflake">❅</div>
     <div class="snowflake">❆</div>
     <div class="snowflake">❄</div>
@@ -1318,18 +1384,17 @@
     <div class="snowflake">❆</div>
     <div class="snowflake">❄</div>
 
-    <!-- Notifications Bar -->
     <div id="notificationsBar" class="notifications-bar" style="display:none;">
         <i class="fas fa-bell" style="margin-left: 8px;"></i>
         <span id="notificationsText"></span>
     </div>
-    <!-- Top Scorer Alert -->
+    
     <div id="topScorerAlert" class="top-scorer-alert" style="display:none;">
         <span id="topScorerText"></span>
         <button onclick="document.getElementById('topScorerAlert').style.display='none'" class="close-alert-btn"
             title="إغلاق الإعلام">&times;</button>
     </div>
-    <!-- Navigation -->
+    
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
@@ -1340,24 +1405,21 @@
                 <li><a href="#home" class="active">الرئيسية</a></li>
                 <li><a href="#subjects">📚 المواد</a></li>
                 <li><a href="#challenge">⚡ وضع التحدي</a></li>
-                <li><a href="#exams">بنك الأسئلة</a></li>
-                <li><a href="#leaderboard">المتصدرين</a></li>
+                <li><a href="#leaderboard">🏆 المتصدرين</a></li>
+                <li><a href="#ask-ai">🤖 اسأل ذكي</a></li>
                 <li><a href="contact.html">📩 تواصل معنا</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Theme Toggle Button -->
     <button class="theme-toggle" onclick="toggleThemeMenu()" title="تغيير الثيم">
         <i class="fas fa-moon"></i>
     </button>
 
-    <!-- User Profile Button -->
     <button class="user-profile-btn" onclick="openUserProfile()" title="حسابي">
         <i class="fas fa-user"></i>
     </button>
 
-    <!-- User Profile Modal -->
     <div class="user-profile-modal" id="userProfileModal">
         <div class="profile-content">
             <div class="profile-header">
@@ -1405,13 +1467,11 @@
         </div>
     </div>
 
-    <!-- AI Chat Bot Button -->
     <div class="chat-bot-btn" id="chatBotBtn" onclick="toggleChatBot()">
         <i class="fas fa-robot"></i>
         <span class="bot-tooltip">ذكي - EAAAI</span>
     </div>
 
-    <!-- AI Chat Bot Container -->
     <div class="chat-bot-container" id="chatBotContainer">
         <div class="chat-header">
             <div class="chat-header-info">
@@ -1428,7 +1488,7 @@
             </button>
         </div>
         <div class="chat-messages" id="chatMessages">
-            <!-- Messages will be added here -->
+            
         </div>
         <div class="chat-input-container">
             <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
@@ -1438,7 +1498,6 @@
         </div>
     </div>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-content">
             <div id="welcomeGreeting" style="font-size: 1.3rem; color: #ffc107; margin-bottom: 10px; opacity: 0.9;">
@@ -1448,15 +1507,11 @@
                     href="https://ibrahim88887.github.io/EAAAI/" target="_blank"
                     style="color: #38ef7d; text-decoration: none;">EAAAI</a></p>
             <div class="hero-buttons">
-                <a href="#challenge" class="btn btn-primary">
-                    <i class="fas fa-bolt"></i> ابدأ التحدي
+                <a href="#subjects" class="btn btn-primary">
+                    <i class="fas fa-book"></i> المواد الدراسية
                 </a>
-                <a href="essay-challenge.html" class="btn btn-primary"
-                    style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                    <i class="fas fa-pen-fancy"></i> تحدي المقالي
-                </a>
-                <a href="#exams" class="btn btn-secondary">
-                    <i class="fas fa-book-open"></i> بنك الأسئلة
+                <a href="#challenge" class="btn btn-secondary">
+                    <i class="fas fa-bolt"></i> وضع التحدي
                 </a>
                 <a href="#leaderboard" class="btn btn-secondary">
                     <i class="fas fa-trophy"></i> المتصدرين
@@ -1465,7 +1520,6 @@
         </div>
     </section>
 
-    <!-- Subjects Cards Section -->
     <section id="subjects" class="section subjects-section">
         <div class="container">
             <h2 class="section-title">
@@ -1474,232 +1528,218 @@
             </h2>
 
             <div class="subjects-grid">
-                <!-- Physics 2 Card -->
-                <div class="subject-card" data-subject="physics2">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                        <i class="fas fa-atom"></i>
+                
+                <a href="subjects/physics2.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #667eea, #764ba2);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-atom"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>فيزياء 2</h3>
+                            <p>Modern Physics & Electricity</p>
+                        </div>
                     </div>
-                    <h3>فيزياء 2</h3>
-                    <p>Modern Physics & Electricity</p>
-                    <div class="subject-stats-bar"
-                        style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <span
-                            style="background: rgba(255, 193, 7, 0.2); color: #ffc107; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-medium">
                             <i class="fas fa-star"></i> متوسط
                         </span>
-                        <span
-                            style="background: rgba(56, 239, 125, 0.2); color: #38ef7d; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                        <span class="stat-badge questions-count">
                             <i class="fas fa-question-circle"></i> 150+ سؤال
                         </span>
                     </div>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('physics2')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('physics2')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('physics2')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
-                        <a href="https://t.me/+uyfoXvivpiY3MTRk" target="_blank" class="subject-btn"
-                            style="background: rgba(29, 161, 242, 0.1); color: #1DA1F2; border: 1px solid rgba(29, 161, 242, 0.3); text-decoration: none;">
-                            <i class="fab fa-telegram"></i> تليجرام
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Physics 1 Card -->
-                <div class="subject-card" data-subject="physics">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
-                        <i class="fas fa-atom"></i>
-                    </div>
-                    <h3>فيزياء 1</h3>
-                    <p>Mechanics & Waves</p>
-                    <div class="subject-stats-bar"
-                        style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <span
-                            style="background: rgba(56, 239, 125, 0.2); color: #38ef7d; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
-                            <i class="fas fa-star"></i> سهل
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
                         </span>
-                        <span
-                            style="background: rgba(56, 239, 125, 0.2); color: #38ef7d; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
-                            <i class="fas fa-question-circle"></i> 100+ سؤال
+                        <span class="telegram-link" onclick="event.preventDefault(); window.open('https://t.me/+uyfoXvivpiY3MTRk', '_blank');">
+                            <i class="fab fa-telegram"></i>
                         </span>
                     </div>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('physics')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('physics')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('physics')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
-                    </div>
-                </div>
+                </a>
 
-                <!-- English Card -->
-                <div class="subject-card" data-subject="english">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                        <i class="fas fa-language"></i>
+                <a href="subjects/english.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #f093fb, #f5576c);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>لغة إنجليزية</h3>
+                            <p>English Language</p>
+                        </div>
                     </div>
-                    <h3>لغة إنجليزية</h3>
-                    <p>English Language</p>
-                    <div class="subject-stats-bar"
-                        style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <span
-                            style="background: rgba(255, 193, 7, 0.2); color: #ffc107; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-medium">
                             <i class="fas fa-star"></i> متوسط
                         </span>
-                        <span
-                            style="background: rgba(56, 239, 125, 0.2); color: #38ef7d; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                        <span class="stat-badge questions-count">
                             <i class="fas fa-question-circle"></i> 80+ سؤال
                         </span>
                     </div>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('english')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('english')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('english')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
                     </div>
-                </div>
+                </a>
 
-                <!-- IT Card -->
-                <div class="subject-card" data-subject="it">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-                        <i class="fas fa-laptop-code"></i>
+                <a href="subjects/it.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #4facfe, #00f2fe);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>IT</h3>
+                            <p>Information Technology</p>
+                        </div>
                     </div>
-                    <h3>IT</h3>
-                    <p>Information Technology</p>
-                    <div class="subject-stats-bar"
-                        style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <span
-                            style="background: rgba(255, 107, 107, 0.2); color: #ff6b6b; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-hard">
                             <i class="fas fa-star"></i> صعب
                         </span>
-                        <span
-                            style="background: rgba(56, 239, 125, 0.2); color: #38ef7d; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                        <span class="stat-badge questions-count">
                             <i class="fas fa-question-circle"></i> 120+ سؤال
                         </span>
                     </div>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('it')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('it')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('it')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
                     </div>
-                </div>
+                </a>
 
-                <!-- Electronics Card -->
-                <div class="subject-card" data-subject="electronics">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
-                        <i class="fas fa-microchip"></i>
+                <a href="subjects/electronics.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #fa709a, #fee140);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>إلكترونيات</h3>
+                            <p>Electronics</p>
+                        </div>
                     </div>
-                    <h3>إلكترونيات</h3>
-                    <p>Electronics</p>
-                    <div class="subject-stats-bar"
-                        style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                        <span
-                            style="background: rgba(255, 193, 7, 0.2); color: #ffc107; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-medium">
                             <i class="fas fa-star"></i> متوسط
                         </span>
-                        <span
-                            style="background: rgba(56, 239, 125, 0.2); color: #38ef7d; padding: 4px 10px; border-radius: 15px; font-size: 0.8rem;">
+                        <span class="stat-badge questions-count">
                             <i class="fas fa-question-circle"></i> 90+ سؤال
                         </span>
                     </div>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('electronics')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('electronics')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('electronics')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
                     </div>
-                </div>
+                </a>
 
-                <!-- Math 1 Card -->
-                <div class="subject-card" data-subject="math1">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
-                        <i class="fas fa-calculator"></i>
+                <a href="subjects/math1.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #a8edea, #fed6e3);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>رياضة 1</h3>
+                            <p>Mathematics 1</p>
+                        </div>
                     </div>
-                    <h3>رياضة 1</h3>
-                    <p>Mathematics 1</p>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('math1')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('math1')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('math1')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-medium">
+                            <i class="fas fa-star"></i> متوسط
+                        </span>
+                        <span class="stat-badge questions-count">
+                            <i class="fas fa-question-circle"></i> قريباً
+                        </span>
                     </div>
-                </div>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
+                    </div>
+                </a>
 
-                <!-- Math 0 Card -->
-                <div class="subject-card" data-subject="math0">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #d299c2, #fef9d7);">
-                        <i class="fas fa-square-root-alt"></i>
+                <a href="subjects/math0.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #d299c2, #fef9d7);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #d299c2, #fef9d7);">
+                            <i class="fas fa-square-root-alt"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>رياضة 0</h3>
+                            <p>Mathematics 0</p>
+                        </div>
                     </div>
-                    <h3>رياضة 0</h3>
-                    <p>Mathematics 0</p>
-                    <div class="subject-actions">
-                        <button class="subject-btn challenge-btn" onclick="openSubjectChallenge('math0')">
-                            <i class="fas fa-bolt"></i> التحدي
-                        </button>
-                        <button class="subject-btn bank-btn" onclick="openSubjectBank('math0')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
-                        <button class="subject-btn leaderboard-btn" onclick="openSubjectLeaderboard('math0')">
-                            <i class="fas fa-trophy"></i> المتصدرين
-                        </button>
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-easy">
+                            <i class="fas fa-star"></i> سهل
+                        </span>
+                        <span class="stat-badge questions-count">
+                            <i class="fas fa-question-circle"></i> قريباً
+                        </span>
                     </div>
-                </div>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
+                    </div>
+                </a>
 
-                <!-- Computing History Card -->
-                <div class="subject-card" data-subject="computing-history">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
-                        <i class="fas fa-history"></i>
+                <a href="subjects/history.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #8B4513, #DAA520);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #8B4513, #DAA520);">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>تاريخ الحوسبة</h3>
+                            <p>Computing History</p>
+                        </div>
                     </div>
-                    <h3>تاريخ الحوسبة</h3>
-                    <p>Computing History</p>
-                    <div class="subject-actions">
-                        <button class="subject-btn bank-btn" onclick="alert('📚 قريباً - جاري إضافة الأسئلة')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-easy">
+                            <i class="fas fa-star"></i> سهل
+                        </span>
+                        <span class="stat-badge questions-count">
+                            <i class="fas fa-question-circle"></i> قريباً
+                        </span>
                     </div>
-                </div>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
+                    </div>
+                </a>
 
-                <!-- Computer Laws Card -->
-                <div class="subject-card" data-subject="computer-laws">
-                    <div class="subject-icon" style="background: linear-gradient(135deg, #e74c3c, #f39c12);">
-                        <i class="fas fa-balance-scale"></i>
+                <a href="subjects/law.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #4a69bd, #82ccdd);">
+                    <div class="subject-card-header">
+                        <div class="subject-icon" style="background: linear-gradient(135deg, #4a69bd, #82ccdd);">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="subject-card-info">
+                            <h3>قوانين الحاسب</h3>
+                            <p>Computer Law</p>
+                        </div>
                     </div>
-                    <h3>قوانين الحوسبة</h3>
-                    <p>Computer Laws</p>
-                    <div class="subject-actions">
-                        <button class="subject-btn bank-btn" onclick="alert('📚 قريباً - جاري إضافة الأسئلة')">
-                            <i class="fas fa-book-open"></i> بنك الأسئلة
-                        </button>
+                    <div class="subject-stats">
+                        <span class="stat-badge difficulty-medium">
+                            <i class="fas fa-star"></i> متوسط
+                        </span>
+                        <span class="stat-badge questions-count">
+                            <i class="fas fa-question-circle"></i> قريباً
+                        </span>
                     </div>
-                </div>
+                    <div class="subject-card-footer">
+                        <span class="enter-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            ابدأ الآن
+                        </span>
+                    </div>
+                </a>
+
             </div>
         </div>
     </section>
@@ -1759,7 +1799,6 @@
                 </div>
             </div>
 
-            <!-- Challenge Quiz Container -->
             <div class="challenge-container" id="challengeContainer" style="display: none;">
                 <div class="challenge-header">
                     <div class="challenge-timer" id="challengeTimer">
@@ -1793,7 +1832,6 @@
                 </div>
             </div>
 
-            <!-- Challenge Result -->
             <div class="challenge-result" id="challengeResult" style="display: none;">
                 <div class="result-icon" id="resultIcon">🏆</div>
                 <h3 id="resultTitle">أحسنت!</h3>
@@ -1822,293 +1860,20 @@
                 </button>
             </div>
 
-            <!-- Leaderboard -->
-            <div class="leaderboard-section">
-                <h3 class="leaderboard-title">
-                    <i class="fas fa-trophy"></i>
-                    لوحة المتصدرين
-                </h3>
-                <div class="leaderboard-container" id="leaderboardContainer">
-                    <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الاسم</th>
-                                <th>النتيجة</th>
-                                <th>الوقت</th>
-                                <th>التاريخ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardBody">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-                    <p class="no-records" id="noRecords" style="display: none;">لا توجد نتائج بعد. كن أول المتحدين!</p>
-                </div>
-            </div>
+
         </div>
     </section>
 
-    <!-- Essay Challenge Section - تحدي المقالي -->
-    <section id="essay-challenge" class="section essay-challenge-section">
+
+
+    <section id="ask-ai" class="section ai-section">
         <div class="container">
             <h2 class="section-title">
-                <i class="fas fa-pen-fancy"></i>
-                تحدي المقالي
+                <i class="fas fa-robot"></i>
+                اسأل الذكاء الاصطناعي
             </h2>
 
-            <!-- Essay Challenge Intro -->
-            <div class="essay-challenge-intro" id="essayChallengeIntro">
-                <div class="challenge-info">
-                    <div class="challenge-icon">📝</div>
-                    <h3>تحدي المقالي بالذكاء الاصطناعي</h3>
-                    <p>اختبر معرفتك! أجب على 5 أسئلة مقالية عشوائية وسيقوم الذكاء الاصطناعي بتصحيحها</p>
-                    <div class="challenge-rules">
-                        <div class="rule">
-                            <i class="fas fa-clock"></i>
-                            <span>15 دقيقة</span>
-                        </div>
-                        <div class="rule">
-                            <i class="fas fa-question-circle"></i>
-                            <span>5 أسئلة</span>
-                        </div>
-                        <div class="rule">
-                            <i class="fas fa-star"></i>
-                            <span>30 درجة</span>
-                        </div>
-                        <div class="rule">
-                            <i class="fas fa-robot"></i>
-                            <span>تصحيح AI</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="challenge-name-input">
-                    <label for="essayChallengerName">
-                        <i class="fas fa-user"></i>
-                        أدخل اسمك للبدء
-                    </label>
-                    <input type="text" id="essayChallengerName" placeholder="اسمك هنا..." maxlength="30">
-                    <button class="btn btn-primary start-challenge-btn" onclick="startEssayChallenge()">
-                        <i class="fas fa-play"></i>
-                        ابدأ التحدي
-                    </button>
-                </div>
-            </div>
-
-            <!-- Essay Challenge Container -->
-            <div class="essay-challenge-container" id="essayChallengeContainer" style="display: none;">
-                <div class="challenge-header">
-                    <div class="challenge-timer essay-timer" id="essayChallengeTimer">
-                        <i class="fas fa-clock"></i>
-                        <span id="essayTimerDisplay">15:00</span>
-                    </div>
-                    <div class="challenge-progress">
-                        <span id="essayChallengeProgress">1/5</span>
-                    </div>
-                    <div class="challenge-score">
-                        <i class="fas fa-star"></i>
-                        <span>30 درجة</span>
-                    </div>
-                </div>
-
-                <div class="essay-question-box">
-                    <div class="essay-question-header">
-                        <span class="question-badge" id="essayQuestionBadge">السؤال 1</span>
-                        <span class="question-points">6 درجات</span>
-                    </div>
-                    <div class="essay-question-text" id="essayQuestionText"></div>
-                </div>
-
-                <div class="essay-answer-box">
-                    <label for="essayAnswerInput">
-                        <i class="fas fa-edit"></i>
-                        إجابتك:
-                    </label>
-                    <textarea id="essayAnswerInput" placeholder="اكتب إجابتك هنا بالتفصيل..." rows="8"></textarea>
-                    <div class="char-counter">
-                        <span id="essayCharCount">0</span> حرف
-                    </div>
-                </div>
-
-                <div class="challenge-nav">
-                    <button class="btn btn-secondary" id="prevEssayBtn" onclick="prevEssayQuestion()" disabled>
-                        <i class="fas fa-arrow-right"></i>
-                        السابق
-                    </button>
-                    <button class="btn btn-primary" id="nextEssayBtn" onclick="nextEssayQuestion()">
-                        التالي
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <button class="btn btn-success" id="submitEssayBtn" onclick="submitEssayChallenge()"
-                        style="display: none;">
-                        <i class="fas fa-paper-plane"></i>
-                        إرسال للتصحيح
-                    </button>
-                </div>
-            </div>
-
-            <!-- Essay Grading Loading -->
-            <div class="essay-grading-loading" id="essayGradingLoading" style="display: none;">
-                <div class="grading-animation">
-                    <i class="fas fa-robot fa-spin"></i>
-                </div>
-                <h3>جاري التصحيح بالذكاء الاصطناعي...</h3>
-                <p>يرجى الانتظار بينما يقوم ذكي بتحليل إجاباتك</p>
-                <div class="grading-progress">
-                    <div class="grading-bar" id="gradingBar"></div>
-                </div>
-            </div>
-
-            <!-- Essay Challenge Result -->
-            <div class="essay-challenge-result" id="essayChallengeResult" style="display: none;">
-                <div class="result-icon" id="essayResultIcon">📚</div>
-                <h3 id="essayResultTitle">تم التصحيح!</h3>
-                <div class="result-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="essayFinalScore">0/30</span>
-                        <span class="stat-label">الدرجة الكلية</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="essayFinalTime">00:00</span>
-                        <span class="stat-label">الوقت المستغرق</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="essayPercentage">0%</span>
-                        <span class="stat-label">النسبة المئوية</span>
-                    </div>
-                </div>
-
-                <!-- AI Feedback Cards -->
-                <div class="essay-feedback-container" id="essayFeedbackContainer">
-                    <!-- Will be filled dynamically -->
-                </div>
-
-                <button class="btn btn-primary" onclick="restartEssayChallenge()">
-                    <i class="fas fa-redo"></i>
-                    حاول مرة أخرى
-                </button>
-            </div>
-
-            <!-- Essay Leaderboard -->
-            <div class="leaderboard-section">
-                <h3 class="leaderboard-title">
-                    <i class="fas fa-trophy"></i>
-                    متصدرين المقالي
-                </h3>
-                <div class="leaderboard-container" id="essayLeaderboardContainer">
-                    <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>الاسم</th>
-                                <th>الدرجة</th>
-                                <th>الوقت</th>
-                                <th>التاريخ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="essayLeaderboardBody">
-                            <!-- Dynamic content -->
-                        </tbody>
-                    </table>
-                    <p class="no-records" id="noEssayRecords" style="display: none;">لا توجد نتائج بعد. كن أول المتحدين!
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Exams Bank Section -->
-    <section id="exams" class="section exams-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-book-open"></i>
-                بنك الأسئلة
-            </h2>
-
-            <div class="subjects-tabs">
-                <button class="subject-tab" data-bank-subject="physics">
-                    <i class="fas fa-atom"></i> فيزياء 1
-                </button>
-                <button class="subject-tab active" data-bank-subject="physics2">
-                    <i class="fas fa-atom"></i> فيزياء 2
-                </button>
-                <button class="subject-tab" data-bank-subject="math1">
-                    <i class="fas fa-calculator"></i> رياضة 1
-                </button>
-                <button class="subject-tab" data-bank-subject="math0">
-                    <i class="fas fa-square-root-alt"></i> رياضة 0
-                </button>
-                <button class="subject-tab" data-bank-subject="it">
-                    <i class="fas fa-laptop-code"></i> IT
-                </button>
-                <button class="subject-tab" data-bank-subject="computing-history">
-                    <i class="fas fa-history"></i> تاريخ حوسبة
-                </button>
-                <button class="subject-tab" data-bank-subject="computer-laws">
-                    <i class="fas fa-gavel"></i> قوانين حاسبات
-                </button>
-                <button class="subject-tab" data-bank-subject="electronics">
-                    <i class="fas fa-microchip"></i> إلكترونيات
-                </button>
-                <button class="subject-tab" data-bank-subject="english">
-                    <i class="fas fa-language"></i> لغة إنجليزية
-                </button>
-            </div>
-
-            <!-- Questions Bank Container -->
-            <div class="questions-bank-container" id="questionsBankContainer">
-                <!-- الأسئلة ستُعرض هنا ديناميكياً -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Essay Questions Section -->
-    <section id="essay" class="section essay-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-pen-fancy"></i>
-                الأسئلة المقالية
-            </h2>
-
-            <div class="subjects-tabs">
-                <button class="subject-tab" data-essay-subject="physics">
-                    <i class="fas fa-atom"></i> فيزياء 1
-                </button>
-                <button class="subject-tab active" data-essay-subject="physics2">
-                    <i class="fas fa-atom"></i> فيزياء 2
-                </button>
-                <button class="subject-tab" data-essay-subject="math1">
-                    <i class="fas fa-calculator"></i> رياضة 1
-                </button>
-                <button class="subject-tab" data-essay-subject="math0">
-                    <i class="fas fa-square-root-alt"></i> رياضة 0
-                </button>
-                <button class="subject-tab" data-essay-subject="it">
-                    <i class="fas fa-laptop-code"></i> IT
-                </button>
-                <button class="subject-tab" data-essay-subject="computing-history">
-                    <i class="fas fa-history"></i> تاريخ حوسبة
-                </button>
-                <button class="subject-tab" data-essay-subject="computer-laws">
-                    <i class="fas fa-gavel"></i> قوانين حاسبات
-                </button>
-                <button class="subject-tab" data-essay-subject="electronics">
-                    <i class="fas fa-microchip"></i> إلكترونيات
-                </button>
-            </div>
-
-            <!-- Essay Questions Container -->
-            <div class="essay-questions-container" id="essayQuestionsContainer">
-                <!-- الأسئلة المقالية ستُعرض هنا ديناميكياً -->
-            </div>
-
-            <!-- Ask AI Section -->
             <div class="ask-ai-section">
-                <h3 class="ask-ai-title">
-                    <i class="fas fa-robot"></i>
-                    اسأل الذكاء الاصطناعي
-                </h3>
                 <p class="ask-ai-desc">عندك سؤال مش لاقي إجابته؟ اسأل ذكي وهيساعدك!</p>
                 <div class="ask-ai-input-container">
                     <textarea id="askAiQuestion" placeholder="اكتب سؤالك هنا... مثال: اشرح لي قانون مالوس"></textarea>
@@ -2128,7 +1893,7 @@
         </div>
     </section>
 
-    <!-- Leaderboard Section -->
+
     <section id="leaderboard" class="section leaderboard-main-section">
         <div class="container">
             <h2 class="section-title">
@@ -2137,10 +1902,45 @@
             </h2>
 
             <div class="leaderboard-info">
-                <p>هنا يظهر أفضل المتحدين في وضع التحدي. ابدأ التحدي وسجل اسمك في لوحة الشرف!</p>
+                <p>هنا يظهر أفضل المتحدين في جميع المواد. اختر المادة لعرض المتصدرين فيها!</p>
             </div>
 
+            <!-- Subject Tabs -->
+            <div class="leaderboard-tabs" id="leaderboardTabs">
+                <button class="lb-tab active" data-subject="all" onclick="switchLeaderboardTab('all')">
+                    <i class="fas fa-star"></i> الإجمالي
+                </button>
+                <button class="lb-tab" data-subject="physics2" onclick="switchLeaderboardTab('physics2')">
+                    <i class="fas fa-atom"></i> فيزياء 2
+                </button>
+                <button class="lb-tab" data-subject="english" onclick="switchLeaderboardTab('english')">
+                    <i class="fas fa-language"></i> إنجليزية
+                </button>
+                <button class="lb-tab" data-subject="it" onclick="switchLeaderboardTab('it')">
+                    <i class="fas fa-laptop-code"></i> IT
+                </button>
+                <button class="lb-tab" data-subject="electronics" onclick="switchLeaderboardTab('electronics')">
+                    <i class="fas fa-microchip"></i> إلكترونيات
+                </button>
+                <button class="lb-tab" data-subject="math1" onclick="switchLeaderboardTab('math1')">
+                    <i class="fas fa-calculator"></i> رياضة 1
+                </button>
+                <button class="lb-tab" data-subject="math0" onclick="switchLeaderboardTab('math0')">
+                    <i class="fas fa-square-root-alt"></i> رياضة 0
+                </button>
+                <button class="lb-tab" data-subject="history" onclick="switchLeaderboardTab('history')">
+                    <i class="fas fa-history"></i> تاريخ
+                </button>
+                <button class="lb-tab" data-subject="law" onclick="switchLeaderboardTab('law')">
+                    <i class="fas fa-gavel"></i> قوانين
+                </button>
+            </div>
+
+            <!-- Leaderboard Content -->
             <div class="main-leaderboard-container">
+                <div class="current-subject-title" id="currentSubjectTitle">
+                    <i class="fas fa-star"></i> الإجمالي - مجموع النقاط من جميع المواد
+                </div>
                 <table class="main-leaderboard-table">
                     <thead>
                         <tr>
@@ -2152,7 +1952,7 @@
                         </tr>
                     </thead>
                     <tbody id="mainLeaderboardBody">
-                        <!-- Dynamic content -->
+                        
                     </tbody>
                 </table>
                 <p class="no-records-main" id="noRecordsMain">لا توجد نتائج بعد. <a href="#challenge">ابدأ التحدي
@@ -2161,7 +1961,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -2222,13 +2021,13 @@
 
     <script src="script.js"></script>
     <script>
-        // جلب التنبيهات من Firebase
+
         async function loadNotificationFromFirebase() {
             const bar = document.getElementById('notificationsBar');
             const textSpan = document.getElementById('notificationsText');
 
             try {
-                // التحقق من وجود Firebase
+
                 if (typeof db !== 'undefined' && db) {
                     const doc = await db.collection('settings').doc('notification').get();
                     if (doc.exists && doc.data().text && doc.data().text.trim() !== '') {
@@ -2238,7 +2037,6 @@
                     }
                 }
 
-                // جلب من localStorage كاحتياط
                 const localNotification = localStorage.getItem('siteNotification');
                 if (localNotification && localNotification.trim() !== '') {
                     textSpan.textContent = localNotification;
@@ -2253,10 +2051,8 @@
             }
         }
 
-        // تحميل التنبيه عند فتح الصفحة
         setTimeout(loadNotificationFromFirebase, 1000);
 
-        // إعلام أعلى متصدر
         function showTopScorerAlert(name, score) {
             var alertDiv = document.getElementById('topScorerAlert');
             var textSpan = document.getElementById('topScorerText');
@@ -2266,7 +2062,6 @@
             }
         }
 
-        // عرض الأخطاء بعد التحدي
         function showChallengeMistakes(mistakes) {
             var container = document.getElementById('challengeMistakesContainer');
             var list = document.getElementById('challengeMistakesList');
@@ -2286,7 +2081,6 @@
             }
         }
 
-        // مراقبة المتصدر من لوحة المتصدرين
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(function () {
                 var leaderboard = document.getElementById('mainLeaderboardBody');
@@ -2304,7 +2098,6 @@
         });
     </script>
 
-    <!-- Subject Challenge Modal -->
     <div class="challenge-modal" id="subjectChallengeModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -2327,7 +2120,6 @@
                     </button>
                 </div>
 
-                <!-- Questions Bank Tab -->
                 <div class="tab-content" id="questionsTabContent">
                     <div id="modalQuestionsContainer">
                         <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
@@ -2337,7 +2129,6 @@
                     </div>
                 </div>
 
-                <!-- Challenge Tab -->
                 <div class="tab-content active" id="challengeTabContent">
                     <div class="modal-challenge-intro" id="modalChallengeIntro">
                         <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
@@ -2351,7 +2142,6 @@
                         </div>
                     </div>
 
-                    <!-- Challenge Quiz Container -->
                     <div id="modalChallengeContainer" style="display: none;">
                         <div class="challenge-header"
                             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
@@ -2388,7 +2178,6 @@
                         </div>
                     </div>
 
-                    <!-- Challenge Result -->
                     <div id="modalChallengeResult" style="display: none; text-align: center; padding: 30px 0;">
                         <div id="modalResultIcon" style="font-size: 5rem; margin-bottom: 20px;">🏆</div>
                         <h3 id="modalResultTitle" style="color: white; font-size: 2rem; margin-bottom: 15px;">أحسنت!
@@ -2412,7 +2201,6 @@
                     </div>
                 </div>
 
-                <!-- Leaderboard Tab -->
                 <div class="tab-content" id="leaderboardTabContent">
                     <h3 style="color: white; margin-bottom: 20px; text-align: center;">
                         <i class="fas fa-trophy" style="color: #ffc107;"></i> أفضل المتحدين

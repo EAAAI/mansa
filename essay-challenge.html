@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
@@ -583,7 +582,6 @@
                 <p>اختبر معلوماتك في الأسئلة المقالية واحصل على تصحيح فوري بالذكاء الاصطناعي</p>
             </div>
 
-            <!-- Challenge Intro -->
             <div class="challenge-intro-section" id="challengeIntro">
                 <div class="challenge-icon-big">📝</div>
                 <h2>تحدي الأسئلة المقالية</h2>
@@ -620,9 +618,8 @@
                 </button>
             </div>
 
-            <!-- Challenge Active Section -->
             <div id="challengeActive" style="display: none;">
-                <!-- Status Bar -->
+                
                 <div class="challenge-status-bar">
                     <div class="timer-display" id="timerDisplay">
                         <i class="fas fa-clock"></i>
@@ -638,19 +635,16 @@
                     </div>
                 </div>
 
-                <!-- Questions Container -->
                 <div id="essayChallengeQuestions">
-                    <!-- Questions will be loaded here dynamically -->
+                    
                 </div>
 
-                <!-- Submit All Button -->
                 <button class="submit-all-btn" id="submitAllBtn" onclick="submitAllAnswers()">
                     <i class="fas fa-paper-plane"></i>
                     إنهاء التحدي وتصحيح الإجابات
                 </button>
             </div>
 
-            <!-- Result Section -->
             <div class="challenge-result-section" id="challengeResult">
                 <div class="result-icon" id="resultIcon">🏆</div>
                 <h2 class="result-title" id="resultTitle">أحسنت!</h2>
@@ -680,9 +674,7 @@
     </div>
 
     <script>
-        // ==========================================
-        // Firebase Configuration
-        // ==========================================
+
         const firebaseConfig = {
             apiKey: "AIzaSyCFhUdOI9IqFCjBkg8zytanD5O1_67vCr4",
             authDomain: "manasa-ceaa2.firebaseapp.com",
@@ -693,7 +685,6 @@
             measurementId: "G-CYX6QKJZSR"
         };
 
-        // Initialize Firebase
         let db;
         try {
             firebase.initializeApp(firebaseConfig);
@@ -703,18 +694,12 @@
             console.error('❌ Firebase initialization error:', error);
         }
 
-        // ==========================================
-        // Configuration - Groq API
-        // ==========================================
         const API_CONFIG = {
             apiKey: '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',
             apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
             model: 'llama-3.3-70b-versatile'
         };
 
-        // ==========================================
-        // Challenge Configuration
-        // ==========================================
         const CHALLENGE_TIME = 11 * 60; // 11 minutes in seconds
         const TOTAL_MARKS = 30;
 
@@ -726,9 +711,6 @@
         let challengeStartTime = null;
         let totalScore = 0;
 
-        // ==========================================
-        // Essay Questions Data
-        // ==========================================
         const essayQuestionsData = [
             {
                 id: 1,
@@ -832,9 +814,6 @@
             }
         ];
 
-        // ==========================================
-        // Get Participant IP
-        // ==========================================
         async function getParticipantIP() {
             return {
                 ip: 'hidden',
@@ -844,32 +823,25 @@
             };
         }
 
-        // ==========================================
-        // Validate Name (must be real name with first and last)
-        // ==========================================
         function validateName(name) {
-            // Remove extra spaces
+
             const cleanName = name.trim().replace(/\s+/g, ' ');
 
-            // Must have at least 2 parts (first and last name)
             const parts = cleanName.split(' ');
             if (parts.length < 2) {
                 return { valid: false, message: 'يجب إدخال الاسم الأول والأخير' };
             }
 
-            // Each part must be at least 2 characters
             for (const part of parts) {
                 if (part.length < 2) {
                     return { valid: false, message: 'يجب أن يكون كل جزء من الاسم حرفين على الأقل' };
                 }
             }
 
-            // Must be at least 5 characters total
             if (cleanName.length < 5) {
                 return { valid: false, message: 'الاسم قصير جداً' };
             }
 
-            // Check for invalid characters (numbers, special chars)
             if (/[0-9!@#$%^&*()_+=\[\]{}|;:'"<>,.?/\\]/.test(cleanName)) {
                 return { valid: false, message: 'الاسم يجب أن يحتوي على حروف فقط' };
             }
@@ -877,9 +849,6 @@
             return { valid: true, name: cleanName };
         }
 
-        // ==========================================
-        // Register Participant in Firebase
-        // ==========================================
         async function registerParticipant(name, ipData) {
             if (!db) return null;
 
@@ -909,9 +878,6 @@
             }
         }
 
-        // ==========================================
-        // Update Participant Result
-        // ==========================================
         async function updateParticipantResult(participantId, score, timeTaken, answers) {
             if (!db || !participantId) return;
 
@@ -929,16 +895,12 @@
             }
         }
 
-        // ==========================================
-        // Start Challenge
-        // ==========================================
         async function startEssayChallenge() {
             const nameInput = document.getElementById('challengerName');
             const startBtn = document.querySelector('.start-challenge-btn');
 
             const rawName = nameInput.value;
 
-            // Validate name
             const validation = validateName(rawName);
             if (!validation.valid) {
                 alert('⚠️ ' + validation.message + '\n\nيرجى إدخال اسمك الحقيقي (الاسم الأول والأخير)');
@@ -948,39 +910,29 @@
 
             challengerName = validation.name;
 
-            // Show loading
             startBtn.disabled = true;
             startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
 
-            // Get IP and register participant
             const ipData = await getParticipantIP();
             participantIP = ipData.ip;
 
             participantData = await registerParticipant(challengerName, ipData);
 
-            // Hide intro, show challenge
             document.getElementById('challengeIntro').style.display = 'none';
             document.getElementById('challengeActive').style.display = 'block';
 
-            // Reset variables
             timeRemaining = CHALLENGE_TIME;
             challengeStartTime = Date.now();
             totalScore = 0;
 
-            // Load questions
             loadChallengeQuestions();
 
-            // Start timer
             startTimer();
 
-            // Reset button
             startBtn.disabled = false;
             startBtn.innerHTML = '<i class="fas fa-play"></i> ابدأ التحدي';
         }
 
-        // ==========================================
-        // Load Questions
-        // ==========================================
         function loadChallengeQuestions() {
             const container = document.getElementById('essayChallengeQuestions');
 
@@ -1006,15 +958,12 @@
                     </div>
                     
                     <div class="ai-feedback-section" id="feedback-${q.id}">
-                        <!-- AI Feedback will appear here -->
+                        
                     </div>
                 </div>
             `).join('');
         }
 
-        // ==========================================
-        // Timer Functions
-        // ==========================================
         function startTimer() {
             updateTimerDisplay();
 
@@ -1037,31 +986,24 @@
 
             timerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-            // Warning when less than 2 minutes
             if (timeRemaining <= 120) {
                 timerDisplay.classList.add('warning');
             }
         }
 
-        // ==========================================
-        // Submit All Answers
-        // ==========================================
         async function submitAllAnswers() {
-            // Stop timer
+
             clearInterval(timerInterval);
 
-            // Disable submit button
             const submitBtn = document.getElementById('submitAllBtn');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التصحيح...';
 
-            // Calculate time taken
             const timeTaken = CHALLENGE_TIME - timeRemaining;
             const minutes = Math.floor(timeTaken / 60);
             const seconds = timeTaken % 60;
             const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-            // Collect answers and grade each one
             let totalScore = 0;
             let answeredCount = 0;
             const questionScores = [];
@@ -1122,7 +1064,6 @@
                 }
             }
 
-            // Collect all answers for saving
             const answersData = essayQuestionsData.map(q => {
                 const answerTextarea = document.getElementById(`answer-${q.id}`);
                 return {
@@ -1133,18 +1074,13 @@
                 };
             });
 
-            // Save results to Firebase
             if (participantData && participantData.id) {
                 await updateParticipantResult(participantData.id, totalScore, timeString, answersData);
             }
 
-            // Show result
             showResult(totalScore, timeString, answeredCount);
         }
 
-        // ==========================================
-        // Get AI Grade
-        // ==========================================
         async function getAIGrade(question, studentAnswer) {
             const systemPrompt = `أنت مصحح امتحانات ذكي. مهمتك تصحيح إجابات الطلاب وإعطاء درجة دقيقة.
 
@@ -1191,14 +1127,12 @@ ${studentAnswer}
             const data = await response.json();
             const feedback = data.choices[0]?.message?.content || '';
 
-            // Extract score from response
             let score = 0;
             const scoreMatch = feedback.match(/الدرجة:\s*(\d+\.?\d*)/);
             if (scoreMatch) {
                 score = Math.min(parseFloat(scoreMatch[1]), question.marks);
             }
 
-            // Format the feedback
             const formattedFeedback = feedback
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>');
@@ -1206,9 +1140,6 @@ ${studentAnswer}
             return { score, feedback: formattedFeedback };
         }
 
-        // ==========================================
-        // Show Result
-        // ==========================================
         function showResult(score, time, answered) {
             document.getElementById('challengeActive').style.display = 'none';
             document.getElementById('challengeResult').style.display = 'block';
@@ -1217,7 +1148,6 @@ ${studentAnswer}
             const resultTitle = document.getElementById('resultTitle');
             const resultSubtitle = document.getElementById('resultSubtitle');
 
-            // Determine result message based on score
             const percentage = (score / TOTAL_MARKS) * 100;
 
             if (percentage >= 90) {
@@ -1246,25 +1176,18 @@ ${studentAnswer}
             document.getElementById('finalTime').textContent = time;
             document.getElementById('questionsAnswered').textContent = `${answered}/5`;
 
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ==========================================
-        // Restart Challenge
-        // ==========================================
         function restartChallenge() {
             document.getElementById('challengeResult').style.display = 'none';
             document.getElementById('challengeIntro').style.display = 'block';
 
-            // Reset timer display
             document.getElementById('timerText').textContent = '11:00';
             document.getElementById('timerDisplay').classList.remove('warning');
 
-            // Clear name input
             document.getElementById('challengerName').value = '';
 
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
