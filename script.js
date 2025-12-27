@@ -20,7 +20,7 @@ function initUserProfile() {
             bestScore: 0,
             totalCorrect: 0,
             visits: 1,
-            theme: 'default',
+            theme: 'winter',
             createdAt: new Date().toISOString(),
             lastVisit: new Date().toISOString()
         };
@@ -34,6 +34,8 @@ function initUserProfile() {
 
     if (userProfile.theme === 'space') {
         document.body.classList.add('space-theme');
+    } else if (userProfile.theme && userProfile.theme !== 'default') {
+        document.body.classList.add(userProfile.theme + '-theme');
     }
 
     displayWelcomeGreeting(userProfile);
@@ -330,6 +332,22 @@ function loadSavedTheme() {
     }
 }
 
+// Cycle through themes when clicking theme icon
+function cycleTheme() {
+    const themes = ['default', 'space', 'ocean', 'sunset', 'pyramids', 'winter'];
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+    const currentTheme = userProfile.theme || 'default';
+
+    // Find current theme index and get next theme
+    const currentIndex = themes.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    const nextTheme = themes[nextIndex];
+
+    // Apply the next theme
+    setTheme(nextTheme);
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
     initUserProfile();
 });
@@ -366,7 +384,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 const API_CONFIG = {
-    apiKey: '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',
+    apiKey: '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',
     apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
     model: 'llama-3.3-70b-versatile'
 };
@@ -418,7 +436,7 @@ let db = dbLeaderboard;
 // ==========================================
 // Visitor Analytics Tracking - تتبع الزوار (Using Database 2)
 // ==========================================
-   
+
 
 let chatHistory = [];
 let userName = '';
@@ -1985,6 +2003,19 @@ function startChallenge() {
         return;
     }
 
+    // Auto-save name to user profile
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+    if (!userProfile.name || userProfile.name !== challengerName) {
+        userProfile.name = challengerName;
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        // Update profile input if exists
+        const profileNameInput = document.getElementById('profileNameInput');
+        if (profileNameInput) {
+            profileNameInput.value = challengerName;
+        }
+    }
+
     const selectedSubject = document.getElementById('challengeSubject')?.value || 'physics2';
 
     challengeQuestions = getRandomQuestions(15, selectedSubject);
@@ -2147,15 +2178,26 @@ function submitChallenge() {
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
+    // Get user profile for ID
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+
+    // Format date as DD/MM/YYYY
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
     const selectedSubject = document.getElementById('challengeSubject')?.value || 'physics2';
     saveToLeaderboard({
+        userId: userProfile.id,
         name: challengerName,
         score: correctCount,
         total: 15,
         time: timeString,
         timeSeconds: timeTaken,
         subject: selectedSubject,
-        date: new Date().toLocaleDateString('ar-EG')
+        date: formattedDate
     });
 
     showChallengeResult(correctCount, timeString);
@@ -2167,6 +2209,9 @@ function showChallengeResult(score, time) {
 
     const resultIcon = document.getElementById('resultIcon');
     const resultTitle = document.getElementById('resultTitle');
+
+    // Calculate percentage
+    const percentage = Math.round((score / 15) * 100);
 
     if (score >= 13) {
         resultIcon.textContent = '🏆';
@@ -2182,7 +2227,7 @@ function showChallengeResult(score, time) {
         resultTitle.textContent = 'حاول مرة أخرى!';
     }
 
-    document.getElementById('finalScore').textContent = `${score}/15`;
+    document.getElementById('finalScore').textContent = `${score}/15 (${percentage}%)`;
     document.getElementById('finalTime').textContent = time;
     document.getElementById('correctAnswers').textContent = `${score}/15`;
 
@@ -2206,8 +2251,8 @@ async function saveToLeaderboard(entry) {
 
         if (db) {
             try {
-
-                const suspiciousResults = await db.collection('leaderboard_v2')
+                const collectionName = `leaderboard_${entry.subject}`;
+                const suspiciousResults = await db.collection(collectionName)
                     .where('name', '==', entry.name)
                     .where('score', '>=', 14)
                     .get();
@@ -2215,7 +2260,7 @@ async function saveToLeaderboard(entry) {
                 suspiciousResults.forEach(async (doc) => {
                     const data = doc.data();
                     if (data.timeSeconds < 60) {
-                        await db.collection('leaderboard_v2').doc(doc.id).delete();
+                        await db.collection(collectionName).doc(doc.id).delete();
                         console.log('🗑️ تم حذف نتيجة مشبوهة:', doc.id);
                     }
                 });
@@ -2243,12 +2288,12 @@ async function saveToLeaderboard(entry) {
     }
 
     try {
-
+        const collectionName = `leaderboard_${entry.subject}`;
         entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
-        const docRef = await db.collection('leaderboard_v2').add(entry);
+        const docRef = await db.collection(collectionName).add(entry);
 
-        console.log('✅ تم حفظ النتيجة في Firebase:', docRef.id);
+        console.log(`✅ تم حفظ النتيجة في Firebase: ${collectionName}/${docRef.id}`);
 
     } catch (error) {
         console.error('❌ خطأ في حفظ النتيجة:', error);
@@ -2257,7 +2302,7 @@ async function saveToLeaderboard(entry) {
     }
 }
 
-async function displayLeaderboard() {
+async function displayLeaderboard(subject = 'physics2') {
     if (!db) {
         const leaderboard = JSON.parse(localStorage.getItem('challengeLeaderboard')) || [];
         updateLeaderboardUI(leaderboard);
@@ -2265,8 +2310,8 @@ async function displayLeaderboard() {
     }
 
     try {
-
-        const snapshot = await db.collection('leaderboard_v2')
+        const collectionName = `leaderboard_${subject}`;
+        const snapshot = await db.collection(collectionName)
             .limit(100)
             .get();
 
@@ -2305,19 +2350,12 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecords) noRecords.style.display = 'none';
             tbody.innerHTML = leaderboard.map((entry, index) => {
                 let rowClass = '';
+                if (index === 0) rowClass = 'top-leader';
 
-                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
-                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
-                    rowClass = 'ibrahim-leader';
-                } else if (index === 0) rowClass = 'top-leader';
-                let nameCell = entry.name;
-                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
-                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
-                }
                 return `
                                 <tr class="${rowClass}">
                                         <td>${index + 1}</td>
-                                        <td class="name-cell">${nameCell}</td>
+                                        <td class="name-cell">${entry.name}</td>
                                         <td>${entry.score}/${entry.total}</td>
                                         <td>${entry.time}</td>
                                         <td>${entry.date}</td>
@@ -2338,19 +2376,12 @@ function updateLeaderboardUI(leaderboard) {
             if (noRecordsMain) noRecordsMain.style.display = 'none';
             mainTbody.innerHTML = leaderboard.map((entry, index) => {
                 let rowClass = '';
+                if (index === 0) rowClass = 'top-leader';
 
-                const nameNorm = entry.name.trim().toLowerCase().replace(/\s+/g, '');
-                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
-                    rowClass = 'ibrahim-leader';
-                } else if (index === 0) rowClass = 'top-leader';
-                let nameCell = entry.name;
-                if (nameNorm === 'ibrahimmohamed' || nameNorm === 'ibrahimmohamad' || nameNorm === 'ابراهيم' || nameNorm === 'ابراهيممحمد' || nameNorm === 'ابراهيممحمود') {
-                    nameCell = `${entry.name} <span class='ibrahim-crown' title='Legendary'><i class=\"fas fa-crown\"></i></span>`;
-                }
                 return `
                                 <tr class="${rowClass}">
                                         <td>${index + 1}</td>
-                                        <td class="name-cell">${nameCell}</td>
+                                        <td class="name-cell">${entry.name}</td>
                                         <td>${entry.score}/${entry.total}</td>
                                         <td>${entry.time}</td>
                                         <td>${entry.date}</td>
@@ -2361,7 +2392,7 @@ function updateLeaderboardUI(leaderboard) {
     }
 }
 
-function listenToLeaderboard() {
+function listenToLeaderboard(subject = 'physics2') {
     if (!db) {
         console.error('❌ Firebase غير متصل');
 
@@ -2372,7 +2403,8 @@ function listenToLeaderboard() {
 
     console.log('🔄 جاري الاتصال بـ Firebase...');
 
-    db.collection('leaderboard_v2')
+    const collectionName = `leaderboard_${subject}`;
+    db.collection(collectionName)
         .limit(100)
         .onSnapshot((snapshot) => {
             console.log('✅ تم جلب البيانات:', snapshot.size, 'سجل');
@@ -2402,21 +2434,30 @@ async function cleanSuspiciousResults() {
     try {
         console.log('🧹 جاري البحث عن نتائج مشبوهة...');
 
-        const snapshot = await db.collection('leaderboard_v2').get();
+        const subjects = ['physics2', 'english', 'it', 'electronics', 'math1', 'math0', 'history', 'law'];
+        let totalDeleted = 0;
 
-        let deletedCount = 0;
-        for (const doc of snapshot.docs) {
-            const data = doc.data();
+        for (const subject of subjects) {
+            const collectionName = `leaderboard_${subject}`;
+            try {
+                const snapshot = await db.collection(collectionName).get();
 
-            if (data.score >= 14 && data.timeSeconds < 60) {
-                await db.collection('leaderboard_v2').doc(doc.id).delete();
-                console.log('🗑️ تم حذف نتيجة مشبوهة:', data.name, '- النتيجة:', data.score, '- الوقت:', data.timeSeconds, 'ثانية');
-                deletedCount++;
+                for (const doc of snapshot.docs) {
+                    const data = doc.data();
+
+                    if (data.score >= 14 && data.timeSeconds < 60) {
+                        await db.collection(collectionName).doc(doc.id).delete();
+                        console.log(`🗑️ تم حذف نتيجة مشبوهة من ${subject}:`, data.name, '- النتيجة:', data.score, '- الوقت:', data.timeSeconds, 'ثانية');
+                        totalDeleted++;
+                    }
+                }
+            } catch (error) {
+                console.log(`⚠️ لا توجد بيانات في ${collectionName}`);
             }
         }
 
-        if (deletedCount > 0) {
-            console.log(`✅ تم حذف ${deletedCount} نتيجة مشبوهة`);
+        if (totalDeleted > 0) {
+            console.log(`✅ تم حذف ${totalDeleted} نتيجة مشبوهة`);
         } else {
             console.log('✅ لا توجد نتائج مشبوهة');
         }
@@ -2695,6 +2736,19 @@ function startModalChallenge() {
         return;
     }
 
+    // Auto-save name to user profile
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+    if (!userProfile.name || userProfile.name !== modalChallengerName) {
+        userProfile.name = modalChallengerName;
+        localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        // Update profile input if exists
+        const profileNameInput = document.getElementById('profileNameInput');
+        if (profileNameInput) {
+            profileNameInput.value = modalChallengerName;
+        }
+    }
+
     modalChallengeQuestions = getRandomQuestions(15, modalChallengeSubject);
     modalCurrentIndex = 0;
     modalAnswers = {};
@@ -2808,14 +2862,25 @@ function submitModalChallenge() {
     const seconds = timeTaken % 60;
     const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
+    // Get user profile for ID
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
+
+    // Format date as DD/MM/YYYY
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
     saveToLeaderboard({
+        userId: userProfile.id,
         name: modalChallengerName,
         score: correctCount,
         total: 15,
         time: timeString,
         timeSeconds: timeTaken,
         subject: modalChallengeSubject,
-        date: new Date().toLocaleDateString('ar-EG')
+        date: formattedDate
     });
 
     updateUserStats(correctCount);
@@ -2826,6 +2891,9 @@ function submitModalChallenge() {
 function showModalResult(score, time) {
     document.getElementById('modalChallengeContainer').style.display = 'none';
     document.getElementById('modalChallengeResult').style.display = 'block';
+
+    // Calculate percentage
+    const percentage = Math.round((score / 15) * 100);
 
     if (score >= 13) {
         document.getElementById('modalResultIcon').textContent = '🏆';
@@ -2841,7 +2909,7 @@ function showModalResult(score, time) {
         document.getElementById('modalResultTitle').textContent = 'حاول مرة أخرى!';
     }
 
-    document.getElementById('modalFinalScore').textContent = `${score}/15`;
+    document.getElementById('modalFinalScore').textContent = `${score}/15 (${percentage}%)`;
     document.getElementById('modalFinalTime').textContent = time;
 
     loadModalLeaderboard(modalChallengeSubject);
@@ -2867,8 +2935,8 @@ async function loadModalLeaderboard(subject) {
     }
 
     try {
-        const snapshot = await db.collection('leaderboard')
-            .where('subject', '==', subject)
+        const collectionName = `leaderboard_${subject}`;
+        const snapshot = await db.collection(collectionName)
             .orderBy('score', 'desc')
             .limit(20)
             .get();
@@ -2938,7 +3006,7 @@ let currentLeaderboardSubject = 'all';
 
 function switchLeaderboardTab(subject) {
     currentLeaderboardSubject = subject;
-    
+
     // Update active tab
     document.querySelectorAll('.lb-tab').forEach(tab => {
         tab.classList.remove('active');
@@ -2946,70 +3014,78 @@ function switchLeaderboardTab(subject) {
             tab.classList.add('active');
         }
     });
-    
+
     // Update title
     const titleEl = document.getElementById('currentSubjectTitle');
     if (titleEl && leaderboardSubjectInfo[subject]) {
         const info = leaderboardSubjectInfo[subject];
         titleEl.innerHTML = `<i class="fas ${info.icon}"></i> ${info.name} - ${info.desc}`;
     }
-    
+
     // Load leaderboard data
     loadUnifiedLeaderboard(subject);
 }
 
 async function loadUnifiedLeaderboard(subject) {
     console.log('Loading leaderboard for:', subject);
-    
+
     const tbody = document.getElementById('mainLeaderboardBody');
     const noRecords = document.getElementById('noRecordsMain');
-    
+
     if (!tbody) {
         console.error('mainLeaderboardBody element not found');
         return;
     }
-    
+
     // Check if Firebase is available
     if (!dbLeaderboard) {
         console.error('dbLeaderboard is not initialized');
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #ffc107;">⚠️ قاعدة البيانات غير متصلة</td></tr>';
         return;
     }
-    
+
     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>';
     if (noRecords) noRecords.style.display = 'none';
-    
+
     try {
         let entries = [];
-        
+
         if (subject === 'all') {
-            // Load from all subjects and aggregate by user
+            // Load from all subjects and aggregate by USER ID
             const allSubjects = ['physics2', 'english', 'it', 'electronics', 'math1', 'math0', 'history', 'law'];
             const userTotals = {};
-            
+
             for (const subj of allSubjects) {
                 try {
                     const snapshot = await dbLeaderboard.collection(`leaderboard_${subj}`).get();
                     snapshot.forEach(doc => {
                         const data = doc.data();
+                        const userId = data.userId || data.name; // Fallback to name if userId doesn't exist
                         const name = data.name || 'مجهول';
-                        if (!userTotals[name]) {
-                            userTotals[name] = { name, totalScore: 0, attempts: 0, lastDate: '' };
+
+                        if (!userTotals[userId]) {
+                            userTotals[userId] = {
+                                userId: userId,
+                                name: name,
+                                totalScore: 0,
+                                attempts: 0,
+                                lastDate: ''
+                            };
                         }
-                        userTotals[name].totalScore += (data.score || 0);
-                        userTotals[name].attempts += 1;
-                        if (!userTotals[name].lastDate || data.date > userTotals[name].lastDate) {
-                            userTotals[name].lastDate = data.date || '';
+                        userTotals[userId].totalScore += (data.score || 0);
+                        userTotals[userId].attempts += 1;
+                        if (!userTotals[userId].lastDate || data.date > userTotals[userId].lastDate) {
+                            userTotals[userId].lastDate = data.date || '';
                         }
                     });
                 } catch (e) {
                     console.log(`No data for ${subj}`);
                 }
             }
-            
+
             entries = Object.values(userTotals)
                 .sort((a, b) => b.totalScore - a.totalScore)
-                .slice(0, 20)
+                .slice(0, 50)
                 .map(u => ({
                     name: u.name,
                     score: u.totalScore,
@@ -3020,40 +3096,59 @@ async function loadUnifiedLeaderboard(subject) {
             // Load from specific subject
             const snapshot = await dbLeaderboard.collection(`leaderboard_${subject}`)
                 .orderBy('score', 'desc')
-                .limit(20)
+                .limit(50)
                 .get();
-            
+
             snapshot.forEach(doc => {
                 entries.push(doc.data());
             });
+
+            // Sort by score then by time
+            entries.sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return (a.timeSeconds || 999999) - (b.timeSeconds || 999999);
+            });
         }
-        
+
         if (entries.length === 0) {
             tbody.innerHTML = '';
             if (noRecords) noRecords.style.display = 'block';
             return;
         }
-        
+
         if (noRecords) noRecords.style.display = 'none';
-        
+
         tbody.innerHTML = entries.map((entry, index) => {
             let rankDisplay = index + 1;
             let rankClass = '';
             if (index === 0) { rankDisplay = '🥇'; rankClass = 'gold'; }
             else if (index === 1) { rankDisplay = '🥈'; rankClass = 'silver'; }
             else if (index === 2) { rankDisplay = '🥉'; rankClass = 'bronze'; }
-            
+
+            // Calculate percentage for individual subjects (not for 'all')
+            let scoreDisplay = entry.score || 0;
+            if (subject !== 'all' && entry.total) {
+                const percentage = Math.round((entry.score / entry.total) * 100);
+                scoreDisplay = `${entry.score}/${entry.total} (${percentage}%)`;
+            }
+
+            // Show challenge count for 'all', time for individual subjects
+            let timeDisplay = entry.time || '-';
+            if (subject !== 'all' && !entry.time) {
+                timeDisplay = '00:00';
+            }
+
             return `
                 <tr class="${rankClass}">
                     <td>${rankDisplay}</td>
                     <td>${entry.name || 'مجهول'}</td>
-                    <td>${entry.score || 0}</td>
-                    <td>${entry.time || '-'}</td>
+                    <td>${scoreDisplay}</td>
+                    <td>${timeDisplay}</td>
                     <td>${entry.date || '-'}</td>
                 </tr>
             `;
         }).join('');
-        
+
     } catch (error) {
         console.error('Error loading unified leaderboard:', error);
         tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: #ff6b6b;">خطأ في تحميل البيانات</td></tr>';
@@ -3061,7 +3156,7 @@ async function loadUnifiedLeaderboard(subject) {
 }
 
 // Load default leaderboard on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('leaderboardTabs')) {
         loadUnifiedLeaderboard('all');
     }

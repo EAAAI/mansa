@@ -1330,6 +1330,7 @@
             .leaderboard-tabs {
                 padding: 15px;
             }
+
             .lb-tab {
                 padding: 10px 15px;
                 font-size: 0.85rem;
@@ -1339,7 +1340,7 @@
 </head>
 
 <body>
-    
+
     <div class="space-planet planet-1"></div>
     <div class="space-planet planet-2"></div>
     <div class="space-planet planet-3"></div>
@@ -1383,18 +1384,23 @@
     <div class="snowflake">❅</div>
     <div class="snowflake">❆</div>
     <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
 
     <div id="notificationsBar" class="notifications-bar" style="display:none;">
         <i class="fas fa-bell" style="margin-left: 8px;"></i>
         <span id="notificationsText"></span>
     </div>
-    
+
     <div id="topScorerAlert" class="top-scorer-alert" style="display:none;">
         <span id="topScorerText"></span>
         <button onclick="document.getElementById('topScorerAlert').style.display='none'" class="close-alert-btn"
             title="إغلاق الإعلام">&times;</button>
     </div>
-    
+
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
@@ -1403,22 +1409,25 @@
             </div>
             <ul class="nav-links">
                 <li><a href="#home" class="active">الرئيسية</a></li>
-                <li><a href="#subjects">📚 المواد</a></li>
+                <li><a href="#subjects">📚المواد</a></li>
                 <li><a href="#challenge">⚡ وضع التحدي</a></li>
                 <li><a href="#leaderboard">🏆 المتصدرين</a></li>
                 <li><a href="#ask-ai">🤖 اسأل ذكي</a></li>
-                <li><a href="contact.html">📩 تواصل معنا</a></li>
+                <li class="nav-icon-item">
+                    <a href="#" onclick="cycleTheme(); return false;" class="nav-icon-link" title="تغيير الثيم">
+                        <i class="fas fa-palette"></i>
+                    </a>
+                </li>
+                <li class="nav-icon-item">
+                    <a href="#" onclick="openUserProfile(); return false;" class="nav-icon-link" title="حسابي">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
 
-    <button class="theme-toggle" onclick="toggleThemeMenu()" title="تغيير الثيم">
-        <i class="fas fa-moon"></i>
-    </button>
 
-    <button class="user-profile-btn" onclick="openUserProfile()" title="حسابي">
-        <i class="fas fa-user"></i>
-    </button>
 
     <div class="user-profile-modal" id="userProfileModal">
         <div class="profile-content">
@@ -1488,7 +1497,7 @@
             </button>
         </div>
         <div class="chat-messages" id="chatMessages">
-            
+
         </div>
         <div class="chat-input-container">
             <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
@@ -1504,7 +1513,6 @@
             </div>
             <h1>🌙 ليالي الامتحان</h1>
             <p>منصة تعليمية لطلاب كلية الحاسبات والمعلومات | تم تطويرها بواسطة <a
-                    href="https://ibrahim88887.github.io/EAAAI/" target="_blank"
                     style="color: #38ef7d; text-decoration: none;">EAAAI</a></p>
             <div class="hero-buttons">
                 <a href="#subjects" class="btn btn-primary">
@@ -1528,8 +1536,9 @@
             </h2>
 
             <div class="subjects-grid">
-                
-                <a href="subjects/physics2.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #667eea, #764ba2);">
+
+                <a href="subjects/physics2.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #667eea, #764ba2);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                             <i class="fas fa-atom"></i>
@@ -1552,13 +1561,15 @@
                             <i class="fas fa-arrow-left"></i>
                             ابدأ الآن
                         </span>
-                        <span class="telegram-link" onclick="event.preventDefault(); window.open('https://t.me/+uyfoXvivpiY3MTRk', '_blank');">
+                        <span class="telegram-link"
+                            onclick="event.preventDefault(); window.open('https://t.me/+uyfoXvivpiY3MTRk', '_blank');">
                             <i class="fab fa-telegram"></i>
                         </span>
                     </div>
                 </a>
 
-                <a href="subjects/english.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #f093fb, #f5576c);">
+                <a href="subjects/english.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #f093fb, #f5576c);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
                             <i class="fas fa-language"></i>
@@ -1584,7 +1595,8 @@
                     </div>
                 </a>
 
-                <a href="subjects/it.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <a href="subjects/it.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #4facfe, #00f2fe);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
                             <i class="fas fa-laptop-code"></i>
@@ -1610,7 +1622,8 @@
                     </div>
                 </a>
 
-                <a href="subjects/electronics.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #fa709a, #fee140);">
+                <a href="subjects/electronics.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #fa709a, #fee140);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
                             <i class="fas fa-microchip"></i>
@@ -1636,7 +1649,8 @@
                     </div>
                 </a>
 
-                <a href="subjects/math1.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #a8edea, #fed6e3);">
+                <a href="subjects/math1.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #a8edea, #fed6e3);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
                             <i class="fas fa-calculator"></i>
@@ -1662,7 +1676,8 @@
                     </div>
                 </a>
 
-                <a href="subjects/math0.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #d299c2, #fef9d7);">
+                <a href="subjects/math0.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #d299c2, #fef9d7);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #d299c2, #fef9d7);">
                             <i class="fas fa-square-root-alt"></i>
@@ -1688,7 +1703,8 @@
                     </div>
                 </a>
 
-                <a href="subjects/history.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #8B4513, #DAA520);">
+                <a href="subjects/history.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #8B4513, #DAA520);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #8B4513, #DAA520);">
                             <i class="fas fa-history"></i>
@@ -1714,7 +1730,8 @@
                     </div>
                 </a>
 
-                <a href="subjects/law.html" class="subject-card" style="--card-gradient: linear-gradient(135deg, #4a69bd, #82ccdd);">
+                <a href="subjects/law.html" class="subject-card"
+                    style="--card-gradient: linear-gradient(135deg, #4a69bd, #82ccdd);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #4a69bd, #82ccdd);">
                             <i class="fas fa-gavel"></i>
@@ -1947,12 +1964,12 @@
                             <th>المركز</th>
                             <th>الاسم</th>
                             <th>النتيجة</th>
-                            <th>الوقت</th>
+                            <th>التحديات</th>
                             <th>التاريخ</th>
                         </tr>
                     </thead>
                     <tbody id="mainLeaderboardBody">
-                        
+
                     </tbody>
                 </table>
                 <p class="no-records-main" id="noRecordsMain">لا توجد نتائج بعد. <a href="#challenge">ابدأ التحدي
@@ -1992,16 +2009,12 @@
                     <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank" class="footer-link">
                         <i class="fas fa-globe"></i> زيارة موقع EAAAI
                     </a>
-                    <a href="https://www.instagram.com/z7w44/" target="_blank" class="footer-link"
-                        style="margin-top:8px;display:inline-block;">
-                        <i class="fab fa-instagram"></i> تابعنا على انستقرام
-                    </a>
                 </div>
             </div>
 
             <div class="footer-bottom">
                 <p>&copy; 2025 ليالي الامتحان - جميع الحقوق محفوظة</p>
-                <p class="made-with">صُنع بـ 🌙 بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
+                <p class="made-with">صُنع بـ 💗 بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
                         target="_blank">EAAAI</a></p>
                 <div style="margin-top: 12px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
                     <a href="#" id="showStatsVideoBtn"
@@ -2232,3 +2245,4 @@
 </script>
 
 </html>
+<!-- شسيشب -->
