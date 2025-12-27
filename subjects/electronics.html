@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="physics2.css">
     <link rel="stylesheet" href="electronics.css">
 </head>
+
 <body>
     <nav class="subject-navbar">
         <div class="nav-container">
@@ -33,7 +35,8 @@
             <h1>دوائر إلكترونية</h1>
             <p>Electronic Circuits</p>
             <div class="hero-stats">
-                <div class="hero-stat"><i class="fas fa-question-circle"></i><span id="totalQuestions">0</span> سؤال اختياري</div>
+                <div class="hero-stat"><i class="fas fa-question-circle"></i><span id="totalQuestions">0</span> سؤال
+                    اختياري</div>
                 <div class="hero-stat"><i class="fas fa-pen-fancy"></i><span id="totalEssay">0</span> سؤال مقالي</div>
                 <div class="hero-stat"><i class="fas fa-users"></i><span id="totalPlayers">0</span> متحدي</div>
             </div>
@@ -51,18 +54,51 @@
             <p class="section-subtitle">اختبر معلوماتك في 15 سؤال خلال 5 دقائق</p>
             <div class="challenge-intro" id="challengeIntro">
                 <div class="challenge-card">
-                    <div class="challenge-icon">⚡</div><h3>تحدي الـ 15 سؤال</h3><p>اختبر معلوماتك في الدوائر الإلكترونية</p>
-                    <div class="challenge-rules"><div class="rule"><i class="fas fa-clock"></i><span>5 دقائق</span></div><div class="rule"><i class="fas fa-question-circle"></i><span>15 سؤال</span></div><div class="rule"><i class="fas fa-star"></i><span>15 درجة</span></div><div class="rule"><i class="fas fa-trophy"></i><span>لوحة الشرف</span></div></div>
-                    <div class="name-input-box"><label><i class="fas fa-user"></i> أدخل اسمك للبدء</label><input type="text" id="challengerName" placeholder="اسمك هنا..." maxlength="30"><button class="start-btn" onclick="startChallenge()"><i class="fas fa-play"></i> ابدأ التحدي</button></div>
+                    <div class="challenge-icon">⚡</div>
+                    <h3>تحدي الـ 15 سؤال</h3>
+                    <p>اختبر معلوماتك في الدوائر الإلكترونية</p>
+                    <div class="challenge-rules">
+                        <div class="rule"><i class="fas fa-clock"></i><span>5 دقائق</span></div>
+                        <div class="rule"><i class="fas fa-question-circle"></i><span>15 سؤال</span></div>
+                        <div class="rule"><i class="fas fa-star"></i><span>15 درجة</span></div>
+                        <div class="rule"><i class="fas fa-trophy"></i><span>لوحة الشرف</span></div>
+                    </div>
+                    <div class="name-input-box"><label><i class="fas fa-user"></i> أدخل اسمك للبدء</label><input
+                            type="text" id="challengerName" placeholder="اسمك هنا..." maxlength="30"><button
+                            class="start-btn" onclick="startChallenge()"><i class="fas fa-play"></i> ابدأ
+                            التحدي</button></div>
                 </div>
             </div>
             <div class="challenge-container" id="challengeContainer" style="display: none;">
-                <div class="challenge-header"><div class="timer" id="timer"><i class="fas fa-clock"></i><span id="timerDisplay">5:00</span></div><div class="progress"><span id="questionProgress">1/15</span></div><div class="score-display"><i class="fas fa-star"></i><span id="currentScore">0</span></div></div>
-                <div class="question-box"><div class="question-number" id="questionBadge">السؤال 1</div><h3 class="question-text" id="questionText"></h3></div>
+                <div class="challenge-header">
+                    <div class="timer" id="timer"><i class="fas fa-clock"></i><span id="timerDisplay">5:00</span></div>
+                    <div class="progress"><span id="questionProgress">1/15</span></div>
+                    <div class="score-display"><i class="fas fa-star"></i><span id="currentScore">0</span></div>
+                </div>
+                <div class="question-box">
+                    <div class="question-number" id="questionBadge">السؤال 1</div>
+                    <h3 class="question-text" id="questionText"></h3>
+                </div>
                 <div class="options-container" id="optionsContainer"></div>
-                <div class="challenge-nav"><button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i class="fas fa-arrow-right"></i> السابق</button><button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">التالي <i class="fas fa-arrow-left"></i></button><button class="nav-btn success" id="submitBtn" onclick="submitChallenge()" style="display: none;"><i class="fas fa-paper-plane"></i> إنهاء</button></div>
+                <div class="challenge-nav"><button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i
+                            class="fas fa-arrow-right"></i> السابق</button><button class="nav-btn primary" id="nextBtn"
+                        onclick="nextQuestion()">التالي <i class="fas fa-arrow-left"></i></button><button
+                        class="nav-btn success" id="submitBtn" onclick="submitChallenge()" style="display: none;"><i
+                            class="fas fa-paper-plane"></i> إنهاء</button></div>
             </div>
-            <div class="challenge-result" id="challengeResult" style="display: none;"><div class="result-icon" id="resultIcon">🏆</div><h2 id="resultTitle">أحسنت!</h2><div class="result-stats"><div class="stat"><span class="stat-value" id="finalScore">0/15</span><span class="stat-label">الدرجة</span></div><div class="stat"><span class="stat-value" id="finalTime">00:00</span><span class="stat-label">الوقت</span></div><div class="stat"><span class="stat-value" id="percentage">0%</span><span class="stat-label">النسبة</span></div></div><button class="restart-btn" onclick="restartChallenge()"><i class="fas fa-redo"></i> حاول مرة أخرى</button></div>
+            <div class="challenge-result" id="challengeResult" style="display: none;">
+                <div class="result-icon" id="resultIcon">🏆</div>
+                <h2 id="resultTitle">أحسنت!</h2>
+                <div class="result-stats">
+                    <div class="stat"><span class="stat-value" id="finalScore">0/15</span><span
+                            class="stat-label">الدرجة</span></div>
+                    <div class="stat"><span class="stat-value" id="finalTime">00:00</span><span
+                            class="stat-label">الوقت</span></div>
+                    <div class="stat"><span class="stat-value" id="percentage">0%</span><span
+                            class="stat-label">النسبة</span></div>
+                </div><button class="restart-btn" onclick="restartChallenge()"><i class="fas fa-redo"></i> حاول مرة
+                    أخرى</button>
+            </div>
         </div>
     </section>
 
@@ -70,7 +106,11 @@
         <div class="container">
             <h2 class="section-title"><i class="fas fa-book-open"></i>الأسئلة الاختيارية</h2>
             <p class="section-subtitle">تصفح جميع أسئلة الاختيار من متعدد</p>
-            <div class="bank-controls"><div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput" placeholder="ابحث في الأسئلة..." oninput="filterQuestions()"></div><div class="questions-count">إجمالي: <span id="displayedCount">0</span> سؤال</div></div>
+            <div class="bank-controls">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchInput"
+                        placeholder="ابحث في الأسئلة..." oninput="filterQuestions()"></div>
+                <div class="questions-count">إجمالي: <span id="displayedCount">0</span> سؤال</div>
+            </div>
             <div class="questions-list" id="questionsList"></div>
         </div>
     </section>
@@ -78,40 +118,69 @@
     <section id="essay" class="section essay-section">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
-            <p class="section-subtitle">اختبر نفسك في الأسئلة المقالية مع تصحيح بالذكاء الاصطناعي</p>
-            <div class="essay-intro" id="essayIntro">
-                <div class="essay-card"><div class="essay-icon">📝</div><h3>تحدي الأسئلة المقالية</h3><p>أجب على 5 أسئلة مقالية واحصل على تصحيح فوري بالذكاء الاصطناعي</p>
-                    <div class="essay-rules"><div class="rule"><i class="fas fa-clock"></i><span>11 دقيقة</span></div><div class="rule"><i class="fas fa-pen"></i><span>5 أسئلة</span></div><div class="rule"><i class="fas fa-robot"></i><span>تصحيح AI</span></div></div>
-                    <div class="name-input-box"><input type="text" id="essayPlayerName" placeholder="اسمك هنا..." maxlength="30"><button class="start-btn essay-start" onclick="startEssayChallenge()"><i class="fas fa-play"></i> ابدأ تحدي المقالي</button></div>
-                </div>
+            <p class="section-subtitle">تصفح جميع الأسئلة المقالية</p>
+            <div class="essay-bank">
+                <h3><i class="fas fa-list"></i> الأسئلة الاختيارية المقالية</h3>
+                <div class="essay-bank-search"><i class="fas fa-search"></i><input type="text" id="essaySearchInput"
+                        placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="essay-questions-list" id="essayQuestionsList"></div>
             </div>
-            <div class="essay-container" id="essayContainer" style="display: none;">
-                <div class="essay-header"><div class="timer essay-timer" id="essayTimer"><i class="fas fa-clock"></i><span id="essayTimerDisplay">11:00</span></div><div class="progress"><span id="essayProgress">1/5</span></div></div>
-                <div class="essay-question-card" id="essayQuestionCard"><div class="question-number" id="essayQuestionBadge">السؤال 1</div><h3 class="question-text" id="essayQuestionText"></h3><textarea id="essayAnswer" class="essay-answer" placeholder="اكتب إجابتك هنا..." rows="6"></textarea></div>
-                <div class="essay-nav"><button class="nav-btn" id="essayPrevBtn" onclick="prevEssayQuestion()" disabled><i class="fas fa-arrow-right"></i></button><button class="nav-btn primary" id="essayNextBtn" onclick="nextEssayQuestion()">التالي</button><button class="nav-btn success" id="essaySubmitBtn" onclick="submitEssayChallenge()" style="display: none;"><i class="fas fa-paper-plane"></i> إنهاء</button></div>
-            </div>
-            <div class="essay-result" id="essayResult" style="display: none;"><div class="grading-status" id="gradingStatus"><div class="loading-spinner"></div><p>جاري التصحيح بالذكاء الاصطناعي...</p></div><div class="essay-scores" id="essayScores" style="display: none;"></div></div>
-            <div class="essay-bank"><h3><i class="fas fa-list"></i> الأسئلة الاختيارية المقالية</h3><div class="essay-bank-search"><i class="fas fa-search"></i><input type="text" id="essaySearchInput" placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div><div class="essay-questions-list" id="essayQuestionsList"></div></div>
         </div>
     </section>
 
     <section id="leaderboard" class="section leaderboard-section">
         <div class="container">
-            <h2 class="section-title"><i class="fas fa-trophy"></i>لوحة المتصدرين</h2><p class="section-subtitle">أفضل النتائج في تحدي الدوائر الإلكترونية</p>
-            <div class="leaderboard-card"><div class="leaderboard-header"><button class="refresh-btn" onclick="loadLeaderboard()"><i class="fas fa-sync-alt"></i> تحديث</button></div><div class="leaderboard-container"><table class="leaderboard-table"><thead><tr><th>#</th><th>الاسم</th><th>الدرجة</th><th>الوقت</th><th>التاريخ</th></tr></thead><tbody id="leaderboardBody"></tbody></table><p class="no-records" id="noRecords" style="display: none;">لا توجد نتائج بعد</p></div></div>
+            <h2 class="section-title"><i class="fas fa-trophy"></i>لوحة المتصدرين</h2>
+            <p class="section-subtitle">أفضل النتائج في تحدي الدوائر الإلكترونية</p>
+            <div class="leaderboard-card">
+                <div class="leaderboard-header"><button class="refresh-btn" onclick="loadLeaderboard()"><i
+                            class="fas fa-sync-alt"></i> تحديث</button></div>
+                <div class="leaderboard-container">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الاسم</th>
+                                <th>الدرجة</th>
+                                <th>الوقت</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody"></tbody>
+                    </table>
+                    <p class="no-records" id="noRecords" style="display: none;">لا توجد نتائج بعد</p>
+                </div>
+            </div>
         </div>
     </section>
 
     <section id="ask-ai" class="section ai-section">
         <div class="container">
-            <h2 class="section-title"><i class="fas fa-robot"></i>اسأل الذكاء الاصطناعي</h2><p class="section-subtitle">اسأل أي سؤال عن الدوائر الإلكترونية</p>
-            <div class="ai-chat-container"><div class="ai-messages" id="aiMessages"><div class="ai-message bot"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><p>مرحباً! اسألني أي سؤال عن الدوائر الإلكترونية!</p></div></div></div><div class="ai-input-container"><textarea id="aiInput" placeholder="اكتب سؤالك هنا..." rows="2"></textarea><button class="ai-send-btn" onclick="askAI()"><i class="fas fa-paper-plane"></i></button></div></div>
+            <h2 class="section-title"><i class="fas fa-robot"></i>اسأل الذكاء الاصطناعي</h2>
+            <p class="section-subtitle">اسأل أي سؤال عن الدوائر الإلكترونية</p>
+            <div class="ai-chat-container">
+                <div class="ai-messages" id="aiMessages">
+                    <div class="ai-message bot">
+                        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="message-content">
+                            <p>مرحباً! اسألني أي سؤال عن الدوائر الإلكترونية!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="ai-input-container"><textarea id="aiInput" placeholder="اكتب سؤالك هنا..."
+                        rows="2"></textarea><button class="ai-send-btn" onclick="askAI()"><i
+                            class="fas fa-paper-plane"></i></button></div>
+            </div>
         </div>
     </section>
 
-    <footer class="subject-footer"><p>© 2024 ليالي الامتحان - دوائر إلكترونية | <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank">EAAAI</a></p></footer>
+    <footer class="subject-footer">
+        <p>© 2024 ليالي الامتحان - دوائر إلكترونية | <a href="https://ibrahim88887.github.io/EAAAI/"
+                target="_blank">EAAAI</a></p>
+    </footer>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="electronics.js"></script>
 </body>
+
 </html>

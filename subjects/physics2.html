@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="physics2.css">
+    <link rel="stylesheet" href="physics2-winter.css">
 </head>
-<body>
-    <nav class="subject-navbar">
+
+<body class="winter-physics">
+    <!-- Winter Theme Elements -->
+    <div class="winter-snowflakes">
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+    </div>
+    <div class="ice-overlay"></div>
+
+    <nav class="subject-navbar frozen-nav">
         <div class="nav-container">
             <a href="../index.html" class="nav-brand">
                 <i class="fas fa-arrow-right"></i>
@@ -70,7 +88,7 @@
                 </div>
                 <div class="hero-stat">
                     <i class="fas fa-users"></i>
-                    <span id="totalPlayers">0</span> متحدي
+                    <span id="totalPlayers">378</span> متحدي
                 </div>
             </div>
             <div class="hero-buttons">
@@ -128,9 +146,12 @@
                 </div>
                 <div class="options-container" id="optionsContainer"></div>
                 <div class="challenge-nav">
-                    <button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i class="fas fa-arrow-right"></i> السابق</button>
-                    <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">التالي <i class="fas fa-arrow-left"></i></button>
-                    <button class="nav-btn success" id="submitBtn" onclick="submitChallenge()" style="display: none;"><i class="fas fa-paper-plane"></i> إنهاء</button>
+                    <button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i
+                            class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">التالي <i
+                            class="fas fa-arrow-left"></i></button>
+                    <button class="nav-btn success" id="submitBtn" onclick="submitChallenge()" style="display: none;"><i
+                            class="fas fa-paper-plane"></i> إنهاء</button>
                 </div>
             </div>
 
@@ -138,11 +159,15 @@
                 <div class="result-icon" id="resultIcon">🏆</div>
                 <h2 id="resultTitle">أحسنت!</h2>
                 <div class="result-stats">
-                    <div class="stat"><span class="stat-value" id="finalScore">0/15</span><span class="stat-label">الدرجة</span></div>
-                    <div class="stat"><span class="stat-value" id="finalTime">00:00</span><span class="stat-label">الوقت</span></div>
-                    <div class="stat"><span class="stat-value" id="percentage">0%</span><span class="stat-label">النسبة</span></div>
+                    <div class="stat"><span class="stat-value" id="finalScore">0/15</span><span
+                            class="stat-label">الدرجة</span></div>
+                    <div class="stat"><span class="stat-value" id="finalTime">00:00</span><span
+                            class="stat-label">الوقت</span></div>
+                    <div class="stat"><span class="stat-value" id="percentage">0%</span><span
+                            class="stat-label">النسبة</span></div>
                 </div>
-                <button class="restart-btn" onclick="restartChallenge()"><i class="fas fa-redo"></i> حاول مرة أخرى</button>
+                <button class="restart-btn" onclick="restartChallenge()"><i class="fas fa-redo"></i> حاول مرة
+                    أخرى</button>
             </div>
         </div>
     </section>
@@ -175,60 +200,9 @@
                 <i class="fas fa-pen-fancy"></i>
                 الأسئلة المقالية
             </h2>
-            <p class="section-subtitle">اختبر نفسك في الأسئلة المقالية مع تصحيح بالذكاء الاصطناعي</p>
-
-            <div class="essay-intro" id="essayIntro">
-                <div class="essay-card">
-                    <div class="essay-icon">📝</div>
-                    <h3>تحدي الأسئلة المقالية</h3>
-                    <p>أجب على 5 أسئلة مقالية واحصل على تصحيح فوري بالذكاء الاصطناعي</p>
-                    <div class="essay-rules">
-                        <div class="rule"><i class="fas fa-clock"></i><span>11 دقيقة</span></div>
-                        <div class="rule"><i class="fas fa-pen"></i><span>5 أسئلة</span></div>
-                        <div class="rule"><i class="fas fa-robot"></i><span>تصحيح AI</span></div>
-                    </div>
-                    <div class="name-input-box">
-                        <input type="text" id="essayPlayerName" placeholder="اسمك هنا..." maxlength="30">
-                        <button class="start-btn essay-start" onclick="startEssayChallenge()">
-                            <i class="fas fa-play"></i> ابدأ تحدي المقالي
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="essay-container" id="essayContainer" style="display: none;">
-                <div class="essay-header">
-                    <div class="timer essay-timer" id="essayTimer"><i class="fas fa-clock"></i><span id="essayTimerDisplay">11:00</span></div>
-                    <div class="progress"><span id="essayProgress">1/5</span></div>
-                </div>
-                <div class="essay-question-card" id="essayQuestionCard">
-                    <div class="question-number" id="essayQuestionBadge">السؤال 1</div>
-                    <h3 class="question-text" id="essayQuestionText"></h3>
-                    <textarea id="essayAnswer" class="essay-answer" placeholder="اكتب إجابتك هنا..." rows="6"></textarea>
-                </div>
-                <div class="essay-nav">
-                    <button class="nav-btn" id="essayPrevBtn" onclick="prevEssayQuestion()" disabled><i class="fas fa-arrow-right"></i></button>
-                    <button class="nav-btn primary" id="essayNextBtn" onclick="nextEssayQuestion()">التالي</button>
-                    <button class="nav-btn success" id="essaySubmitBtn" onclick="submitEssayChallenge()" style="display: none;"><i class="fas fa-paper-plane"></i> إنهاء</button>
-                </div>
-            </div>
-
-            <div class="essay-result" id="essayResult" style="display: none;">
-                <div class="grading-status" id="gradingStatus">
-                    <div class="loading-spinner"></div>
-                    <p>جاري التصحيح بالذكاء الاصطناعي...</p>
-                </div>
-                <div class="essay-scores" id="essayScores" style="display: none;"></div>
-            </div>
-
-            <div class="essay-bank">
-                <h3><i class="fas fa-list"></i> الأسئلة الاختيارية المقالية</h3>
-                <div class="essay-bank-search">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="essaySearchInput" placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()">
-                </div>
-                <div class="essay-questions-list" id="essayQuestionsList"></div>
-            </div>
+            <p class="section-subtitle">تصفح جميع الأسئلة المقالية</p>
+            <div class="essay-questions-list" id="essayQuestionsList"></div>
+        </div>
         </div>
     </section>
 
@@ -293,11 +267,13 @@
     </section>
 
     <footer class="subject-footer">
-        <p>© 2024 ليالي الامتحان - فيزياء 2 | تم تطويره بواسطة <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank">EAAAI</a></p>
+        <p>© 2024 ليالي الامتحان - فيزياء 2 | تم تطويره بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
+                target="_blank">EAAAI</a></p>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="physics2.js"></script>
 </body>
+
 </html>

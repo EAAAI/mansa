@@ -18,6 +18,7 @@ try {
     console.error('❌ Firebase initialization error:', error);
 }
 
+
 // Subject Configuration
 const SUBJECT_ID = 'physics2';
 const SUBJECT_NAME = 'فيزياء 2';
@@ -26,7 +27,7 @@ const QUESTIONS_PER_CHALLENGE = 15;
 
 // Questions Bank - Bilingual (English main + Arabic translation)
 // Format: { questionEn, questionAr, optionsEn, optionsAr, correct }
-const questions = [
+const hardcodedQuestions = [
     { questionEn: "In Young's double-slit experiment, constructive interference occurs when the path difference is...", questionAr: "في تجربة يونج للشق المزدوج، يحدث التداخل البناء عندما يكون فرق المسار...", optionsEn: ["mλ", "(m+1/2)λ", "1/2 mλ", "Zero"], optionsAr: ["mλ", "(m+1/2)λ", "1/2 mλ", "صفر"], correct: 0 },
     { questionEn: "In an interference pattern, the distance between two adjacent bright fringes is determined by...", questionAr: "في نمط التداخل، المسافة بين هدبتين مضيئتين متجاورتين تتحدد بواسطة...", optionsEn: ["The wavelength of light and the slit separation", "The screen's distance from the slits only", "The intensity of the light", "The angle of incidence"], optionsAr: ["الطول الموجي للضوء والمسافة بين الشقين", "المسافة إلى الشاشة فقط", "شدة الضوء", "زاوية السقوط"], correct: 0 },
     { questionEn: "Which concept did Einstein challenge with his Special Theory of Relativity?", questionAr: "أي مفهوم تحداه أينشتاين بنظريته النسبية الخاصة؟", optionsEn: ["Newtonian mechanics", "The laws of thermodynamics", "Quantum entanglement", "Electromagnetism"], optionsAr: ["ميكانيكا نيوتن", "قوانين الديناميكا الحرارية", "التشابك الكمي", "الكهرومغناطيسية"], correct: 0 },
@@ -72,6 +73,58 @@ const questions = [
     { questionEn: "In a full-wave bridge rectifier, how many diodes are used?", questionAr: "في مقوم الموجة الكاملة الجسري، كم عدد الدايودات المستخدمة؟", optionsEn: ["Four", "One", "Two", "Three"], optionsAr: ["أربعة", "واحد", "اثنان", "ثلاثة"], correct: 0 },
     { questionEn: "The time dilation equation Δt = Δt₀/√(1 - v²/c²) shows that time...", questionAr: "معادلة تمدد الزمن Δt = Δt₀/√(1 - v²/c²) تُظهر أن الزمن...", optionsEn: ["Runs slower for moving observers", "Runs faster for moving observers", "Is the same for all observers", "Stops completely"], optionsAr: ["يمر أبطأ للمراقبين المتحركين", "يمر أسرع للمراقبين المتحركين", "نفسه لجميع المراقبين", "يتوقف تماماً"], correct: 0 }
 ];
+
+// Combined questions array (will include Firebase questions)
+let questions = [...hardcodedQuestions];
+
+// Load questions from Firebase and merge with hardcoded ones
+async function loadQuestionsFromFirebase() {
+    if (!db) {
+        console.log('⚠️ Firebase not available, using hardcoded questions only');
+        return;
+    }
+
+    try {
+        const snapshot = await db.collection(`questions_${SUBJECT_ID}`).get();
+
+        if (!snapshot.empty) {
+            const firebaseQuestions = [];
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                // Convert Firebase question format to our format
+                const q = {
+                    question: data.question,
+                    options: data.options,
+                    correct: data.correct,
+                    imageUrl: data.imageUrl,
+                    source: 'firebase',
+                    id: doc.id
+                };
+                firebaseQuestions.push(q);
+            });
+
+            // Merge Firebase questions with hardcoded questions
+            questions = [...hardcodedQuestions, ...firebaseQuestions];
+            console.log(`✅ Loaded ${firebaseQuestions.length} questions from Firebase`);
+            console.log(`📊 Total questions available: ${questions.length}`);
+
+            // Update total questions count if element exists
+            const totalQuestionsEl = document.getElementById('totalQuestions');
+            if (totalQuestionsEl) {
+                totalQuestionsEl.textContent = questions.length;
+            }
+        } else {
+            console.log('ℹ️ No Firebase questions found, using hardcoded questions only');
+        }
+    } catch (error) {
+        console.error('❌ Error loading questions from Firebase:', error);
+    }
+}
+
+// Load Firebase questions when page loads
+if (db) {
+    loadQuestionsFromFirebase();
+}
 
 // Helper functions for bilingual question text
 function getQuestionText(q) {
@@ -123,7 +176,7 @@ let challenge = {
 function updateActiveNav() {
     const sections = ['hero', 'challenge', 'bank', 'essay', 'leaderboard', 'ask-ai'];
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     let currentSection = 'hero';
     sections.forEach(sectionId => {
         const section = document.getElementById(sectionId);
@@ -134,7 +187,7 @@ function updateActiveNav() {
             }
         }
     });
-    
+
     navLinks.forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === '#' + currentSection) {
@@ -145,7 +198,7 @@ function updateActiveNav() {
 
 // Smooth Scroll
 document.querySelectorAll('.nav-link, .btn[href^="#"]').forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
         if (href.startsWith('#')) {
             e.preventDefault();
@@ -168,13 +221,13 @@ window.addEventListener('scroll', updateActiveNav);
 function startChallenge() {
     const nameInput = document.getElementById('challengerName');
     const name = nameInput.value.trim();
-    
+
     if (!name) {
         alert('من فضلك أدخل اسمك أولاً!');
         nameInput.focus();
         return;
     }
-    
+
     challenge.userName = name;
     challenge.questions = shuffleArray([...questions]).slice(0, QUESTIONS_PER_CHALLENGE);
     challenge.currentIndex = 0;
@@ -183,11 +236,11 @@ function startChallenge() {
     challenge.timeLeft = CHALLENGE_TIME;
     challenge.startTime = Date.now();
     challenge.active = true;
-    
+
     document.getElementById('challengeIntro').style.display = 'none';
     document.getElementById('challengeContainer').style.display = 'block';
     document.getElementById('challengeResult').style.display = 'none';
-    
+
     showQuestion(0);
     startTimer();
 }
@@ -202,14 +255,14 @@ function shuffleArray(array) {
 
 function showQuestion(index) {
     const q = challenge.questions[index];
-    
+
     document.getElementById('questionBadge').textContent = `السؤال ${index + 1}`;
     document.getElementById('questionText').innerHTML = getQuestionText(q);
     document.getElementById('questionProgress').textContent = `${index + 1}/${QUESTIONS_PER_CHALLENGE}`;
-    
+
     const optionsContainer = document.getElementById('optionsContainer');
     optionsContainer.innerHTML = '';
-    
+
     const letters = ['A', 'B', 'C', 'D'];
     const opts = getOptions(q);
     opts.forEach((option, i) => {
@@ -225,9 +278,9 @@ function showQuestion(index) {
         btn.onclick = () => selectOption(i);
         optionsContainer.appendChild(btn);
     });
-    
+
     document.getElementById('prevBtn').disabled = index === 0;
-    
+
     if (index === QUESTIONS_PER_CHALLENGE - 1) {
         document.getElementById('nextBtn').style.display = 'none';
         document.getElementById('submitBtn').style.display = 'flex';
@@ -281,25 +334,25 @@ function updateTimerDisplay() {
 function submitChallenge() {
     clearInterval(challenge.timerInterval);
     challenge.active = false;
-    
+
     let score = 0;
     challenge.questions.forEach((q, i) => {
         if (challenge.answers[i] === q.correct) {
             score++;
         }
     });
-    
+
     challenge.score = score;
     const timeTaken = CHALLENGE_TIME - challenge.timeLeft;
     const percentage = Math.round((score / QUESTIONS_PER_CHALLENGE) * 100);
-    
+
     document.getElementById('challengeContainer').style.display = 'none';
     document.getElementById('challengeResult').style.display = 'block';
-    
+
     document.getElementById('finalScore').textContent = `${score}/${QUESTIONS_PER_CHALLENGE}`;
     document.getElementById('finalTime').textContent = formatTime(timeTaken);
     document.getElementById('percentage').textContent = `${percentage}%`;
-    
+
     let icon, title;
     if (percentage >= 90) {
         icon = '🏆';
@@ -314,11 +367,11 @@ function submitChallenge() {
         icon = '📚';
         title = 'تحتاج مراجعة أكثر';
     }
-    
+
     document.getElementById('resultIcon').textContent = icon;
     document.getElementById('resultTitle').textContent = title;
     document.getElementById('currentScore').textContent = score;
-    
+
     saveToLeaderboard(score, timeTaken);
 }
 
@@ -358,36 +411,36 @@ async function loadLeaderboard() {
         document.getElementById('noRecords').style.display = 'block';
         return;
     }
-    
+
     try {
         const snapshot = await db.collection(`leaderboard_${SUBJECT_ID}`)
             .orderBy('score', 'desc')
             .orderBy('time', 'asc')
             .limit(20)
             .get();
-        
+
         const tbody = document.getElementById('leaderboardBody');
         tbody.innerHTML = '';
-        
+
         if (snapshot.empty) {
             document.getElementById('noRecords').style.display = 'block';
             return;
         }
-        
+
         document.getElementById('noRecords').style.display = 'none';
         document.getElementById('totalPlayers').textContent = snapshot.size;
-        
+
         snapshot.docs.forEach((doc, index) => {
             const data = doc.data();
             const tr = document.createElement('tr');
-            
+
             let rankDisplay = index + 1;
             if (index === 0) rankDisplay = '🥇';
             else if (index === 1) rankDisplay = '🥈';
             else if (index === 2) rankDisplay = '🥉';
-            
+
             const date = data.date ? new Date(data.date).toLocaleDateString('ar-EG') : '-';
-            
+
             tr.innerHTML = `
                 <td>${rankDisplay}</td>
                 <td>${data.name}</td>
@@ -411,12 +464,12 @@ let filteredQuestions = [];
 function renderQuestionsBank(showAll = false) {
     const container = document.getElementById('questionsList');
     container.innerHTML = '';
-    
+
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    
+
     filteredQuestions = questions;
     if (searchTerm) {
-        filteredQuestions = questions.filter(q => 
+        filteredQuestions = questions.filter(q =>
             getQuestionTextPlain(q).toLowerCase().includes(searchTerm) ||
             (q.optionsEn && q.optionsEn.some(o => o.toLowerCase().includes(searchTerm))) ||
             (q.optionsAr && q.optionsAr.some(o => o.toLowerCase().includes(searchTerm))) ||
@@ -424,23 +477,23 @@ function renderQuestionsBank(showAll = false) {
         );
         currentBankPage = 1;
     }
-    
+
     document.getElementById('displayedCount').textContent = filteredQuestions.length;
-    
+
     if (filteredQuestions.length === 0) {
         container.innerHTML = '<p class="no-records">لا توجد نتائج مطابقة</p>';
         return;
     }
-    
+
     const letters = ['A', 'B', 'C', 'D'];
     const questionsToShow = showAll ? filteredQuestions : filteredQuestions.slice(0, currentBankPage * QUESTIONS_PER_PAGE);
-    
+
     questionsToShow.forEach((q, index) => {
         const card = document.createElement('div');
         card.className = 'bank-question-card';
         card.dataset.correct = q.correct;
         card.dataset.answered = 'false';
-        
+
         let optionsHTML = '';
         const opts = getOptions(q);
         opts.forEach((opt, i) => {
@@ -452,7 +505,7 @@ function renderQuestionsBank(showAll = false) {
                 </button>
             `;
         });
-        
+
         card.innerHTML = `
             <div class="bank-question-header">
                 <h4>${index + 1}.</h4>${getQuestionText(q)}
@@ -473,7 +526,7 @@ function renderQuestionsBank(showAll = false) {
         `;
         container.appendChild(card);
     });
-    
+
     // Add Show More button if there are more questions
     const remaining = filteredQuestions.length - questionsToShow.length;
     if (remaining > 0 && !showAll) {
@@ -492,12 +545,12 @@ function renderQuestionsBank(showAll = false) {
 function selectBankOption(btn, correctIndex) {
     const card = btn.closest('.bank-question-card');
     if (card.dataset.answered === 'true') return;
-    
+
     const selectedIndex = parseInt(btn.dataset.index);
     const isCorrect = selectedIndex === correctIndex;
-    
+
     card.dataset.answered = 'true';
-    
+
     const allOptions = card.querySelectorAll('.bank-option-btn');
     allOptions.forEach((opt, i) => {
         opt.disabled = true;
@@ -509,10 +562,10 @@ function selectBankOption(btn, correctIndex) {
             opt.querySelector('.option-icon').innerHTML = '<i class="fas fa-times"></i>';
         }
     });
-    
+
     const feedback = card.querySelector('.bank-feedback');
     feedback.style.display = 'block';
-    
+
     if (isCorrect) {
         feedback.innerHTML = '<i class="fas fa-check-circle"></i> إجابة صحيحة! أحسنت 🎉';
         feedback.className = 'bank-feedback correct';
@@ -520,14 +573,14 @@ function selectBankOption(btn, correctIndex) {
         feedback.innerHTML = '<i class="fas fa-times-circle"></i> إجابة خاطئة. الإجابة الصحيحة موضحة باللون الأخضر';
         feedback.className = 'bank-feedback wrong';
     }
-    
+
     card.querySelector('.show-answer-btn').style.display = 'none';
     card.querySelector('.answer-reveal').style.display = 'flex';
 }
 
 function showBankAnswer(btn, correctIndex, correctAnswer) {
     const card = btn.closest('.bank-question-card');
-    
+
     const allOptions = card.querySelectorAll('.bank-option-btn');
     allOptions.forEach((opt, i) => {
         if (i === correctIndex) {
@@ -535,7 +588,7 @@ function showBankAnswer(btn, correctIndex, correctAnswer) {
             opt.querySelector('.option-icon').innerHTML = '<i class="fas fa-check"></i>';
         }
     });
-    
+
     btn.style.display = 'none';
     card.querySelector('.answer-reveal').style.display = 'flex';
 }
@@ -551,11 +604,11 @@ const GEMINI_API_KEY = 'AIzaSyBaUgHBLPT2VxapoYZ2SSGB7PKpxz45uB8';
 async function askAI() {
     const input = document.getElementById('aiInput');
     const question = input.value.trim();
-    
+
     if (!question) return;
-    
+
     const messagesContainer = document.getElementById('aiMessages');
-    
+
     // Add user message
     const userMessage = document.createElement('div');
     userMessage.className = 'ai-message user';
@@ -564,10 +617,10 @@ async function askAI() {
         <div class="message-content"><p>${question}</p></div>
     `;
     messagesContainer.appendChild(userMessage);
-    
+
     input.value = '';
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
+
     // Add loading message
     const loadingMessage = document.createElement('div');
     loadingMessage.className = 'ai-message bot';
@@ -578,7 +631,7 @@ async function askAI() {
     `;
     messagesContainer.appendChild(loadingMessage);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
+
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
@@ -591,12 +644,12 @@ async function askAI() {
                 }]
             })
         });
-        
+
         const data = await response.json();
         const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'عذراً، لم أتمكن من الإجابة. حاول مرة أخرى.';
-        
+
         loadingMessage.remove();
-        
+
         const botMessage = document.createElement('div');
         botMessage.className = 'ai-message bot';
         botMessage.innerHTML = `
@@ -605,11 +658,11 @@ async function askAI() {
         `;
         messagesContainer.appendChild(botMessage);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
+
     } catch (error) {
         console.error('AI Error:', error);
         loadingMessage.remove();
-        
+
         const errorMessage = document.createElement('div');
         errorMessage.className = 'ai-message bot';
         errorMessage.innerHTML = `
@@ -621,7 +674,7 @@ async function askAI() {
 }
 
 // Enter key for AI input
-document.getElementById('aiInput')?.addEventListener('keypress', function(e) {
+document.getElementById('aiInput')?.addEventListener('keypress', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         askAI();
@@ -632,61 +685,61 @@ document.getElementById('aiInput')?.addEventListener('keypress', function(e) {
 
 // Essay Questions Bank (Bilingual: Arabic & English)
 const essayQuestions = [
-    { 
+    {
         questionAr: "اشرح قانون مالوس للاستقطاب وكيف يُستخدم لحساب شدة الضوء المستقطب",
         questionEn: "Explain Malus's law for polarization and how it is used to calculate the intensity of polarized light",
         answerAr: "قانون مالوس ينص على أن شدة الضوء المستقطب بعد مروره خلال محلل تساوي الشدة الأصلية مضروبة في مربع جيب تمام الزاوية بين محور الاستقطاب ومحور المحلل. I = I₀ cos²θ",
         answerEn: "Malus's law states that the intensity of polarized light after passing through an analyzer equals the original intensity multiplied by the square of the cosine of the angle between the polarization axis and the analyzer axis. I = I₀ cos²θ"
     },
-    { 
+    {
         questionAr: "ما الفرق بين أشباه الموصلات من النوع n والنوع p؟",
         questionEn: "What is the difference between n-type and p-type semiconductors?",
         answerAr: "النوع n: يتم تنشيطه بإضافة شوائب خماسية التكافؤ (مثل الفوسفور) مما يضيف إلكترونات حرة كحاملات أغلبية. النوع p: يتم تنشيطه بإضافة شوائب ثلاثية التكافؤ (مثل البورون) مما يخلق ثقوبًا كحاملات أغلبية.",
         answerEn: "N-type: Doped with pentavalent impurities (like phosphorus) which adds free electrons as majority carriers. P-type: Doped with trivalent impurities (like boron) which creates holes as majority carriers."
     },
-    { 
+    {
         questionAr: "اشرح ظاهرة تمدد الزمن في النسبية الخاصة وأعطِ مثالاً عليها",
         questionEn: "Explain the phenomenon of time dilation in special relativity and give an example",
         answerAr: "تمدد الزمن يعني أن الساعة المتحركة تبدو أبطأ من ساعة ساكنة. المعادلة: Δt = Δt₀/√(1-v²/c²). مثال: جسيمات الميون التي تعيش أطول عند السرعات العالية.",
         answerEn: "Time dilation means a moving clock appears slower than a stationary clock. Equation: Δt = Δt₀/√(1-v²/c²). Example: Muon particles that live longer at high speeds."
     },
-    { 
+    {
         questionAr: "صف تجربة يونج للشقين المزدوجين واشرح كيف تثبت الطبيعة الموجية للضوء",
         questionEn: "Describe Young's double-slit experiment and explain how it proves the wave nature of light",
         answerAr: "في تجربة يونج، يمر ضوء أحادي اللون خلال شقين ضيقين مما ينتج نمط تداخل من حزم مضيئة ومظلمة على الشاشة. هذا يثبت الطبيعة الموجية لأن التداخل خاصية موجية.",
         answerEn: "In Young's experiment, monochromatic light passes through two narrow slits producing an interference pattern of bright and dark fringes on the screen. This proves the wave nature because interference is a wave property."
     },
-    { 
+    {
         questionAr: "ما هو الوصلة الثنائية p-n؟ اشرح سلوكها في الانحياز الأمامي والعكسي",
         questionEn: "What is a p-n junction diode? Explain its behavior in forward and reverse bias",
         answerAr: "الوصلة p-n هي تقاطع بين أشباه موصلات من النوع p والنوع n. في الانحياز الأمامي: يتدفق التيار بسهولة. في الانحياز العكسي: لا يتدفق تيار تقريبًا بسبب اتساع منطقة الاستنزاف.",
         answerEn: "A p-n junction is a boundary between p-type and n-type semiconductors. In forward bias: current flows easily. In reverse bias: almost no current flows due to the widening of the depletion region."
     },
-    { 
+    {
         questionAr: "اشرح كيف يعمل مقوم نصف الموجة وما هي مميزاته وعيوبه",
         questionEn: "Explain how a half-wave rectifier works and what are its advantages and disadvantages",
         answerAr: "مقوم نصف الموجة يستخدم ثنائي واحد لتحويل AC إلى DC. يسمح بمرور نصف الموجة فقط. المميزات: بسيط ورخيص. العيوب: كفاءة منخفضة وتموج عالٍ.",
         answerEn: "A half-wave rectifier uses one diode to convert AC to DC. It allows only half the wave to pass. Advantages: Simple and cheap. Disadvantages: Low efficiency and high ripple."
     },
-    { 
+    {
         questionAr: "ما هي منطقة الاستنزاف في الوصلة الثنائية وكيف تتشكل؟",
         questionEn: "What is the depletion region in a diode and how is it formed?",
         answerAr: "منطقة الاستنزاف هي منطقة في الوصلة p-n خالية من حاملات الشحنة الحرة. تتشكل عندما تنتشر الإلكترونات من n إلى p والثقوب من p إلى n، تاركة أيونات ثابتة.",
         answerEn: "The depletion region is an area in the p-n junction free of mobile charge carriers. It forms when electrons diffuse from n to p and holes from p to n, leaving behind fixed ions."
     },
-    { 
+    {
         questionAr: "اشرح المجال المغناطيسي الناتج عن موصل يحمل تيارًا كهربائيًا",
         questionEn: "Explain the magnetic field produced by a current-carrying conductor",
         answerAr: "عند مرور تيار في موصل، ينشأ مجال مغناطيسي دائري حول الموصل. اتجاهه يُحدد بقاعدة اليد اليمنى. شدته تتناسب طرديًا مع التيار وعكسيًا مع البعد عن الموصل.",
         answerEn: "When current flows through a conductor, a circular magnetic field is created around it. Its direction is determined by the right-hand rule. Its strength is directly proportional to the current and inversely proportional to the distance from the conductor."
     },
-    { 
+    {
         questionAr: "ما هو تقلص الطول في النسبية الخاصة؟ اشرح العلاقة الرياضية",
         questionEn: "What is length contraction in special relativity? Explain the mathematical relationship",
         answerAr: "تقلص الطول يعني أن الأجسام المتحركة تظهر أقصر في اتجاه الحركة. المعادلة: L = L₀√(1-v²/c²). حيث L₀ هو الطول بالنسبة للراصد الساكن مع الجسم.",
         answerEn: "Length contraction means moving objects appear shorter in the direction of motion. Equation: L = L₀√(1-v²/c²). Where L₀ is the proper length measured by a stationary observer relative to the object."
     },
-    { 
+    {
         questionAr: "اشرح كيف يحدث تشتت الضوء ولماذا السماء زرقاء",
         questionEn: "Explain how light scattering occurs and why the sky is blue",
         answerAr: "تشتت الضوء يحدث عندما يصطدم الضوء بجزيئات الغلاف الجوي. الضوء الأزرق يتشتت أكثر لأن طوله الموجي قصير (تشتت رايلي). لذلك نرى السماء زرقاء.",
@@ -713,36 +766,36 @@ const ESSAYS_PER_CHALLENGE = 5;
 function startEssayChallenge() {
     const nameInput = document.getElementById('essayPlayerName');
     const name = nameInput.value.trim() || document.getElementById('challengerName').value.trim();
-    
+
     if (!name) {
         alert('من فضلك أدخل اسمك أولاً!');
         nameInput.focus();
         return;
     }
-    
+
     if (essayQuestions.length < ESSAYS_PER_CHALLENGE) {
         alert('لا توجد أسئلة مقالية كافية حالياً');
         return;
     }
-    
+
     essayChallenge.userName = name;
     essayChallenge.questions = shuffleArray([...essayQuestions]).slice(0, ESSAYS_PER_CHALLENGE);
     essayChallenge.currentIndex = 0;
     essayChallenge.answers = new Array(ESSAYS_PER_CHALLENGE).fill('');
     essayChallenge.timeLeft = ESSAY_TIME;
     essayChallenge.active = true;
-    
+
     document.getElementById('essayIntro').style.display = 'none';
     document.getElementById('essayContainer').style.display = 'block';
     document.getElementById('essayResult').style.display = 'none';
-    
+
     showEssayQuestion(0);
     startEssayTimer();
 }
 
 function showEssayQuestion(index) {
     const q = essayChallenge.questions[index];
-    
+
     document.getElementById('essayQuestionBadge').textContent = `السؤال ${index + 1}`;
     document.getElementById('essayQuestionText').innerHTML = `
         <div class="bilingual-question">
@@ -753,9 +806,9 @@ function showEssayQuestion(index) {
     document.getElementById('essayProgress').textContent = `${index + 1}/${ESSAYS_PER_CHALLENGE}`;
     document.getElementById('essayAnswer').value = essayChallenge.answers[index] || '';
 
-    
+
     document.getElementById('essayPrevBtn').disabled = index === 0;
-    
+
     if (index === ESSAYS_PER_CHALLENGE - 1) {
         document.getElementById('essayNextBtn').style.display = 'none';
         document.getElementById('essaySubmitBtn').style.display = 'flex';
@@ -810,22 +863,22 @@ async function submitEssayChallenge() {
     saveCurrentEssayAnswer();
     clearInterval(essayChallenge.timerInterval);
     essayChallenge.active = false;
-    
+
     document.getElementById('essayContainer').style.display = 'none';
     document.getElementById('essayResult').style.display = 'block';
     document.getElementById('gradingStatus').style.display = 'flex';
     document.getElementById('essayScores').style.display = 'none';
-    
+
     const scoresContainer = document.getElementById('essayScores');
     scoresContainer.innerHTML = '';
-    
+
     for (let i = 0; i < essayChallenge.questions.length; i++) {
         const q = essayChallenge.questions[i];
         const answer = essayChallenge.answers[i];
-        
+
         let feedback = '';
         let score = 0;
-        
+
         if (!answer || answer.trim().length < 10) {
             feedback = 'لم يتم الإجابة على هذا السؤال أو الإجابة قصيرة جداً';
             score = 0;
@@ -850,10 +903,10 @@ async function submitEssayChallenge() {
                         }]
                     })
                 });
-                
+
                 const data = await response.json();
                 const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                
+
                 const scoreMatch = aiResponse.match(/الدرجة:\s*(\d+)/);
                 score = scoreMatch ? parseInt(scoreMatch[1]) : 5;
                 feedback = aiResponse.replace(/الدرجة:\s*\d+\/10\s*/g, '').trim() || 'تم التقييم';
@@ -862,7 +915,7 @@ async function submitEssayChallenge() {
                 score = 5;
             }
         }
-        
+
         const card = document.createElement('div');
         card.className = 'essay-score-card';
         card.innerHTML = `
@@ -876,7 +929,7 @@ async function submitEssayChallenge() {
         scoresContainer.appendChild(card);
 
     }
-    
+
     document.getElementById('gradingStatus').style.display = 'none';
     document.getElementById('essayScores').style.display = 'flex';
 }
@@ -895,14 +948,14 @@ let filteredEssay = [];
 function renderEssayBank(showAll = false) {
     const container = document.getElementById('essayQuestionsList');
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     const searchTerm = document.getElementById('essaySearchInput')?.value?.toLowerCase() || '';
-    
+
     filteredEssay = essayQuestions;
     if (searchTerm) {
-        filteredEssay = essayQuestions.filter(q => 
+        filteredEssay = essayQuestions.filter(q =>
             q.questionAr.toLowerCase().includes(searchTerm) ||
             q.questionEn.toLowerCase().includes(searchTerm) ||
             q.answerAr.toLowerCase().includes(searchTerm) ||
@@ -910,14 +963,14 @@ function renderEssayBank(showAll = false) {
         );
         currentEssayPage = 1;
     }
-    
+
     if (filteredEssay.length === 0) {
         container.innerHTML = '<p class="no-records">لا توجد نتائج مطابقة</p>';
         return;
     }
-    
+
     const essaysToShow = showAll ? filteredEssay : filteredEssay.slice(0, currentEssayPage * ESSAYS_PER_PAGE);
-    
+
     essaysToShow.forEach((q, index) => {
         const item = document.createElement('div');
         item.className = 'essay-question-item';
@@ -938,7 +991,7 @@ function renderEssayBank(showAll = false) {
         item.onclick = () => item.classList.toggle('expanded');
         container.appendChild(item);
     });
-    
+
     // Add Show More button if there are more questions
     const remaining = filteredEssay.length - essaysToShow.length;
     if (remaining > 0 && !showAll) {
@@ -971,14 +1024,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const essayName = document.getElementById('essayPlayerName');
                 if (essayName) essayName.value = profile.name;
             }
-        } catch (e) {}
+        } catch (e) { }
     }
-    
+
     // Update stats
     document.getElementById('totalQuestions').textContent = questions.length;
     const totalEssay = document.getElementById('totalEssay');
     if (totalEssay) totalEssay.textContent = essayQuestions.length;
-    
+
     // Load data
     loadLeaderboard();
     renderQuestionsBank();

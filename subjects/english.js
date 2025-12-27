@@ -6,7 +6,7 @@ const SUBJECT_ID = 'english';
 const SUBJECT_NAME = 'لغة إنجليزية';
 const CHALLENGE_TIME = 300;
 const QUESTIONS_PER_CHALLENGE = 15;
-const GEMINI_API_KEY = 'AIzaSyBaUgHBLPT2VxapoYZ2SSGB7PKpxz45uB8';
+const GROQ_API_KEY = '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';
 
 // MCQ Questions - Bilingual Format (questionAr, questionEn, options, correct)
 // Add your questions here in this format:
@@ -346,3 +346,4 @@ document.getElementById('aiInput')?.addEventListener('keypress', e => { if (e.ke
 
 // Init
 document.addEventListener('DOMContentLoaded', () => { const s = localStorage.getItem('userProfile'); if (s) { try { const p = JSON.parse(s); if (p.name) { document.getElementById('challengerName').value = p.name; const en = document.getElementById('essayPlayerName'); if (en) en.value = p.name; } } catch(e){} } document.getElementById('totalQuestions').textContent = questions.length; const te = document.getElementById('totalEssay'); if (te) te.textContent = essayQuestions.length; loadLeaderboard(); renderQuestionsBank(); renderEssayBank(); });
+
