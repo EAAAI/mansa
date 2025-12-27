@@ -407,5 +407,135 @@ async function askAI() {
 }
 document.getElementById('aiInput')?.addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); askAI(); } });
 
+// Essay Bank with Firebase Integration
+let essayBankQuestions = [];
+let essayBankLoaded = false;
+let filteredEssayBank = [];
+
+// Load essay questions from Firebase
+async function loadEssayBankFromFirebase() {
+    if (essayBankLoaded) return;
+    
+    const container = document.getElementById('essayQuestionsList');
+    if (!container) return;
+    
+    try {
+        container.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>';
+        
+        if (!db) {
+            container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-circle"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة قريباً</p></div>';
+            return;
+        }
+
+        const snapshot = await db.collection(`essay_questions_${SUBJECT_ID}`).get();
+        
+        if (snapshot.empty) {
+            container.innerHTML = '<div class="no-questions-message"><i class="fas fa-book-open"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة من لوحة الإدارة</p></div>';
+            document.getElementById('essayDisplayedCount').textContent = '0';
+            essayBankLoaded = true;
+            return;
+        }
+
+        essayBankQuestions = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            essayBankQuestions.push({
+                id: doc.id,
+                question: data.question || '',
+                answer: data.answer || '',
+                ...data
+            });
+        });
+
+        essayBankLoaded = true;
+        renderEssayBankQuestions();
+        
+    } catch (error) {
+        console.error('Error loading essay questions:', error);
+        container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-triangle"></i><h3>حدث خطأ في التحميل</h3><p>يرجى المحاولة مرة أخرى</p></div>';
+    }
+}
+
+// Render essay bank questions
+function renderEssayBankQuestions() {
+    const container = document.getElementById('essayQuestionsList');
+    if (!container) return;
+
+    const searchTerm = document.getElementById('essaySearchInput')?.value?.toLowerCase() || '';
+    
+    filteredEssayBank = essayBankQuestions;
+    if (searchTerm) {
+        filteredEssayBank = essayBankQuestions.filter(q =>
+            q.question.toLowerCase().includes(searchTerm) ||
+            (q.answer && q.answer.toLowerCase().includes(searchTerm))
+        );
+    }
+
+    document.getElementById('essayDisplayedCount').textContent = filteredEssayBank.length;
+
+    if (filteredEssayBank.length === 0) {
+        container.innerHTML = '<div class="no-questions-message"><i class="fas fa-search"></i><h3>لا توجد نتائج</h3><p>جرب كلمات بحث أخرى</p></div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    filteredEssayBank.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'essay-question-card';
+        card.innerHTML = `
+            <div class="question-number">سؤال ${index + 1}</div>
+            <div class="question-text">${q.question}</div>
+            ${q.answer ? `
+                <div class="question-answer collapsed" id="essay-answer-${index}">
+                    <strong>الإجابة النموذجية:</strong>
+                    <p>${q.answer}</p>
+                </div>
+                <button class="toggle-answer-btn" onclick="toggleEssayAnswer(${index})">
+                    <i class="fas fa-eye"></i> عرض الإجابة
+                </button>
+            ` : ''}
+        `;
+        container.appendChild(card);
+    });
+}
+
+// Toggle essay answer visibility
+function toggleEssayAnswer(index) {
+    const answerDiv = document.getElementById(`essay-answer-${index}`);
+    const button = answerDiv.nextElementSibling;
+    
+    if (answerDiv.classList.contains('collapsed')) {
+        answerDiv.classList.remove('collapsed');
+        answerDiv.classList.add('expanded');
+        button.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء الإجابة';
+        button.classList.add('active');
+    } else {
+        answerDiv.classList.add('collapsed');
+        answerDiv.classList.remove('expanded');
+        button.innerHTML = '<i class="fas fa-eye"></i> عرض الإجابة';
+        button.classList.remove('active');
+    }
+}
+
+// Filter essay bank questions
+function filterEssayQuestions() {
+    renderEssayBankQuestions();
+}
+
+// Lazy loading with Intersection Observer
+const essayBankSection = document.getElementById('essay-bank');
+if (essayBankSection) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !essayBankLoaded) {
+                loadEssayBankFromFirebase();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    observer.observe(essayBankSection);
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', () => { const s = localStorage.getItem('userProfile'); if (s) { try { const p = JSON.parse(s); if (p.name) { document.getElementById('challengerName').value = p.name; const en = document.getElementById('essayPlayerName'); if (en) en.value = p.name; } } catch (e) { } } document.getElementById('totalQuestions').textContent = questions.length; const te = document.getElementById('totalEssay'); if (te) te.textContent = essayQuestions.length; loadLeaderboard(); renderQuestionsBank(); renderEssayBank(); });

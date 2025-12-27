@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="physics2.css">
     <link rel="stylesheet" href="math1.css">
+    <link rel="stylesheet" href="essay-bank.css">
 </head>
 
 <body>
@@ -21,6 +22,8 @@
                 <a href="#hero" class="nav-link active"><i class="fas fa-home"></i><span>الرئيسية</span></a>
                 <a href="#challenge" class="nav-link"><i class="fas fa-bolt"></i><span>التحدي</span></a>
                 <a href="#bank" class="nav-link"><i class="fas fa-book-open"></i><span>الأسئلة الاختيارية</span></a>
+                <a href="#essay-bank" class="nav-link"><i class="fas fa-pen-fancy"></i><span>بنك الأسئلة
+                        المقالية</span></a>
                 <a href="#leaderboard" class="nav-link"><i class="fas fa-trophy"></i><span>المتصدرين</span></a>
                 <a href="#ask-ai" class="nav-link"><i class="fas fa-robot"></i><span>اسأل الذكاء</span></a>
             </div>
@@ -112,6 +115,20 @@
         </div>
     </section>
 
+    <section id="essay-bank" class="section essay-bank-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-pen-fancy"></i>بنك الأسئلة المقالية</h2>
+            <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
+            <div class="essay-bank-controls">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput"
+                        placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="questions-count">إجمالي: <span id="essayDisplayedCount">0</span> سؤال مقالي</div>
+            </div>
+            <div class="essay-questions-grid" id="essayQuestionsList">
+                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>
+            </div>
+        </div>
+    </section>
 
     <section id="leaderboard" class="section leaderboard-section">
         <div class="container">
