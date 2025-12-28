@@ -1,0 +1,80 @@
+/* Additional KaTeX Styling for Leaderboard and Dynamic Content */
+
+/* CRITICAL: Force LTR for math in all contexts */
+table .katex,
+.leaderboard-table .katex,
+.bank-option-btn .katex,
+.option-btn .katex,
+.essay-question-card .katex,
+.question-answer .katex {
+    direction: ltr !important;
+    unicode-bidi: isolate !important;
+    display: inline-block !important;
+}
+
+/* Prevent RTL from affecting math symbols */
+.katex .mord.text,
+.katex .minner {
+    direction: ltr !important;
+    unicode-bidi: plaintext !important;
+}
+
+/* Leaderboard Math Rendering */
+.leaderboard-table .player-name .katex {
+    font-size: 1em !important;
+    vertical-align: middle !important;
+}
+
+/* Inline math in tables */
+table .katex {
+    font-size: 0.95em !important;
+    display: inline !important;
+}
+
+/* Math in option buttons */
+.bank-option-btn .katex,
+.option-btn .katex {
+    font-size: 1em !important;
+    vertical-align: middle !important;
+    color: inherit !important;
+}
+
+.option-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.option-text .katex {
+    font-size: 1em !important;
+    vertical-align: middle !important;
+}
+
+/* Math in question headers */
+.bank-question-header .katex {
+    color: #fff !important;
+}
+
+/* Ensure inline math doesn't break layout */
+.katex-html {
+    display: inline-block !important;
+}
+
+/* Math in feedback messages */
+.bank-feedback .katex {
+    color: #fff !important;
+}
+
+/* Calculator-style font for numbers in math */
+.katex .mord.text {
+    font-family: 'Courier New', 'Consolas', monospace !important;
+}
+
+/* Clean rendering - no visible raw code */
+.katex-mathml {
+    display: none !important;
+}
+
+/* Ensure proper alignment in all contexts */
+.katex-display>.katex {
+    text-align: center !important;
+}

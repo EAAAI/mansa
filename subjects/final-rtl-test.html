@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final RTL/LTR Math Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="katex-custom.css">
+    <link rel="stylesheet" href="katex-leaderboard.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .test-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(56, 239, 125, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #38ef7d;
+        }
+
+        .math-content {
+            direction: ltr !important;
+            unicode-bidi: bidi-override !important;
+            display: inline-block;
+            background: rgba(56, 239, 125, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .correct {
+            color: #38ef7d;
+        }
+
+        .wrong {
+            color: #ff6b6b;
+        }
+
+        .test-case {
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔬 اختبار نهائي - RTL/LTR للرياضيات</h1>
+
+    <div class="test-box">
+        <h2>✅ الحالات الاختبارية</h2>
+
+        <div class="test-case">
+            <strong>1. الفترة مع سالب لا نهاية:</strong><br>
+            <span class="math-content">&lrm;$(-\infty, 5)$&lrm;</span>
+            <p class="correct">✓ يجب أن تظهر الإشارة السالبة على يسار ∞</p>
+        </div>
+
+        <div class="test-case">
+            <strong>2. فترة بأعداد سالبة:</strong><br>
+            <span class="math-content">&lrm;$(-5, -2)$&lrm;</span>
+            <p class="correct">✓ كلا الإشارتين على اليسار</p>
+        </div>
+
+        <div class="test-case">
+            <strong>3. معادلة مع أعداد سالبة:</strong><br>
+            <span class="math-content">&lrm;$x = -2$ أو $x = -3$&lrm;</span>
+            <p class="correct">✓ الإشارات السالبة على يسار الأرقام</p>
+        </div>
+
+        <div class="test-case">
+            <strong>4. كسر سالب:</strong><br>
+            <span class="math-content">&lrm;$\frac{-8}{-2} = 4$&lrm;</span>
+            <p class="correct">✓ الإشارات في البسط والمقام على اليسار</p>
+        </div>
+
+        <div class="test-case">
+            <strong>5. فترة مفتوحة لموجب لا نهاية:</strong><br>
+            <span class="math-content">&lrm;$(0, +\infty)$&lrm;</span>
+            <p class="correct">✓ الإشارة الموجبة على يسار ∞</p>
+        </div>
+
+        <div class="test-case">
+            <strong>6. نص عربي مع رياضيات مدمجة:</strong><br>
+            <p>الحل هو <span class="math-content" dir="ltr" style="unicode-bidi: bidi-override !important;">&lrm;$x \in
+                    (-\infty, 5]$&lrm;</span> والنتيجة صحيحة</p>
+            <p class="correct">✓ الرياضيات معزولة عن النص العربي</p>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>❌ أمثلة على الأخطاء المتوقعة (إذا لم يعمل الحل)</h2>
+        <div class="test-case">
+            <p class="wrong">✗ $\infty-$ بدلاً من $-\infty$ (خطأ!)</p>
+            <p class="wrong">✗ $(5 ,∞-)$ بدلاً من $(-\infty, 5)$ (خطأ!)</p>
+            <p class="wrong">✗ الأقواس معكوسة: )5 ,∞-( (خطأ!)</p>
+        </div>
+    </div>
+
+    <div class="test-box">
+        <h2>🎯 النتيجة المتوقعة</h2>
+        <p>جميع الحالات أعلاه يجب أن تعرض بشكل صحيح مع:</p>
+        <ul>
+            <li>✓ الإشارات السالبة على اليسار</li>
+            <li>✓ الأقواس في الاتجاه الصحيح</li>
+            <li>✓ الفواصل في المكان الصحيح</li>
+            <li>✓ عدم تأثر الرياضيات بالنص العربي المحيط</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+                console.log('✅ KaTeX rendering complete with bidi-override');
+            }
+        });
+    </script>
+</body>
+
+</html>

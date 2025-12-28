@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Question Layout Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="katex-custom.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(56, 239, 125, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #38ef7d;
+        }
+
+        /* Simulate question container */
+        .question-content-wrapper {
+            direction: ltr !important;
+            text-align: left !important;
+            unicode-bidi: isolate !important;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .question-text {
+            direction: ltr !important;
+            text-align: left !important;
+            unicode-bidi: plaintext !important;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .option-btn {
+            direction: ltr !important;
+            text-align: left !important;
+            display: flex !important;
+            flex-direction: row-reverse !important;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: rgba(56, 239, 125, 0.1);
+            border-color: #38ef7d;
+        }
+
+        .option-letter {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-left: 15px !important;
+            margin-right: 0 !important;
+        }
+
+        .option-text {
+            direction: ltr !important;
+            text-align: left !important;
+            unicode-bidi: plaintext !important;
+            flex: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📐 اختبار تخطيط الأسئلة الإنجليزية</h1>
+
+    <div class="test-card">
+        <h2 style="text-align: right;">مثال: سؤال فيزياء بالإنجليزية</h2>
+
+        <div class="question-content-wrapper">
+            <div class="question-text">
+                A particle moves along a line with velocity $v(t) = 3t^2 - 2t + 1$ m/s.
+                What is the acceleration at time $t = 2$ seconds?
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">أ</span>
+                <span class="option-text">$a = 10$ m/s²</span>
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">ب</span>
+                <span class="option-text">$a = 8$ m/s²</span>
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">ج</span>
+                <span class="option-text">$a = 6$ m/s²</span>
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">د</span>
+                <span class="option-text">$a = 4$ m/s²</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2 style="text-align: right;">مثال: سؤال رياضيات بفترات</h2>
+
+        <div class="question-content-wrapper">
+            <div class="question-text">
+                Find the domain of the function $f(x) = \frac{1}{x+3}$
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">أ</span>
+                <span class="option-text">$(-\infty, -3) \cup (-3, +\infty)$</span>
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">ب</span>
+                <span class="option-text">$(-\infty, +\infty)$</span>
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">ج</span>
+                <span class="option-text">$[-3, +\infty)$</span>
+            </div>
+
+            <div class="option-btn">
+                <span class="option-letter">د</span>
+                <span class="option-text">$(-3, +\infty)$</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2 style="text-align: right;">✅ النتائج المتوقعة</h2>
+        <ul style="line-height: 2; text-align: right;">
+            <li>✓ النص الإنجليزي يبدأ من اليسار ويتدفق طبيعياً</li>
+            <li>✓ الحروف العربية (أ، ب، ج، د) على اليمين</li>
+            <li>✓ المحتوى الرياضي على اليسار</li>
+            <li>✓ الفترات والأعداد السالبة صحيحة</li>
+            <li>✓ الكسور تعرض بشكل احترافي</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+                console.log('✅ KaTeX rendering complete');
+            }
+        });
+    </script>
+</body>
+
+</html>

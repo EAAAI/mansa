@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaTeX Math Display Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="katex-custom.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #38ef7d, #11998e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            color: #38ef7d;
+            margin-bottom: 20px;
+        }
+
+        .example {
+            background: rgba(56, 239, 125, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #38ef7d;
+        }
+
+        .code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            color: #38ef7d;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧮 اختبار عرض الرياضيات الطبيعي</h1>
+
+    <div class="test-section">
+        <h2>1. الكسور (Fractions)</h2>
+        <div class="example">
+            <div class="code">$$\frac{a + b}{c + d}$$</div>
+            <p>النتيجة:</p>
+            $$\frac{a + b}{c + d}$$
+        </div>
+        <div class="example">
+            <div class="code">$$\frac{x^2 + 2x + 1}{x - 1}$$</div>
+            <p>النتيجة:</p>
+            $$\frac{x^2 + 2x + 1}{x - 1}$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. التكاملات (Integrals)</h2>
+        <div class="example">
+            <div class="code">$$\int_0^1 x^2 dx$$</div>
+            <p>النتيجة:</p>
+            $$\int_0^1 x^2 dx$$
+        </div>
+        <div class="example">
+            <div class="code">$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</div>
+            <p>النتيجة:</p>
+            $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. الجذور (Roots)</h2>
+        <div class="example">
+            <div class="code">$$\sqrt{x^2 + y^2}$$</div>
+            <p>النتيجة:</p>
+            $$\sqrt{x^2 + y^2}$$
+        </div>
+        <div class="example">
+            <div class="code">$$\sqrt[3]{x^3 + y^3 + z^3}$$</div>
+            <p>النتيجة:</p>
+            $$\sqrt[3]{x^3 + y^3 + z^3}$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. المجموع والضرب (Summation & Product)</h2>
+        <div class="example">
+            <div class="code">$$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$</div>
+            <p>النتيجة:</p>
+            $$\sum_{i=1}^{n} i = \frac{n(n+1)}{2}$$
+        </div>
+        <div class="example">
+            <div class="code">$$\prod_{i=1}^{n} i = n!$$</div>
+            <p>النتيجة:</p>
+            $$\prod_{i=1}^{n} i = n!$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. النهايات (Limits)</h2>
+        <div class="example">
+            <div class="code">$$\lim_{x \to 0} \frac{\sin x}{x} = 1$$</div>
+            <p>النتيجة:</p>
+            $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$
+        </div>
+        <div class="example">
+            <div class="code">$$\lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n = e$$</div>
+            <p>النتيجة:</p>
+            $$\lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n = e$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. المصفوفات (Matrices)</h2>
+        <div class="example">
+            <div class="code">$$\begin{pmatrix} a & b \\ c & d \end{pmatrix}$$</div>
+            <p>النتيجة:</p>
+            $$\begin{pmatrix} a & b \\ c & d \end{pmatrix}$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>7. المعادلات المحاذية (Aligned Equations)</h2>
+        <div class="example">
+            <div class="code">
+                $$\begin{aligned}
+                f(x) &= x^2 + 2x + 1 \\
+                &= (x + 1)^2
+                \end{aligned}$$
+            </div>
+            <p>النتيجة:</p>
+            $$\begin{aligned}
+            f(x) &= x^2 + 2x + 1 \\
+            &= (x + 1)^2
+            \end{aligned}$$
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>8. معادلات مركبة (Complex Equations)</h2>
+        <div class="example">
+            <div class="code">$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$</div>
+            <p>النتيجة (معادلة الدرجة الثانية):</p>
+            $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false,
+                    displayMode: true
+                });
+                console.log('✅ KaTeX rendering complete');
+            } else {
+                console.error('❌ KaTeX not loaded');
+            }
+        });
+    </script>
+</body>
+
+</html>

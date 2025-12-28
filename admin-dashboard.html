@@ -1,13 +1,23 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - ليالي الامتحان</title>
+    <title>Admin Dashboard - Layali Al-Imtihan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+        crossorigin="anonymous"></script>
     <style>
         * {
             margin: 0;
@@ -230,37 +240,72 @@
             margin-top: 20px;
             display: none;
         }
+
+        /* Math Preview Box */
+        .math-preview {
+            background: rgba(56, 239, 125, 0.05);
+            border: 1px solid rgba(56, 239, 125, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            min-height: 60px;
+        }
+
+        .math-preview h4 {
+            color: #38ef7d;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* KaTeX Display Mode in Admin */
+        .katex-display {
+            background: rgba(255, 255, 255, 0.03) !important;
+            padding: 15px !important;
+            border-radius: 8px !important;
+            margin: 10px 0 !important;
+            border-left: 3px solid #38ef7d !important;
+        }
+
+        .katex {
+            font-size: 1.2em !important;
+            color: #fff !important;
+        }
+
+        .preview-hint {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
     </style>
 </head>
 
 <body>
     <!-- Login Screen -->
     <div class="login-container" id="loginContainer">
-        <h1><i class="fas fa-lock"></i> تسجيل الدخول</h1>
-        <input type="password" id="passwordInput" placeholder="كلمة المرور"
-            onkeypress="if(event.key==='Enter') login()">
-        <button onclick="login()"><i class="fas fa-sign-in-alt"></i> دخول</button>
+        <h1><i class="fas fa-lock"></i> Admin Login</h1>
+        <input type="password" id="passwordInput" placeholder="Password" onkeypress="if(event.key==='Enter') login()">
+        <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
         <p style="text-align: center; margin-top: 20px; opacity: 0.5; font-size: 0.85rem;">
-            كلمة المرور الافتراضية: admin123
+            Default password: admin123
         </p>
     </div>
 
     <!-- Dashboard -->
     <div class="dashboard" id="dashboard">
         <div class="dashboard-header">
-            <h1><i class="fas fa-chart-line"></i> لوحة التحكم</h1>
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+            <h1><i class="fas fa-chart-line"></i> Admin Dashboard</h1>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
 
         <div class="tabs">
             <div class="tab active" onclick="switchTab('analytics')">
-                <i class="fas fa-chart-bar"></i> الإحصائيات
+                <i class="fas fa-chart-bar"></i> Analytics
             </div>
             <div class="tab" onclick="switchTab('questions')">
-                <i class="fas fa-plus-circle"></i> إضافة أسئلة اختيارية
+                <i class="fas fa-plus-circle"></i> Add MCQ Questions
             </div>
             <div class="tab" onclick="switchTab('essay')">
-                <i class="fas fa-pen-fancy"></i> إضافة أسئلة مقالية
+                <i class="fas fa-pen-fancy"></i> Add Essay Questions
             </div>
         </div>
 
@@ -268,83 +313,89 @@
         <div class="tab-content active" id="analytics">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>زيارات اليوم</h3>
+                    <h3>Today's Visits</h3>
                     <div class="value" id="todayVisits">0</div>
                 </div>
                 <div class="stat-card">
-                    <h3>إجمالي الزيارات</h3>
+                    <h3>Total Visits</h3>
                     <div class="value" id="totalVisits">0</div>
                 </div>
                 <div class="stat-card">
-                    <h3>عدد التحديات</h3>
+                    <h3>Total Challenges</h3>
                     <div class="value" id="totalChallenges">0</div>
                 </div>
                 <div class="stat-card">
-                    <h3>عدد الأسئلة</h3>
+                    <h3>Total Questions</h3>
                     <div class="value" id="totalQuestions">0</div>
                 </div>
             </div>
 
             <div class="chart-container">
-                <h2 style="margin-bottom: 20px;"><i class="fas fa-chart-line"></i> الزيارات اليومية (آخر 7 أيام)</h2>
+                <h2 style="margin-bottom: 20px;"><i class="fas fa-chart-line"></i> Daily Visits (Last 7 Days)</h2>
                 <canvas id="visitsChart"></canvas>
             </div>
         </div>
 
         <!-- Add Questions Tab -->
         <div class="tab-content" id="questions">
-            <h2 style="margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> إضافة سؤال اختياري جديد</h2>
+            <h2 style="margin-bottom: 20px;"><i class="fas fa-plus-circle"></i> Add New MCQ Question</h2>
 
             <div class="form-group">
-                <label><i class="fas fa-book"></i> اختر المادة</label>
+                <label><i class="fas fa-book"></i> Select Subject</label>
                 <select id="questionSubject">
-                    <option value="physics2">فيزياء 2</option>
-                    <option value="english">لغة إنجليزية</option>
+                    <option value="physics2">Physics 2</option>
+                    <option value="english">English Language</option>
                     <option value="it">IT</option>
-                    <option value="electronics">إلكترونيات</option>
-                    <option value="math1">رياضة 1</option>
-                    <option value="math0">رياضة 0</option>
-                    <option value="history">تاريخ الحوسبة</option>
-                    <option value="law">قوانين الحاسب</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="math1">Math 1</option>
+                    <option value="math0">Math 0</option>
+                    <option value="history">Computing History</option>
+                    <option value="law">Computer Law</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-question-circle"></i> نص السؤال</label>
-                <textarea id="questionText" placeholder="اكتب السؤال هنا..."></textarea>
+                <label><i class="fas fa-question-circle"></i> Question Text</label>
+                <textarea id="questionText" placeholder="Write the question here..."></textarea>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-image"></i> أو ارفع صورة السؤال (اختياري)</label>
+                <label><i class="fas fa-image"></i> Or Upload Question Image (Optional)</label>
                 <input type="file" id="questionImage" accept="image/*"
                     onchange="previewImage(this, 'questionImagePreview')">
                 <img id="questionImagePreview" class="image-preview" style="display: none;">
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-list"></i> الاختيارات</label>
+                <label><i class="fas fa-list"></i> Options</label>
                 <div class="options-container">
-                    <input type="text" id="option1" placeholder="الاختيار الأول">
-                    <input type="text" id="option2" placeholder="الاختيار الثاني">
-                    <input type="text" id="option3" placeholder="الاختيار الثالث">
-                    <input type="text" id="option4" placeholder="الاختيار الرابع">
+                    <input type="text" id="option1" placeholder="Option 1">
+                    <input type="text" id="option2" placeholder="Option 2">
+                    <input type="text" id="option3" placeholder="Option 3">
+                    <input type="text" id="option4" placeholder="Option 4">
                 </div>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-check-circle"></i> الإجابة الصحيحة</label>
+                <label><i class="fas fa-check-circle"></i> Correct Answer</label>
                 <select id="correctAnswer">
-                    <option value="0">الاختيار الأول</option>
-                    <option value="1">الاختيار الثاني</option>
-                    <option value="2">الاختيار الثالث</option>
-                    <option value="3">الاختيار الرابع</option>
+                    <option value="0">Option 1</option>
+                    <option value="1">Option 2</option>
+                    <option value="2">Option 3</option>
+                    <option value="3">Option 4</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-lightbulb"></i> شرح السؤال (اختياري)</label>
-                <textarea id="questionExplanation" placeholder="اكتب شرح للسؤال هنا... (سيظهر بعد الإجابة)"
+                <label><i class="fas fa-lightbulb"></i> Question Explanation (Optional)</label>
+                <textarea id="questionExplanation" placeholder="Write explanation here... (will show after answering)"
                     style="min-height: 80px;"></textarea>
+            </div>
+
+            <div class="math-preview" id="questionMathPreview">
+                <h4><i class="fas fa-eye"></i> معاينة المعادلات الرياضية</h4>
+                <p class="preview-hint">استخدم $$ للمعادلات الكبيرة و $ للمعادلات الصغيرة</p>
+                <div id="questionPreviewContent"></div>
             </div>
 
             <button class="btn" onclick="addQuestion(event)">
@@ -352,55 +403,61 @@
             </button>
 
             <div class="success-message" id="questionSuccess">
-                <i class="fas fa-check-circle"></i> تم إضافة السؤال بنجاح!
+                <i class="fas fa-check-circle"></i> Question added successfully!
             </div>
         </div>
 
         <!-- Add Essay Questions Tab -->
         <div class="tab-content" id="essay">
-            <h2 style="margin-bottom: 20px;"><i class="fas fa-pen-fancy"></i> إضافة سؤال مقالي جديد</h2>
+            <h2 style="margin-bottom: 20px;"><i class="fas fa-pen-fancy"></i> Add New Essay Question</h2>
 
             <div class="form-group">
-                <label><i class="fas fa-book"></i> اختر المادة</label>
+                <label><i class="fas fa-book"></i> Select Subject</label>
                 <select id="essaySubject">
-                    <option value="physics2">فيزياء 2</option>
-                    <option value="english">لغة إنجليزية</option>
+                    <option value="physics2">Physics 2</option>
+                    <option value="english">English Language</option>
                     <option value="it">IT</option>
-                    <option value="electronics">إلكترونيات</option>
-                    <option value="math1">رياضة 1</option>
-                    <option value="math0">رياضة 0</option>
-                    <option value="history">تاريخ الحوسبة</option>
-                    <option value="law">قوانين الحاسب</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="math1">Math 1</option>
+                    <option value="math0">Math 0</option>
+                    <option value="history">Computing History</option>
+                    <option value="law">Computer Law</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-heading"></i> عنوان السؤال</label>
-                <input type="text" id="essayTitle" placeholder="مثال: السؤال الأول: التعريفات">
+                <label><i class="fas fa-heading"></i> Question Title</label>
+                <input type="text" id="essayTitle" placeholder="Example: Question 1: Definitions">
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-question-circle"></i> نص السؤال</label>
-                <textarea id="essayQuestion" placeholder="اكتب السؤال المقالي هنا..."></textarea>
+                <label><i class="fas fa-question-circle"></i> Question Text</label>
+                <textarea id="essayQuestion" placeholder="Write the essay question here..."></textarea>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-lightbulb"></i> الإجابة النموذجية</label>
-                <textarea id="essayAnswer" placeholder="اكتب الإجابة النموذجية هنا..."
+                <label><i class="fas fa-lightbulb"></i> Model Answer</label>
+                <textarea id="essayAnswer" placeholder="Write the model answer here..."
                     style="min-height: 150px;"></textarea>
             </div>
 
             <div class="form-group">
-                <label><i class="fas fa-star"></i> الدرجة</label>
+                <label><i class="fas fa-star"></i> Marks</label>
                 <input type="number" id="essayMarks" placeholder="6" min="1" max="30">
             </div>
 
+            <div class="math-preview" id="essayMathPreview">
+                <h4><i class="fas fa-eye"></i> معاينة المعادلات الرياضية</h4>
+                <p class="preview-hint">استخدم $$ للمعادلات الكبيرة و $ للمعادلات الصغيرة</p>
+                <div id="essayPreviewContent"></div>
+            </div>
+
             <button class="btn" onclick="addEssayQuestion(event)">
-                <i class="fas fa-plus"></i> إضافة السؤال المقالي
+                <i class="fas fa-plus"></i> Add Essay Question
             </button>
 
             <div class="success-message" id="essaySuccess">
-                <i class="fas fa-check-circle"></i> تم إضافة السؤال المقالي بنجاح!
+                <i class="fas fa-check-circle"></i> Essay question added successfully!
             </div>
         </div>
     </div>
@@ -740,6 +797,94 @@
                 console.error('Error tracking visit:', error);
             }
         }
+
+        // KaTeX Initialization and Live Preview
+        function initializeKaTeX() {
+            if (typeof renderMathInElement === 'undefined') {
+                setTimeout(initializeKaTeX, 100);
+                return;
+            }
+
+            console.log('✅ KaTeX loaded and ready');
+
+            // Add event listeners for live preview
+            const questionText = document.getElementById('questionText');
+            const questionExplanation = document.getElementById('questionExplanation');
+            const essayQuestion = document.getElementById('essayQuestion');
+            const essayAnswer = document.getElementById('essayAnswer');
+
+            if (questionText) {
+                questionText.addEventListener('input', updateQuestionPreview);
+            }
+            if (questionExplanation) {
+                questionExplanation.addEventListener('input', updateQuestionPreview);
+            }
+            if (essayQuestion) {
+                essayQuestion.addEventListener('input', updateEssayPreview);
+            }
+            if (essayAnswer) {
+                essayAnswer.addEventListener('input', updateEssayPreview);
+            }
+        }
+
+        // Update MCQ question preview
+        function updateQuestionPreview() {
+            const questionText = document.getElementById('questionText').value;
+            const explanation = document.getElementById('questionExplanation').value;
+            const previewContent = document.getElementById('questionPreviewContent');
+
+            let html = '';
+            if (questionText) {
+                html += `<div style="margin-bottom: 15px;"><strong>السؤال:</strong><br>${questionText}</div>`;
+            }
+            if (explanation) {
+                html += `<div><strong>الشرح:</strong><br>${explanation}</div>`;
+            }
+
+            previewContent.innerHTML = html || '<p style="opacity: 0.5;">اكتب سؤال يحتوي على معادلات رياضية...</p>';
+
+            // Render math
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(previewContent, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // Update essay question preview
+        function updateEssayPreview() {
+            const question = document.getElementById('essayQuestion').value;
+            const answer = document.getElementById('essayAnswer').value;
+            const previewContent = document.getElementById('essayPreviewContent');
+
+            let html = '';
+            if (question) {
+                html += `<div style="margin-bottom: 15px;"><strong>السؤال:</strong><br>${question}</div>`;
+            }
+            if (answer) {
+                html += `<div><strong>الإجابة النموذجية:</strong><br>${answer}</div>`;
+            }
+
+            previewContent.innerHTML = html || '<p style="opacity: 0.5;">اكتب سؤال مقالي يحتوي على معادلات رياضية...</p>';
+
+            // Render math
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(previewContent, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // Initialize KaTeX when page loads
+        document.addEventListener('DOMContentLoaded', initializeKaTeX);
     </script>
 </body>
 

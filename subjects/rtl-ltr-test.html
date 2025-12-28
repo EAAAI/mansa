@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTL/LTR Math Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="katex-custom.css">
+    <link rel="stylesheet" href="katex-leaderboard.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, #38ef7d, #11998e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: rgba(56, 239, 125, 0.1);
+            border-color: #38ef7d;
+        }
+
+        .option-letter {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 5px 12px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        .option-text {
+            direction: ltr;
+            unicode-bidi: isolate;
+            display: inline-block;
+        }
+
+        .correct {
+            color: #38ef7d;
+            font-weight: bold;
+        }
+
+        .wrong {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔄 اختبار RTL/LTR للرياضيات</h1>
+
+    <div class="test-card">
+        <h2>اختبار الفترات والأعداد السالبة</h2>
+        <p><strong>السؤال:</strong> ما هي الفترة الصحيحة؟</p>
+
+        <button class="option-btn">
+            <span class="option-letter">أ</span>
+            <span class="option-text">$(-\infty, 5)$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">ب</span>
+            <span class="option-text">$[-3, 7]$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">ج</span>
+            <span class="option-text">$(0, +\infty)$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">د</span>
+            <span class="option-text">$(-5, -2)$</span>
+        </button>
+    </div>
+
+    <div class="test-card">
+        <h2>اختبار المعادلات مع الأعداد السالبة</h2>
+        <p><strong>السؤال:</strong> حل المعادلة: $x^2 - 5x + 6 = 0$</p>
+
+        <button class="option-btn">
+            <span class="option-letter">أ</span>
+            <span class="option-text">$x = -2$ أو $x = -3$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">ب</span>
+            <span class="option-text">$x = 2$ أو $x = 3$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">ج</span>
+            <span class="option-text">$x = -1$ أو $x = 6$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">د</span>
+            <span class="option-text">لا يوجد حل</span>
+        </button>
+    </div>
+
+    <div class="test-card">
+        <h2>اختبار الكسور والعمليات</h2>
+        <p><strong>السؤال:</strong> ما قيمة: $\frac{-8}{-2}$؟</p>
+
+        <button class="option-btn">
+            <span class="option-letter">أ</span>
+            <span class="option-text">$-4$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">ب</span>
+            <span class="option-text">$4$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">ج</span>
+            <span class="option-text">$\frac{1}{4}$</span>
+        </button>
+
+        <button class="option-btn">
+            <span class="option-letter">د</span>
+            <span class="option-text">$-\frac{1}{4}$</span>
+        </button>
+    </div>
+
+    <div class="test-card">
+        <h2>✅ النتائج المتوقعة</h2>
+        <ul style="line-height: 2;">
+            <li class="correct">✓ الإشارة السالبة تظهر على اليسار: $-\infty$</li>
+            <li class="correct">✓ الفترات تعرض بشكل صحيح: $(-\infty, 5)$</li>
+            <li class="correct">✓ الأعداد السالبة: $-2, -3, -5$</li>
+            <li class="correct">✓ الكسور السالبة: $-\frac{1}{4}$</li>
+            <li class="wrong">✗ إذا ظهرت الإشارة على اليمين: $\infty-$ (خطأ!)</li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+                console.log('✅ KaTeX rendering complete');
+            }
+        });
+    </script>
+</body>
+
+</html>
