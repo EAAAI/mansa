@@ -214,6 +214,66 @@
     padding: 0 0.2em !important;
 }
 
+/* BILINGUAL EXPLANATION SECTION - Arabic with English Math */
+.explanation-section {
+    direction: rtl !important;
+    text-align: right !important;
+    background: rgba(56, 239, 125, 0.05);
+    border: 1px solid rgba(56, 239, 125, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.explanation-section h4 {
+    color: #38ef7d;
+    margin-bottom: 15px;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+.explanation-content {
+    direction: rtl !important;
+    text-align: right !important;
+    line-height: 2;
+    font-size: 1.05rem;
+}
+
+/* Math inside Arabic explanation - Force LTR */
+.explanation-content .katex {
+    direction: ltr !important;
+    unicode-bidi: isolate !important;
+    display: inline-block !important;
+}
+
+.explanation-content .katex-display {
+    direction: ltr !important;
+    text-align: center !important;
+    margin: 15px 0 !important;
+}
+
+/* Show explanation button */
+.show-explanation-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+.show-explanation-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.show-explanation-btn i {
+    margin-left: 8px;
+}
+
 /* Math in Question Cards */
 .essay-question-card .katex-display {
     background: rgba(56, 239, 125, 0.05) !important;
@@ -314,5 +374,44 @@
 
     50% {
         opacity: 0.8;
+    }
+}
+
+/* Notification Animations */
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        max-height: 1000px;
+        opacity: 1;
+        transform: translateY(0);
     }
 }
