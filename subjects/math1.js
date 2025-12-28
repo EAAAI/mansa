@@ -160,7 +160,8 @@ function showQuestion(i) {
         if (j < q.options.length) {
             const b = document.createElement('button');
             b.className = 'option-btn' + (challenge.answers[i] === j ? ' selected' : '');
-            b.innerHTML = `<span class="option-letter">${l}</span><span>${q.options[j]}</span>`;
+            // Wrap option text with LRM markers and force LTR
+            b.innerHTML = `<span class="option-letter">${l}</span><span class="option-text" dir="ltr" style="unicode-bidi: bidi-override !important;">&lrm;${q.options[j]}&lrm;</span>`;
             b.onclick = () => selectOption(j);
             c.appendChild(b);
         }
@@ -168,6 +169,16 @@ function showQuestion(i) {
     document.getElementById('prevBtn').disabled = i === 0;
     document.getElementById('nextBtn').style.display = i === QUESTIONS_PER_CHALLENGE - 1 ? 'none' : 'flex';
     document.getElementById('submitBtn').style.display = i === QUESTIONS_PER_CHALLENGE - 1 ? 'flex' : 'none';
+
+    // Render math in question and options
+    setTimeout(() => {
+        if (typeof renderMathInElement !== 'undefined') {
+            const questionText = document.getElementById('questionText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            if (questionText) renderMathInContent(questionText);
+            if (optionsContainer) renderMathInContent(optionsContainer);
+        }
+    }, 50);
 }
 
 function selectOption(j) { challenge.answers[challenge.currentIndex] = j; document.querySelectorAll('.option-btn').forEach((b, k) => b.classList.toggle('selected', k === j)); }
@@ -181,7 +192,43 @@ function restartChallenge() { document.getElementById('challengeResult').style.d
 
 // Firebase
 async function saveToLeaderboard(score, time) { if (!db) return; try { await db.collection(`leaderboard_${SUBJECT_ID}`).add({ name: challenge.userName, score, time, date: new Date().toISOString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); loadLeaderboard(); } catch (e) { } }
-async function loadLeaderboard() { if (!db) { document.getElementById('noRecords').style.display = 'block'; return; } try { const snap = await db.collection(`leaderboard_${SUBJECT_ID}`).orderBy('score', 'desc').orderBy('time', 'asc').limit(20).get(); const tb = document.getElementById('leaderboardBody'); tb.innerHTML = ''; if (snap.empty) { document.getElementById('noRecords').style.display = 'block'; return; } document.getElementById('noRecords').style.display = 'none'; document.getElementById('totalPlayers').textContent = snap.size; snap.docs.forEach((d, i) => { const data = d.data(); const tr = document.createElement('tr'); let r = i + 1; if (i === 0) r = '🥇'; else if (i === 1) r = '🥈'; else if (i === 2) r = '🥉'; tr.innerHTML = `<td>${r}</td><td>${data.name}</td><td>${data.score}/${QUESTIONS_PER_CHALLENGE}</td><td>${formatTime(data.time)}</td><td>${data.date ? new Date(data.date).toLocaleDateString('ar-EG') : '-'}</td>`; tb.appendChild(tr); }); } catch (e) { document.getElementById('noRecords').style.display = 'block'; } }
+async function loadLeaderboard() {
+    if (!db) { document.getElementById('noRecords').style.display = 'block'; return; }
+    try {
+        const snap = await db.collection(`leaderboard_${SUBJECT_ID}`).orderBy('score', 'desc').orderBy('time', 'asc').limit(20).get();
+        const tb = document.getElementById('leaderboardBody');
+        tb.innerHTML = '';
+        if (snap.empty) { document.getElementById('noRecords').style.display = 'block'; return; }
+        document.getElementById('noRecords').style.display = 'none';
+        document.getElementById('totalPlayers').textContent = snap.size;
+        snap.docs.forEach((d, i) => {
+            const data = d.data();
+            const tr = document.createElement('tr');
+            let r = i + 1;
+            if (i === 0) r = '🥇';
+            else if (i === 1) r = '🥈';
+            else if (i === 2) r = '🥉';
+            tr.innerHTML = `<td>${r}</td><td class="player-name">${data.name}</td><td>${data.score}/${QUESTIONS_PER_CHALLENGE}</td><td>${formatTime(data.time)}</td><td>${data.date ? new Date(data.date).toLocaleDateString('ar-EG') : '-'}</td>`;
+            tb.appendChild(tr);
+        });
+
+        // Render math in leaderboard names
+        setTimeout(() => {
+            if (typeof renderMathInElement !== 'undefined') {
+                const leaderboardBody = document.getElementById('leaderboardBody');
+                if (leaderboardBody) {
+                    renderMathInElement(leaderboardBody, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: false },
+                            { left: '$', right: '$', display: false }
+                        ],
+                        throwOnError: false
+                    });
+                }
+            }
+        }, 100);
+    } catch (e) { document.getElementById('noRecords').style.display = 'block'; }
+}
 
 // Interactive Questions Bank - Supports Bilingual
 function renderQuestionsBank(showAll = false) {
@@ -206,8 +253,12 @@ function renderQuestionsBank(showAll = false) {
         card.dataset.correct = q.correct;
         card.dataset.answered = 'false';
         let optionsHTML = '';
-        q.options.forEach((opt, i) => { optionsHTML += `<button class="bank-option-btn" data-index="${i}" onclick="selectBankOption(this, ${q.correct})"><span class="option-letter">${letters[i]}</span><span class="option-text">${opt}</span><span class="option-icon"></span></button>`; });
-        card.innerHTML = `<div class="bank-question-header"><h4>${index + 1}.</h4>${getQuestionText(q)}</div><div class="bank-options">${optionsHTML}</div><div class="bank-actions"><button class="show-answer-btn" onclick="showBankAnswer(this, ${q.correct})"><i class="fas fa-eye"></i> إظهار الإجابة</button><div class="answer-reveal" style="display: none;"><i class="fas fa-check-circle"></i><span>الإجابة الصحيحة: ${q.options[q.correct]}</span></div></div><div class="bank-feedback" style="display: none;"></div>`;
+        q.options.forEach((opt, i) => {
+            // Wrap each option with LRM markers and LTR span
+            optionsHTML += `<button class="bank-option-btn" data-index="${i}" onclick="selectBankOption(this, ${q.correct})"><span class="option-letter">${letters[i]}</span><span class="option-text" dir="ltr" style="unicode-bidi: bidi-override !important;">&lrm;${opt}&lrm;</span><span class="option-icon"></span></button>`;
+        });
+        const questionTextHTML = `<div class="bank-question-text" dir="ltr" style="direction: ltr !important; text-align: left !important; unicode-bidi: plaintext !important;">${getQuestionText(q)}</div>`;
+        card.innerHTML = `<div class="bank-question-header"><h4>${index + 1}.</h4></div>${questionTextHTML}<div class="bank-options">${optionsHTML}</div><div class="bank-actions"><button class="show-answer-btn" onclick="showBankAnswer(this, ${q.correct})"><i class="fas fa-eye"></i> إظهار الإجابة</button><div class="answer-reveal" style="display: none;"><i class="fas fa-check-circle"></i><span>الإجابة الصحيحة: ${q.options[q.correct]}</span></div></div><div class="bank-feedback" style="display: none;"></div>`;
         container.appendChild(card);
     });
     const remaining = filteredQuestions.length - questionsToShow.length;
@@ -218,6 +269,21 @@ function renderQuestionsBank(showAll = false) {
         btn.onclick = () => { currentBankPage++; renderQuestionsBank(); };
         container.appendChild(btn);
     }
+
+    // Render math in all questions
+    setTimeout(() => {
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(container, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '\\[', right: '\\]', display: true },
+                    { left: '$', right: '$', display: false },
+                    { left: '\\(', right: '\\)', display: false }
+                ],
+                throwOnError: false
+            });
+        }
+    }, 50);
 }
 function selectBankOption(btn, correctIndex) {
     const card = btn.closest('.bank-question-card');
@@ -238,36 +304,20 @@ function selectBankOption(btn, correctIndex) {
             opt.querySelector('.option-icon').innerHTML = '<i class="fas fa-check"></i>';
         } else if (i === selectedIndex && !isCorrect) {
             opt.classList.add('wrong');
-            opt.querySelector('.option-icon').innerHTML = '<i class="fas fa-times></i>';
+            opt.querySelector('.option-icon').innerHTML = '<i class="fas fa-times"></i>';
         }
     });
 
     const feedback = card.querySelector('.bank-feedback');
     feedback.style.display = 'block';
 
-    // Build feedback HTML with explanation if available
+    // Build feedback HTML with explanation if available (admin-provided only)
     let feedbackHTML = isCorrect
         ? '<i class="fas fa-check-circle"></i> إجابة صحيحة! 🎉'
         : '<i class="fas fa-times-circle"></i> إجابة خاطئة.';
 
     if (question && question.explanation) {
         feedbackHTML += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);"><i class="fas fa-lightbulb" style="color: #ffd700;"></i> <strong>الشرح:</strong><br>${question.explanation}</div>`;
-    } else if (question) {
-        // Generate explanation automatically using Groq AI
-        feedbackHTML += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);"><i class="fas fa-robot" style="color: #00d4ff;"></i> <strong>جاري توليد الشرح...</strong></div>`;
-
-        // Generate explanation asynchronously
-        generateExplanation(question, correctIndex).then(explanation => {
-            const explanationDiv = feedback.querySelector('div:last-child');
-            if (explanationDiv) {
-                explanationDiv.innerHTML = `<i class="fas fa-lightbulb" style="color: #ffd700;"></i> <strong>الشرح (AI):</strong><br>${explanation}`;
-            }
-        }).catch(() => {
-            const explanationDiv = feedback.querySelector('div:last-child');
-            if (explanationDiv) {
-                explanationDiv.innerHTML = `<i class="fas fa-info-circle"></i> <em>لم يتم إضافة شرح لهذا السؤال</em>`;
-            }
-        });
     }
 
     feedback.innerHTML = feedbackHTML;
@@ -276,38 +326,7 @@ function selectBankOption(btn, correctIndex) {
     card.querySelector('.answer-reveal').style.display = 'flex';
 }
 
-// Generate explanation using Groq AI
-async function generateExplanation(question, correctIndex) {
-    try {
-        const questionText = question.question || '';
-        const correctAnswer = question.options[correctIndex];
-
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GROQ_API_KEY_EXPLANATION}`
-            },
-            body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [{
-                    role: 'system',
-                    content: 'أنت معلم رياضيات. اشرح الإجابة الصحيحة بشكل مختصر وواضح بالعربية.'
-                }, {
-                    role: 'user',
-                    content: `السؤال: ${questionText}\nالإجابة الصحيحة: ${correctAnswer}\n\nاشرح لماذا هذه الإجابة صحيحة بشكل مختصر (3-4 أسطر فقط).`
-                }],
-                temperature: 0.7,
-                max_tokens: 200
-            })
-        });
-
-        const data = await response.json();
-        return data.choices?.[0]?.message?.content || 'لم يتم إضافة شرح لهذا السؤال';
-    } catch (error) {
-        throw error;
-    }
-}
+// Generate explanation using Groq AI - REMOVED (now using admin explanations only)
 function showBankAnswer(btn, correctIndex) {
     const card = btn.closest('.bank-question-card');
 
@@ -325,23 +344,12 @@ function showBankAnswer(btn, correctIndex) {
     btn.style.display = 'none';
     card.querySelector('.answer-reveal').style.display = 'flex';
 
-    // Show explanation if available or generate it
+    // Show explanation if available (admin-provided only)
     const feedback = card.querySelector('.bank-feedback');
     if (question && question.explanation) {
         feedback.style.display = 'block';
         feedback.innerHTML = `<i class="fas fa-lightbulb" style="color: #ffd700;"></i> <strong>الشرح:</strong><br>${question.explanation}`;
         feedback.className = 'bank-feedback';
-    } else if (question) {
-        feedback.style.display = 'block';
-        feedback.innerHTML = `<i class="fas fa-robot" style="color: #00d4ff;"></i> <strong>جاري توليد الشرح...</strong>`;
-        feedback.className = 'bank-feedback';
-
-        // Generate explanation asynchronously
-        generateExplanation(question, correctIndex).then(explanation => {
-            feedback.innerHTML = `<i class="fas fa-lightbulb" style="color: #ffd700;"></i> <strong>الشرح (AI):</strong><br>${explanation}`;
-        }).catch(() => {
-            feedback.innerHTML = `<i class="fas fa-info-circle"></i> <em>لم يتم إضافة شرح لهذا السؤال</em>`;
-        });
     }
 }
 function filterQuestions() { currentBankPage = 1; renderQuestionsBank(); }
@@ -415,20 +423,20 @@ let filteredEssayBank = [];
 // Load essay questions from Firebase
 async function loadEssayBankFromFirebase() {
     if (essayBankLoaded) return;
-    
+
     const container = document.getElementById('essayQuestionsList');
     if (!container) return;
-    
+
     try {
         container.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>';
-        
+
         if (!db) {
             container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-circle"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة قريباً</p></div>';
             return;
         }
 
         const snapshot = await db.collection(`essay_questions_${SUBJECT_ID}`).get();
-        
+
         if (snapshot.empty) {
             container.innerHTML = '<div class="no-questions-message"><i class="fas fa-book-open"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة من لوحة الإدارة</p></div>';
             document.getElementById('essayDisplayedCount').textContent = '0';
@@ -449,7 +457,7 @@ async function loadEssayBankFromFirebase() {
 
         essayBankLoaded = true;
         renderEssayBankQuestions();
-        
+
     } catch (error) {
         console.error('Error loading essay questions:', error);
         container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-triangle"></i><h3>حدث خطأ في التحميل</h3><p>يرجى المحاولة مرة أخرى</p></div>';
@@ -462,7 +470,7 @@ function renderEssayBankQuestions() {
     if (!container) return;
 
     const searchTerm = document.getElementById('essaySearchInput')?.value?.toLowerCase() || '';
-    
+
     filteredEssayBank = essayBankQuestions;
     if (searchTerm) {
         filteredEssayBank = essayBankQuestions.filter(q =>
@@ -503,7 +511,7 @@ function renderEssayBankQuestions() {
 function toggleEssayAnswer(index) {
     const answerDiv = document.getElementById(`essay-answer-${index}`);
     const button = answerDiv.nextElementSibling;
-    
+
     if (answerDiv.classList.contains('collapsed')) {
         answerDiv.classList.remove('collapsed');
         answerDiv.classList.add('expanded');
@@ -533,9 +541,102 @@ if (essayBankSection) {
             }
         });
     }, { threshold: 0.1 });
-    
+
     observer.observe(essayBankSection);
 }
 
 // Init
-document.addEventListener('DOMContentLoaded', () => { const s = localStorage.getItem('userProfile'); if (s) { try { const p = JSON.parse(s); if (p.name) { document.getElementById('challengerName').value = p.name; const en = document.getElementById('essayPlayerName'); if (en) en.value = p.name; } } catch (e) { } } document.getElementById('totalQuestions').textContent = questions.length; const te = document.getElementById('totalEssay'); if (te) te.textContent = essayQuestions.length; loadLeaderboard(); renderQuestionsBank(); renderEssayBank(); });
+document.addEventListener('DOMContentLoaded', () => {
+    const s = localStorage.getItem('userProfile'); if (s) { try { const p = JSON.parse(s); if (p.name) { document.getElementById('challengerName').value = p.name; const en = document.getElementById('essayPlayerName'); if (en) en.value = p.name; } } catch (e) { } } document.getElementById('totalQuestions').textContent = questions.length; const te = document.getElementById('totalEssay'); if (te) te.textContent = essayQuestions.length; loadLeaderboard(); renderQuestionsBank(); renderEssayBank();
+
+    // Initialize KaTeX Auto-Rendering
+    initializeKaTeX();
+});
+
+// KaTeX Initialization and Configuration
+function initializeKaTeX() {
+    // Wait for KaTeX to load
+    if (typeof renderMathInElement === 'undefined') {
+        setTimeout(initializeKaTeX, 100);
+        return;
+    }
+
+    // Configure KaTeX options for Natural Display
+    const katexOptions = {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },      // Display mode (centered, large)
+            { left: '\\[', right: '\\]', display: true },    // Display mode alternative
+            { left: '$', right: '$', display: false },       // Inline mode
+            { left: '\\(', right: '\\)', display: false }    // Inline mode alternative
+        ],
+        throwOnError: false,
+        errorColor: '#ff6b6b',
+        displayMode: true,  // Default to display mode
+        output: 'html',
+        trust: true,
+        strict: false,
+        macros: {
+            "\\RR": "\\mathbb{R}",
+            "\\NN": "\\mathbb{N}",
+            "\\ZZ": "\\mathbb{Z}",
+            "\\QQ": "\\mathbb{Q}",
+            "\\CC": "\\mathbb{C}"
+        }
+    };
+
+    // Render math in the entire document
+    renderMathInElement(document.body, katexOptions);
+
+    console.log('✅ KaTeX initialized with Natural Display mode');
+}
+
+// Re-render math after dynamic content updates
+function renderMathInContent(element) {
+    if (typeof renderMathInElement === 'undefined') return;
+
+    const katexOptions = {
+        delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false }
+        ],
+        throwOnError: false,
+        errorColor: '#ff6b6b',
+        displayMode: true
+    };
+
+    renderMathInElement(element, katexOptions);
+}
+
+// Override renderQuestionsBank to include math rendering
+const originalRenderQuestionsBank = renderQuestionsBank;
+renderQuestionsBank = function (showAll = false) {
+    originalRenderQuestionsBank(showAll);
+    setTimeout(() => {
+        const container = document.getElementById('questionsList');
+        if (container) renderMathInContent(container);
+    }, 100);
+};
+
+// Override renderEssayBankQuestions to include math rendering
+const originalRenderEssayBankQuestions = renderEssayBankQuestions;
+renderEssayBankQuestions = function () {
+    originalRenderEssayBankQuestions();
+    setTimeout(() => {
+        const container = document.getElementById('essayQuestionsList');
+        if (container) renderMathInContent(container);
+    }, 100);
+};
+
+// Render math in challenge questions
+const originalShowQuestion = showQuestion;
+showQuestion = function (i) {
+    originalShowQuestion(i);
+    setTimeout(() => {
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        if (questionText) renderMathInContent(questionText);
+        if (optionsContainer) renderMathInContent(optionsContainer);
+    }, 50);
+};

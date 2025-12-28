@@ -1,0 +1,318 @@
+/* KaTeX Math Display Styling - Natural Textbook Style */
+
+/* CRITICAL: AGGRESSIVE LTR ENFORCEMENT - Force bidi-override */
+.katex,
+.katex *,
+.katex-display,
+.katex-display * {
+    direction: ltr !important;
+    unicode-bidi: bidi-override !important;
+    text-align: left !important;
+}
+
+/* Force LTR for math in RTL contexts with bidi-override */
+.katex-html {
+    direction: ltr !important;
+    unicode-bidi: bidi-override !important;
+    display: inline-block !important;
+}
+
+/* CRITICAL: Isolate ALL math containers from RTL with bidi-override */
+.question-text .katex,
+.option-text .katex,
+.bank-question-header .katex,
+.bank-option-btn .katex,
+.option-btn .katex,
+.player-name .katex,
+.essay-question-card .katex,
+.bank-feedback .katex,
+.answer-reveal .katex {
+    direction: ltr !important;
+    unicode-bidi: bidi-override !important;
+    display: inline-block !important;
+    text-align: left !important;
+}
+
+/* Prevent ANY sign displacement in intervals and negative numbers */
+.katex .mord,
+.katex .mbin,
+.katex .mrel,
+.katex .mop,
+.katex .mopen,
+.katex .mclose,
+.katex .mpunct,
+.katex .minner {
+    direction: ltr !important;
+    unicode-bidi: normal !important;
+}
+
+/* Force LTR for all text nodes inside math */
+.katex .text,
+.katex .mathrm,
+.katex .mathit {
+    direction: ltr !important;
+    unicode-bidi: embed !important;
+}
+
+/* CRITICAL: LTR Container for Question Content */
+.question-content-wrapper {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: isolate !important;
+    width: 100%;
+}
+
+.question-content-wrapper .question-text {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: plaintext !important;
+    margin-bottom: 20px;
+}
+
+.question-content-wrapper .options-container {
+    direction: ltr !important;
+    text-align: left !important;
+}
+
+/* Fix option buttons in LTR context */
+.question-content-wrapper .option-btn {
+    direction: ltr !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: row-reverse !important;
+    /* Letter on right, content on left */
+    justify-content: flex-start !important;
+}
+
+.question-content-wrapper .option-letter {
+    margin-left: 15px !important;
+    margin-right: 0 !important;
+    order: 2 !important;
+}
+
+.question-content-wrapper .option-text {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: plaintext !important;
+    flex: 1;
+    order: 1 !important;
+}
+
+/* Bank questions LTR wrapper */
+.bank-question-card {
+    direction: rtl;
+    /* Keep card RTL for Arabic UI */
+}
+
+.bank-question-content {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: isolate !important;
+}
+
+.bank-question-header h4 {
+    direction: rtl !important;
+    /* Keep number RTL */
+}
+
+.bank-question-text {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: plaintext !important;
+}
+
+.bank-options {
+    direction: ltr !important;
+}
+
+.bank-option-btn {
+    direction: ltr !important;
+    text-align: left !important;
+    display: flex !important;
+    flex-direction: row-reverse !important;
+}
+
+.bank-option-btn .option-letter {
+    margin-left: 15px !important;
+    margin-right: 0 !important;
+}
+
+.bank-option-btn .option-text {
+    direction: ltr !important;
+    text-align: left !important;
+    unicode-bidi: plaintext !important;
+    flex: 1;
+}
+
+/* Global KaTeX Display Mode Settings */
+.katex-display {
+    display: block !important;
+    margin: 1.5em 0 !important;
+    text-align: center !important;
+    font-size: 1.4em !important;
+    padding: 20px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 10px !important;
+    border-left: 4px solid rgba(56, 239, 125, 0.5) !important;
+}
+
+/* Inline Math Styling */
+.katex {
+    font-size: 1.15em !important;
+    color: #fff !important;
+}
+
+/* Fractions - Clear Horizontal Bar */
+.katex .frac-line {
+    border-bottom-width: 0.08em !important;
+    margin: 0.1em 0 !important;
+}
+
+.katex .mfrac {
+    padding: 0.3em 0 !important;
+}
+
+/* Numerator and Denominator Spacing */
+.katex .mfrac>span {
+    padding: 0.2em 0.3em !important;
+}
+
+/* Square Roots - Full Extension */
+.katex .sqrt {
+    padding: 0.2em 0.3em !important;
+}
+
+.katex .sqrt>.vlist-t {
+    border-top-width: 0.08em !important;
+}
+
+/* Integrals and Limits - Vertical Placement */
+.katex .mop {
+    font-size: 1.3em !important;
+}
+
+.katex .msupsub {
+    font-size: 0.85em !important;
+}
+
+/* Summation and Product Symbols */
+.katex .op-symbol {
+    font-size: 1.5em !important;
+}
+
+/* Matrices and Arrays */
+.katex .arraycolsep {
+    width: 0.8em !important;
+}
+
+.katex .mtable {
+    padding: 0.5em !important;
+}
+
+/* Parentheses and Brackets - Better Scaling */
+.katex .delimsizing {
+    padding: 0 0.2em !important;
+}
+
+/* Math in Question Cards */
+.essay-question-card .katex-display {
+    background: rgba(56, 239, 125, 0.05) !important;
+    border-left-color: #38ef7d !important;
+}
+
+.bank-question-card .katex-display {
+    background: rgba(102, 126, 234, 0.05) !important;
+    border-left-color: #667eea !important;
+}
+
+/* Math in Options */
+.option-text .katex {
+    font-size: 1.1em !important;
+    vertical-align: middle !important;
+}
+
+/* Answer Display Math */
+.question-answer .katex-display {
+    background: rgba(56, 239, 125, 0.1) !important;
+    border-left-color: #38ef7d !important;
+    margin: 1em 0 !important;
+}
+
+/* Ensure Display Mode for All Block Math */
+.math-block {
+    display: block !important;
+    text-align: center !important;
+    margin: 1.5em 0 !important;
+}
+
+/* Professional Font Rendering */
+.katex .mathnormal {
+    font-family: "KaTeX_Math", "Latin Modern Math", "Computer Modern", serif !important;
+}
+
+/* Better Contrast for Dark Theme */
+.katex .mord,
+.katex .mop,
+.katex .mbin,
+.katex .mrel,
+.katex .mopen,
+.katex .mclose,
+.katex .mpunct {
+    color: #ffffff !important;
+}
+
+/* Subscripts and Superscripts */
+.katex .msupsub>span {
+    font-size: 0.75em !important;
+}
+
+/* Large Operators (Integrals, Sums) in Display Mode */
+.katex-display .mop {
+    font-size: 1.8em !important;
+}
+
+.katex-display .msupsub {
+    position: relative !important;
+}
+
+/* Limits Above and Below */
+.katex-display .mop.op-limits>.msupsub {
+    text-align: center !important;
+}
+
+/* Spacing Around Operators */
+.katex .mbin,
+.katex .mrel {
+    margin: 0 0.3em !important;
+}
+
+/* Responsive Math */
+@media (max-width: 768px) {
+    .katex-display {
+        font-size: 1.2em !important;
+        padding: 15px !important;
+        margin: 1em 0 !important;
+    }
+
+    .katex {
+        font-size: 1.05em !important;
+    }
+}
+
+/* Loading State */
+.math-loading {
+    opacity: 0.5;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}

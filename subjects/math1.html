@@ -11,6 +11,18 @@
     <link rel="stylesheet" href="physics2.css">
     <link rel="stylesheet" href="math1.css">
     <link rel="stylesheet" href="essay-bank.css">
+
+    <!-- KaTeX for Math Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
+        crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="katex-custom.css">
+    <link rel="stylesheet" href="katex-leaderboard.css">
 </head>
 
 <body>
@@ -75,11 +87,17 @@
                     <div class="progress"><span id="questionProgress">1/5</span></div>
                     <div class="score-display"><i class="fas fa-star"></i><span id="currentScore">0</span></div>
                 </div>
-                <div class="question-box">
-                    <div class="question-number" id="questionBadge">السؤال 1</div>
-                    <h3 class="question-text" id="questionText"></h3>
+
+                <!-- LTR Wrapper for Question Content -->
+                <div class="question-content-wrapper" dir="ltr"
+                    style="direction: ltr !important; text-align: left !important; unicode-bidi: isolate !important;">
+                    <div class="question-box">
+                        <div class="question-number" id="questionBadge">السؤال 1</div>
+                        <h3 class="question-text" id="questionText"></h3>
+                    </div>
+                    <div class="options-container" id="optionsContainer"></div>
                 </div>
-                <div class="options-container" id="optionsContainer"></div>
+
                 <div class="challenge-nav"><button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i
                             class="fas fa-arrow-right"></i> السابق</button><button class="nav-btn primary" id="nextBtn"
                         onclick="nextQuestion()">التالي <i class="fas fa-arrow-left"></i></button><button
