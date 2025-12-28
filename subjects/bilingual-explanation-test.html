@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilingual Explanation Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="katex-custom.css">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(56, 239, 125, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #38ef7d;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📚 اختبار الشرح ثنائي اللغة</h1>
+
+    <div class="test-card">
+        <h2>مثال: شرح بالعربية مع معادلات إنجليزية</h2>
+
+        <button class="show-explanation-btn" onclick="toggleExplanation()">
+            <i class="fas fa-book-open"></i> عرض الشرح
+        </button>
+
+        <div class="explanation-section" id="explanationSection" style="display: none;">
+            <h4><i class="fas fa-lightbulb"></i> الشرح التفصيلي</h4>
+            <div class="explanation-content">
+                <p><strong>الخطوة 1:</strong> نبدأ بإيجاد التسارع من خلال اشتقاق دالة السرعة</p>
+                <p>بما أن السرعة معطاة بالدالة $v(t) = 3t^2 - 2t + 1$</p>
+                <p>إذن التسارع هو:</p>
+                $$a(t) = \frac{dv}{dt} = 6t - 2$$
+
+                <p><strong>الخطوة 2:</strong> نعوض بقيمة $t = 2$ في معادلة التسارع</p>
+                $$a(2) = 6(2) - 2 = 12 - 2 = 10 \text{ m/s}^2$$
+
+                <p><strong>النتيجة النهائية:</strong> التسارع عند $t = 2$ ثانية يساوي $10$ m/s²</p>
+
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+
+                <p><strong>ملاحظة:</strong> يمكننا التحقق من الإجابة بحساب الفترة $(-\infty, 5)$ كالتالي:</p>
+                <p>المجال يشمل جميع القيم من سالب لا نهاية إلى $5$ (غير شامل)</p>
+                $$x \in (-\infty, 5) \implies x < 5$$ </div>
+            </div>
+        </div>
+
+        <div class="test-card">
+            <h2>✅ المتطلبات المحققة</h2>
+            <ul style="line-height: 2;">
+                <li>✓ النص العربي يتدفق من اليمين لليسار (RTL)</li>
+                <li>✓ المعادلات الرياضية تعرض من اليسار لليمين (LTR)</li>
+                <li>✓ زر "عرض الشرح" يعمل بشكل صحيح</li>
+                <li>✓ الشرح مخفي افتراضياً</li>
+                <li>✓ KaTeX يعرض المعادلات بشكل احترافي</li>
+                <li>✓ الخط واضح ومتناسق مع الموقع</li>
+            </ul>
+        </div>
+
+        <div class="test-card">
+            <h2>📝 مثال على كيفية كتابة الشرح</h2>
+            <div
+                style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px; direction: ltr; text-align: left;">
+                <code style="color: #38ef7d;">
+&lt;strong&gt;الخطوة 1:&lt;/strong&gt; نبدأ بإيجاد المشتقة&lt;br&gt;
+بما أن $f(x) = x^2 + 3x$&lt;br&gt;
+إذن: $$f'(x) = 2x + 3$$&lt;br&gt;
+&lt;strong&gt;النتيجة:&lt;/strong&gt; المشتقة تساوي $2x + 3$
+            </code>
+            </div>
+        </div>
+
+        <script>
+            function toggleExplanation() {
+                const section = document.getElementById('explanationSection');
+                const btn = event.target.closest('button');
+
+                if (section.style.display === 'none') {
+                    section.style.display = 'block';
+                    btn.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء الشرح';
+
+                    // Render math
+                    setTimeout(() => {
+                        if (typeof renderMathInElement !== 'undefined') {
+                            renderMathInElement(section, {
+                                delimiters: [
+                                    { left: '$$', right: '$$', display: true },
+                                    { left: '$', right: '$', display: false }
+                                ],
+                                throwOnError: false
+                            });
+                        }
+                    }, 50);
+                } else {
+                    section.style.display = 'none';
+                    btn.innerHTML = '<i class="fas fa-book-open"></i> عرض الشرح';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('✅ Page loaded - bilingual explanation system ready');
+            });
+        </script>
+</body>
+
+</html>

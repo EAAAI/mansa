@@ -34,15 +34,25 @@ async function loadQuestionsFromFirebase() {
             const firebaseQuestions = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                // Convert Firebase question format to our format
+
+                // CRITICAL: Include explanation field from Firebase
                 const q = {
                     question: data.question,
                     options: data.options,
                     correct: data.correct,
                     imageUrl: data.imageUrl,
+                    explanation: data.explanation || data.questionExplanation || '', // Support both field names
                     source: 'firebase',
                     id: doc.id
                 };
+
+                // Debug log to verify explanation is loaded
+                if (q.explanation) {
+                    console.log(`✅ Question ${doc.id} has explanation:`, q.explanation.substring(0, 50) + '...');
+                } else {
+                    console.log(`⚠️ Question ${doc.id} has NO explanation`);
+                }
+
                 firebaseQuestions.push(q);
             });
 
@@ -190,8 +200,76 @@ function submitChallenge() { clearInterval(challenge.timerInterval); let score =
 function formatTime(s) { return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`; }
 function restartChallenge() { document.getElementById('challengeResult').style.display = 'none'; document.getElementById('challengeIntro').style.display = 'block'; document.getElementById('timer').classList.remove('warning'); }
 
-// Firebase
-async function saveToLeaderboard(score, time) { if (!db) return; try { await db.collection(`leaderboard_${SUBJECT_ID}`).add({ name: challenge.userName, score, time, date: new Date().toISOString(), timestamp: firebase.firestore.FieldValue.serverTimestamp() }); loadLeaderboard(); } catch (e) { } }
+// Firebase - Save to Leaderboard with validation and feedback
+async function saveToLeaderboard(score, time) {
+    if (!db) {
+        console.error('❌ Firebase not initialized');
+        showNotification('خطأ: قاعدة البيانات غير متصلة', 'error');
+        return;
+    }
+
+    try {
+        // Validate and clean data
+        const cleanScore = parseInt(score);
+        const cleanTime = parseInt(time);
+        const cleanName = (challenge.userName || 'مجهول').trim();
+
+        if (isNaN(cleanScore) || isNaN(cleanTime)) {
+            throw new Error('Invalid score or time data');
+        }
+
+        // Save to Firebase
+        const docRef = await db.collection(`leaderboard_${SUBJECT_ID}`).add({
+            name: cleanName,
+            score: cleanScore,
+            time: cleanTime,
+            date: new Date().toISOString(),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        console.log('✅ Score saved to leaderboard:', docRef.id);
+        showNotification('تم إضافة نتيجتك إلى لوحة الشرف! 🏆', 'success');
+
+        // Reload leaderboard to show new score
+        await loadLeaderboard();
+
+    } catch (error) {
+        console.error('❌ Error saving to leaderboard:', error);
+        showNotification('حدث خطأ أثناء حفظ النتيجة', 'error');
+    }
+}
+
+// Show notification helper
+function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, #38ef7d, #11998e)' : 'linear-gradient(135deg, #ff6b6b, #ee5a6f)'};
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
 async function loadLeaderboard() {
     if (!db) { document.getElementById('noRecords').style.display = 'block'; return; }
     try {
@@ -316,12 +394,58 @@ function selectBankOption(btn, correctIndex) {
         ? '<i class="fas fa-check-circle"></i> إجابة صحيحة! 🎉'
         : '<i class="fas fa-times-circle"></i> إجابة خاطئة.';
 
-    if (question && question.explanation) {
-        feedbackHTML += `<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1);"><i class="fas fa-lightbulb" style="color: #ffd700;"></i> <strong>الشرح:</strong><br>${question.explanation}</div>`;
-    }
-
     feedback.innerHTML = feedbackHTML;
     feedback.className = 'bank-feedback ' + (isCorrect ? 'correct' : 'wrong');
+
+    // Add explanation section if available
+    if (question && question.explanation) {
+        console.log('✅ Explanation found after answering! Length:', question.explanation.length);
+
+        const explanationDiv = document.createElement('div');
+        explanationDiv.className = 'explanation-section';
+        explanationDiv.style.display = 'none';
+        explanationDiv.innerHTML = `
+            <h4><i class="fas fa-lightbulb"></i> الشرح التفصيلي</h4>
+            <div class="explanation-content">${question.explanation}</div>
+        `;
+
+        const showExplanationBtn = document.createElement('button');
+        showExplanationBtn.className = 'show-explanation-btn';
+        showExplanationBtn.innerHTML = '<i class="fas fa-book-open"></i> عرض الشرح';
+        showExplanationBtn.onclick = function () {
+            console.log('🔘 Show explanation button clicked');
+            if (explanationDiv.style.display === 'none') {
+                explanationDiv.style.display = 'block';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء الشرح';
+                console.log('📖 Showing explanation...');
+                // Render math in explanation
+                setTimeout(() => {
+                    if (typeof renderMathInElement !== 'undefined') {
+                        console.log('🔢 Rendering math in explanation...');
+                        renderMathInElement(explanationDiv, {
+                            delimiters: [
+                                { left: '$$', right: '$$', display: true },
+                                { left: '$', right: '$', display: false }
+                            ],
+                            throwOnError: false
+                        });
+                        console.log('✅ Math rendered');
+                    }
+                }, 50);
+            } else {
+                explanationDiv.style.display = 'none';
+                this.innerHTML = '<i class="fas fa-book-open"></i> عرض الشرح';
+                console.log('📕 Hiding explanation');
+            }
+        };
+
+        feedback.appendChild(showExplanationBtn);
+        feedback.appendChild(explanationDiv);
+        console.log('✅ Explanation button and div added to feedback');
+    } else {
+        console.warn('⚠️ No explanation available for this question');
+    }
+
     card.querySelector('.show-answer-btn').style.display = 'none';
     card.querySelector('.answer-reveal').style.display = 'flex';
 }
@@ -334,6 +458,12 @@ function showBankAnswer(btn, correctIndex) {
     const questionIndex = Array.from(card.parentElement.children).indexOf(card);
     const question = filteredQuestions[questionIndex];
 
+    // DEBUG: Log question data
+    console.log('🔍 showBankAnswer called for question:', questionIndex);
+    console.log('📊 Question object:', question);
+    console.log('📝 Explanation field:', question?.explanation);
+
+    // Highlight correct answer
     card.querySelectorAll('.bank-option-btn').forEach((opt, i) => {
         if (i === correctIndex) {
             opt.classList.add('correct');
@@ -344,12 +474,47 @@ function showBankAnswer(btn, correctIndex) {
     btn.style.display = 'none';
     card.querySelector('.answer-reveal').style.display = 'flex';
 
-    // Show explanation if available (admin-provided only)
+    // Show explanation automatically if available
     const feedback = card.querySelector('.bank-feedback');
+
     if (question && question.explanation) {
+        console.log('✅ Explanation found! Creating explanation div...');
         feedback.style.display = 'block';
-        feedback.innerHTML = `<i class="fas fa-lightbulb" style="color: #ffd700;"></i> <strong>الشرح:</strong><br>${question.explanation}`;
+
+        const explanationDiv = document.createElement('div');
+        explanationDiv.className = 'explanation-section';
+        explanationDiv.style.display = 'block'; // Show immediately
+        explanationDiv.style.animation = 'slideDown 0.4s ease';
+        explanationDiv.innerHTML = `
+            <h4><i class="fas fa-lightbulb"></i> الشرح التفصيلي</h4>
+            <div class="explanation-content">${question.explanation}</div>
+        `;
+
+        feedback.innerHTML = '';
+        feedback.appendChild(explanationDiv);
         feedback.className = 'bank-feedback';
+
+        console.log('✅ Explanation div added to DOM');
+
+        // Render math in explanation immediately
+        setTimeout(() => {
+            if (typeof renderMathInElement !== 'undefined') {
+                console.log('🔢 Rendering math in explanation...');
+                renderMathInElement(explanationDiv, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+                console.log('✅ Math rendering complete');
+            } else {
+                console.error('❌ renderMathInElement is not defined!');
+            }
+        }, 50);
+    } else {
+        console.warn('⚠️ No explanation found for this question');
+        console.log('Question object:', question);
     }
 }
 function filterQuestions() { currentBankPage = 1; renderQuestionsBank(); }
