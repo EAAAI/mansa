@@ -274,6 +274,34 @@
     margin-left: 8px;
 }
 
+/* Translate button */
+.translate-btn {
+    background: linear-gradient(135deg, #38ef7d, #11998e);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-right: 10px;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.translate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(56, 239, 125, 0.4);
+}
+
+.translate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.translate-btn i {
+    margin-left: 5px;
+}
+
 /* Math in Question Cards */
 .essay-question-card .katex-display {
     background: rgba(56, 239, 125, 0.05) !important;

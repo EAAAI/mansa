@@ -19,6 +19,25 @@ table .katex,
     unicode-bidi: plaintext !important;
 }
 
+/* Time column formatting - Calculator style */
+.leaderboard-table td:nth-child(4),
+.leaderboard-table th:nth-child(4) {
+    direction: ltr !important;
+    text-align: center !important;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Score column formatting - Calculator style */
+.leaderboard-table td:nth-child(3),
+.leaderboard-table th:nth-child(3) {
+    direction: ltr !important;
+    text-align: center !important;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+    font-weight: 600;
+}
+
 /* Leaderboard Math Rendering */
 .leaderboard-table .player-name .katex {
     font-size: 1em !important;

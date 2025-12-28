@@ -2919,6 +2919,43 @@ function restartModalChallenge() {
     resetModalChallenge();
 }
 
+// Helper function to format time as mm:ss
+function formatTime(seconds) {
+    if (!seconds) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Helper function to format date as DD-MM-YYYY
+function formatDate(dateString) {
+    if (!dateString || dateString === '-') return '-';
+    try {
+        const date = new Date(dateString);
+        // Check if date is valid
+        if (isNaN(date.getTime())) return '-';
+
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    } catch (e) {
+        console.error('Error formatting date:', dateString, e);
+        return '-';
+    }
+}
+
+function renderMainLeaderboard(data, subject = 'all') {
+    const container = document.getElementById('modalLeaderboardList');
+
+    container.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 15px;">جاري تحميل المتصدرين...</p>
+        </div>
+    `;
+}
+
 async function loadModalLeaderboard(subject) {
     const container = document.getElementById('modalLeaderboardList');
 
@@ -3051,37 +3088,30 @@ async function loadUnifiedLeaderboard(subject) {
         let entries = [];
 
         if (subject === 'all') {
-            // Load from all subjects and aggregate by USER ID
-            const allSubjects = ['physics2', 'english', 'it', 'electronics', 'math1', 'math0', 'history', 'law'];
+            // Load from unified leaderboard and aggregate by USER ID
+            const snapshot = await dbLeaderboard.collection('leaderboard').get();
             const userTotals = {};
 
-            for (const subj of allSubjects) {
-                try {
-                    const snapshot = await dbLeaderboard.collection(`leaderboard_${subj}`).get();
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const userId = data.userId || data.name; // Fallback to name if userId doesn't exist
-                        const name = data.name || 'مجهول';
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const userId = data.userId || data.userName || data.name;
+                const userName = data.userName || data.name || 'مجهول';
 
-                        if (!userTotals[userId]) {
-                            userTotals[userId] = {
-                                userId: userId,
-                                name: name,
-                                totalScore: 0,
-                                attempts: 0,
-                                lastDate: ''
-                            };
-                        }
-                        userTotals[userId].totalScore += (data.score || 0);
-                        userTotals[userId].attempts += 1;
-                        if (!userTotals[userId].lastDate || data.date > userTotals[userId].lastDate) {
-                            userTotals[userId].lastDate = data.date || '';
-                        }
-                    });
-                } catch (e) {
-                    console.log(`No data for ${subj}`);
+                if (!userTotals[userId]) {
+                    userTotals[userId] = {
+                        userId: userId,
+                        name: userName,
+                        totalScore: 0,
+                        attempts: 0,
+                        lastDate: ''
+                    };
                 }
-            }
+                userTotals[userId].totalScore += (data.score || 0);
+                userTotals[userId].attempts += 1;
+                if (!userTotals[userId].lastDate || data.date > userTotals[userId].lastDate) {
+                    userTotals[userId].lastDate = data.date || '';
+                }
+            });
 
             entries = Object.values(userTotals)
                 .sort((a, b) => b.totalScore - a.totalScore)
@@ -3089,18 +3119,28 @@ async function loadUnifiedLeaderboard(subject) {
                 .map(u => ({
                     name: u.name,
                     score: u.totalScore,
-                    time: `${u.attempts} تحدي`,
+                    time: u.attempts === 1 ? 'تحدي واحد' : `${u.attempts} تحديات`,
                     date: u.lastDate
                 }));
         } else {
-            // Load from specific subject
-            const snapshot = await dbLeaderboard.collection(`leaderboard_${subject}`)
+            // Load from unified leaderboard filtered by specific subject
+            const snapshot = await dbLeaderboard.collection('leaderboard')
+                .where('subject', '==', subject)
                 .orderBy('score', 'desc')
+                .orderBy('timeSeconds', 'asc')
                 .limit(50)
                 .get();
 
             snapshot.forEach(doc => {
-                entries.push(doc.data());
+                const data = doc.data();
+                entries.push({
+                    name: data.userName || data.name || 'مجهول',
+                    score: data.score || 0,
+                    time: formatTime(data.timeSeconds || data.time || 0),
+                    timeSeconds: data.timeSeconds || data.time || 0,
+                    date: data.date || '',
+                    total: 5
+                });
             });
 
             // Sort by score then by time
@@ -3126,25 +3166,31 @@ async function loadUnifiedLeaderboard(subject) {
             else if (index === 2) { rankDisplay = '🥉'; rankClass = 'bronze'; }
 
             // Calculate percentage for individual subjects (not for 'all')
-            let scoreDisplay = entry.score || 0;
+            let scoreValue = entry.score || 0;
             if (subject !== 'all' && entry.total) {
                 const percentage = Math.round((entry.score / entry.total) * 100);
-                scoreDisplay = `${entry.score}/${entry.total} (${percentage}%)`;
+                scoreValue = `${entry.score}/${entry.total} (${percentage}%)`;
             }
 
             // Show challenge count for 'all', time for individual subjects
-            let timeDisplay = entry.time || '-';
+            let timeValue = entry.time || '-';
             if (subject !== 'all' && !entry.time) {
-                timeDisplay = '00:00';
+                timeValue = '00:00';
             }
+
+            // Format time and date with LTR wrappers
+            const timeFormatted = `<span dir="ltr" style="direction: ltr !important;">${timeValue}</span>`;
+            const dateFormatted = `<span dir="ltr" style="direction: ltr !important;">${entry.date ? formatDate(entry.date) : '-'}</span>`;
+            const scoreFormatted = `<span dir="ltr" style="direction: ltr !important;">${scoreValue}</span>`;
+
 
             return `
                 <tr class="${rankClass}">
                     <td>${rankDisplay}</td>
-                    <td>${entry.name || 'مجهول'}</td>
-                    <td>${scoreDisplay}</td>
-                    <td>${timeDisplay}</td>
-                    <td>${entry.date || '-'}</td>
+                    <td>${entry.name || entry.userName || 'مجهول'}</td>
+                    <td>${scoreFormatted}</td>
+                    <td>${timeFormatted}</td>
+                    <td>${dateFormatted}</td>
                 </tr>
             `;
         }).join('');
