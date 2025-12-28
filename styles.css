@@ -2977,6 +2977,35 @@ body {
     font-size: 1.05rem;
 }
 
+/* Time column (4th column) - Calculator style with LTR */
+.main-leaderboard-table td:nth-child(4),
+.main-leaderboard-table th:nth-child(4) {
+    direction: ltr !important;
+    text-align: center !important;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Score column (3rd column) - Calculator style with LTR */
+.main-leaderboard-table td:nth-child(3),
+.main-leaderboard-table th:nth-child(3) {
+    direction: ltr !important;
+    text-align: center !important;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+    font-weight: 600;
+}
+
+/* Date column (5th column) - Calculator style with LTR */
+.main-leaderboard-table td:nth-child(5),
+.main-leaderboard-table th:nth-child(5) {
+    direction: ltr !important;
+    text-align: center !important;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
 .main-leaderboard-table tbody tr {
     transition: all 0.3s ease;
 }

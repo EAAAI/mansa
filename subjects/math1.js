@@ -198,6 +198,21 @@ function startTimer() { updateTimerDisplay(); challenge.timerInterval = setInter
 function updateTimerDisplay() { const m = Math.floor(challenge.timeLeft / 60), s = challenge.timeLeft % 60; document.getElementById('timerDisplay').textContent = `${m}:${s.toString().padStart(2, '0')}`; }
 function submitChallenge() { clearInterval(challenge.timerInterval); let score = 0; challenge.questions.forEach((q, i) => { if (challenge.answers[i] === q.correct) score++; }); challenge.score = score; const time = CHALLENGE_TIME - challenge.timeLeft, pct = Math.round((score / QUESTIONS_PER_CHALLENGE) * 100); document.getElementById('challengeContainer').style.display = 'none'; document.getElementById('challengeResult').style.display = 'block'; document.getElementById('finalScore').textContent = `${score}/${QUESTIONS_PER_CHALLENGE}`; document.getElementById('finalTime').textContent = formatTime(time); document.getElementById('percentage').textContent = `${pct}%`; let icon, title; if (pct >= 90) { icon = '🏆'; title = 'ممتاز!'; } else if (pct >= 70) { icon = '🌟'; title = 'أحسنت!'; } else if (pct >= 50) { icon = '💪'; title = 'جيد!'; } else { icon = '📚'; title = 'حاول مرة أخرى'; } document.getElementById('resultIcon').textContent = icon; document.getElementById('resultTitle').textContent = title; saveToLeaderboard(score, time); }
 function formatTime(s) { return `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`; }
+
+// Format date to DD-MM-YYYY
+function formatDate(dateString) {
+    if (!dateString) return '-';
+    try {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    } catch (e) {
+        return '-';
+    }
+}
+
 function restartChallenge() { document.getElementById('challengeResult').style.display = 'none'; document.getElementById('challengeIntro').style.display = 'block'; document.getElementById('timer').classList.remove('warning'); }
 
 // Firebase - Save to Leaderboard with validation and feedback
@@ -209,25 +224,41 @@ async function saveToLeaderboard(score, time) {
     }
 
     try {
+        // Get user profile for userId
+        let userProfile = JSON.parse(localStorage.getItem('userProfile'));
+        if (!userProfile || !userProfile.id) {
+            // Initialize user profile if not exists
+            userProfile = {
+                id: generateTempUserId(),
+                name: challenge.userName || 'مجهول',
+                createdAt: new Date().toISOString()
+            };
+            localStorage.setItem('userProfile', JSON.stringify(userProfile));
+        }
+
         // Validate and clean data
         const cleanScore = parseInt(score);
         const cleanTime = parseInt(time);
-        const cleanName = (challenge.userName || 'مجهول').trim();
+        const cleanName = (challenge.userName || userProfile.name || 'مجهول').trim();
 
         if (isNaN(cleanScore) || isNaN(cleanTime)) {
             throw new Error('Invalid score or time data');
         }
 
-        // Save to Firebase
-        const docRef = await db.collection(`leaderboard_${SUBJECT_ID}`).add({
-            name: cleanName,
+        // UNIFIED DATABASE: Save to global 'leaderboard' collection
+        const docRef = await db.collection('leaderboard').add({
+            userId: userProfile.id,      // ✅ User tracking
+            userName: cleanName,
             score: cleanScore,
-            time: cleanTime,
+            timeSeconds: cleanTime,      // ✅ Renamed from 'time'
+            subject: SUBJECT_ID,
+            subjectName: SUBJECT_NAME,
             date: new Date().toISOString(),
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        console.log('✅ Score saved to leaderboard:', docRef.id);
+        console.log('✅ Score saved to unified leaderboard:', docRef.id);
+        console.log('📊 User:', userProfile.id, '| Subject:', SUBJECT_ID, '|', SUBJECT_NAME);
         showNotification('تم إضافة نتيجتك إلى لوحة الشرف! 🏆', 'success');
 
         // Reload leaderboard to show new score
@@ -237,6 +268,16 @@ async function saveToLeaderboard(score, time) {
         console.error('❌ Error saving to leaderboard:', error);
         showNotification('حدث خطأ أثناء حفظ النتيجة', 'error');
     }
+}
+
+// Helper function to generate temporary userId
+function generateTempUserId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = 'USER_';
+    for (let i = 0; i < 8; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
 }
 
 // Show notification helper
@@ -271,14 +312,57 @@ function showNotification(message, type = 'success') {
     }, 3000);
 }
 async function loadLeaderboard() {
-    if (!db) { document.getElementById('noRecords').style.display = 'block'; return; }
+    if (!db) {
+        document.getElementById('noRecords').style.display = 'block';
+        return;
+    }
+
     try {
-        const snap = await db.collection(`leaderboard_${SUBJECT_ID}`).orderBy('score', 'desc').orderBy('time', 'asc').limit(20).get();
+        console.log('🔄 Loading leaderboard for subject:', SUBJECT_ID);
+
+        let snap;
+
+        // Try query with timeSeconds ordering (requires composite index)
+        try {
+            snap = await db.collection('leaderboard')
+                .where('subject', '==', SUBJECT_ID)
+                .orderBy('score', 'desc')
+                .orderBy('timeSeconds', 'asc')
+                .limit(20)
+                .get();
+        } catch (indexError) {
+            // Fallback 1: Query without timeSeconds ordering (no composite index needed)
+            console.log('⚠️ Index not ready, using fallback query');
+            try {
+                snap = await db.collection('leaderboard')
+                    .where('subject', '==', SUBJECT_ID)
+                    .orderBy('score', 'desc')
+                    .limit(20)
+                    .get();
+            } catch (unifiedError) {
+                // Fallback 2: Try old collection format
+                console.log('⚠️ Unified collection failed, trying old collection: leaderboard_' + SUBJECT_ID);
+                snap = await db.collection(`leaderboard_${SUBJECT_ID}`)
+                    .orderBy('score', 'desc')
+                    .limit(20)
+                    .get();
+            }
+        }
+
         const tb = document.getElementById('leaderboardBody');
         tb.innerHTML = '';
-        if (snap.empty) { document.getElementById('noRecords').style.display = 'block'; return; }
+
+        if (snap.empty) {
+            document.getElementById('noRecords').style.display = 'block';
+            console.log('⚠️ No leaderboard records found for', SUBJECT_ID);
+            return;
+        }
+
         document.getElementById('noRecords').style.display = 'none';
         document.getElementById('totalPlayers').textContent = snap.size;
+
+        console.log(`✅ Loaded ${snap.size} leaderboard entries for ${SUBJECT_ID}`);
+
         snap.docs.forEach((d, i) => {
             const data = d.data();
             const tr = document.createElement('tr');
@@ -286,7 +370,17 @@ async function loadLeaderboard() {
             if (i === 0) r = '🥇';
             else if (i === 1) r = '🥈';
             else if (i === 2) r = '🥉';
-            tr.innerHTML = `<td>${r}</td><td class="player-name">${data.name}</td><td>${data.score}/${QUESTIONS_PER_CHALLENGE}</td><td>${formatTime(data.time)}</td><td>${data.date ? new Date(data.date).toLocaleDateString('ar-EG') : '-'}</td>`;
+
+            // Format time with LTR wrapper - support both old 'time' and new 'timeSeconds'
+            const timeValue = data.timeSeconds || data.time || 0;
+            const timeFormatted = `<span dir="ltr" style="direction: ltr !important;">${formatTime(timeValue)}</span>`;
+            const scoreFormatted = `<span dir="ltr" style="direction: ltr !important;">${data.score}/${QUESTIONS_PER_CHALLENGE}</span>`;
+            const dateFormatted = `<span dir="ltr" style="direction: ltr !important;">${formatDate(data.date)}</span>`;
+
+            // Use userName if available, fallback to name
+            const displayName = data.userName || data.name || 'مجهول';
+
+            tr.innerHTML = `<td>${r}</td><td class="player-name">${displayName}</td><td>${scoreFormatted}</td><td>${timeFormatted}</td><td>${dateFormatted}</td>`;
             tb.appendChild(tr);
         });
 
@@ -305,7 +399,10 @@ async function loadLeaderboard() {
                 }
             }
         }, 100);
-    } catch (e) { document.getElementById('noRecords').style.display = 'block'; }
+    } catch (e) {
+        console.error('❌ Error loading leaderboard:', e);
+        document.getElementById('noRecords').style.display = 'block';
+    }
 }
 
 // Interactive Questions Bank - Supports Bilingual
@@ -517,6 +614,91 @@ function showBankAnswer(btn, correctIndex) {
         console.log('Question object:', question);
     }
 }
+// Translation function using Groq API
+async function translateExplanation(questionIndex, isBank = false) {
+    const contentId = isBank ? `explanation-bank-${questionIndex}` : `explanation-${questionIndex}`;
+    const btnId = isBank ? `translate-btn-bank-${questionIndex}` : `translate-btn-${questionIndex}`;
+
+    const contentDiv = document.getElementById(contentId);
+    const btn = document.getElementById(btnId);
+
+    if (!contentDiv || !btn) return;
+
+    // Store original content
+    if (!contentDiv.dataset.original) {
+        contentDiv.dataset.original = contentDiv.innerHTML;
+    }
+
+    // Toggle between original and translated
+    if (contentDiv.dataset.translated) {
+        contentDiv.innerHTML = contentDiv.dataset.original;
+        delete contentDiv.dataset.translated;
+        btn.innerHTML = '<i class="fas fa-language"></i> ترجم للعربية';
+        return;
+    }
+
+    // Show loading
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الترجمة...';
+
+    try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${GROQ_API_KEY_EXPLANATION}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'أنت مترجم محترف متخصص في ترجمة الشروح الرياضية من الإنجليزية إلى العربية. قم بترجمة النص بدقة مع الحفاظ على المعادلات الرياضية كما هي (بين علامات $ أو $$). لا تترجم المعادلات أو الرموز الرياضية. ارجع فقط الترجمة بدون أي إضافات.'
+                    },
+                    {
+                        role: 'user',
+                        content: contentDiv.textContent
+                    }
+                ],
+                max_tokens: 1024,
+                temperature: 0.3
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Translation API error');
+        }
+
+        const data = await response.json();
+        const translation = data.choices[0]?.message?.content || 'فشلت الترجمة';
+
+        // Store translated content
+        contentDiv.dataset.translated = 'true';
+        contentDiv.innerHTML = translation;
+
+        // Re-render math
+        setTimeout(() => {
+            if (typeof renderMathInElement !== 'undefined') {
+                renderMathInElement(contentDiv, {
+                    delimiters: [
+                        { left: '$$', right: '$$', display: true },
+                        { left: '$', right: '$', display: false }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }, 50);
+
+        btn.innerHTML = '<i class="fas fa-undo"></i> عرض الأصلي';
+
+    } catch (error) {
+        console.error('Translation error:', error);
+        alert('حدث خطأ في الترجمة');
+    }
+
+    btn.disabled = false;
+}
+
 function filterQuestions() { currentBankPage = 1; renderQuestionsBank(); }
 
 // Essay Challenge Functions
