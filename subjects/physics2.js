@@ -18,6 +18,49 @@ try {
     console.error('❌ Firebase initialization error:', error);
 }
 
+// Mobile Menu Toggle
+function toggleMobileMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    const toggleBtn = document.querySelector('.mobile-menu-toggle i');
+    navLinks.classList.toggle('active');
+    toggleBtn.classList.toggle('fa-chevron-down');
+    toggleBtn.classList.toggle('fa-chevron-up');
+}
+
+// Theme System
+function setTheme(theme) {
+    const body = document.body;
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+    body.classList.remove('space-theme', 'ocean-theme', 'sunset-theme', 'pyramids-theme', 'winter-theme');
+    if (theme !== 'default') {
+        body.classList.add(theme + '-theme');
+    }
+    userProfile.theme = theme;
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+    const toggle = document.querySelector('.theme-toggle i');
+    const icons = { 'default': 'fa-moon', 'space': 'fa-rocket', 'ocean': 'fa-water', 'sunset': 'fa-sun', 'pyramids': 'fa-mountain', 'winter': 'fa-snowflake' };
+    if (toggle) toggle.className = 'fas ' + (icons[theme] || 'fa-moon');
+}
+
+function cycleTheme() {
+    const themes = ['default', 'space', 'ocean', 'sunset', 'pyramids', 'winter'];
+    const userProfile = JSON.parse(localStorage.getItem('userProfile')) || {};
+    const currentTheme = userProfile.theme || 'default';
+    const currentIndex = themes.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
+}
+
+function loadSavedTheme() {
+    const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+    if (userProfile?.theme && userProfile.theme !== 'default') {
+        setTheme(userProfile.theme);
+    }
+}
+
+// Load saved theme on page load
+document.addEventListener('DOMContentLoaded', loadSavedTheme);
+
 
 // Subject Configuration
 const SUBJECT_ID = 'physics2';
@@ -1035,5 +1078,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load data
     loadLeaderboard();
     renderQuestionsBank();
-    renderEssayBank();
+    loadEssayBankFromFirebase(); // Load essay questions from Firebase
 });
+
+// Load essay questions from Firebase
+async function loadEssayBankFromFirebase() {
+    const container = document.getElementById('essayQuestionsList');
+    if (!container) return;
+
+    try {
+        container.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>';
+
+        if (!db) {
+            container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-circle"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة قريباً</p></div>';
+            return;
+        }
+
+        const snapshot = await db.collection(`essay_questions_${SUBJECT_ID}`).get();
+
+        if (snapshot.empty) {
+            // If no Firebase questions, use hardcoded ones if available
+            if (essayQuestions.length > 0) {
+                document.getElementById('essayDisplayedCount').textContent = essayQuestions.length;
+                renderEssayBank();
+            } else {
+                container.innerHTML = '<div class="no-questions-message"><i class="fas fa-book-open"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة من لوحة الإدارة</p></div>';
+                document.getElementById('essayDisplayedCount').textContent = '0';
+            }
+            return;
+        }
+
+        // Load Firebase questions and merge with hardcoded
+        const firebaseEssays = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            firebaseEssays.push({
+                id: doc.id,
+                questionAr: data.question || data.questionAr || '',
+                questionEn: data.questionEn || data.question || '',
+                answerAr: data.answer || data.answerAr || '',
+                answerEn: data.answerEn || data.answer || '',
+                source: 'firebase'
+            });
+        });
+
+        // Merge Firebase questions with hardcoded ones
+        essayQuestions.push(...firebaseEssays);
+        
+        document.getElementById('essayDisplayedCount').textContent = essayQuestions.length;
+        console.log(`✅ Loaded ${firebaseEssays.length} essay questions from Firebase for ${SUBJECT_ID}`);
+        
+        renderEssayBank();
+
+    } catch (error) {
+        console.error('Error loading essay questions:', error);
+        // Fallback to hardcoded questions
+        if (essayQuestions.length > 0) {
+            document.getElementById('essayDisplayedCount').textContent = essayQuestions.length;
+            renderEssayBank();
+        } else {
+            container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-circle"></i><h3>حدث خطأ في تحميل الأسئلة</h3></div>';
+        }
+    }
+}

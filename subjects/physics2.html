@@ -9,26 +9,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="physics2.css">
-    <link rel="stylesheet" href="physics2-winter.css">
+    <link rel="stylesheet" href="essay-bank.css">
 </head>
 
-<body class="winter-physics">
-    <!-- Winter Theme Elements -->
-    <div class="winter-snowflakes">
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-    </div>
-    <div class="ice-overlay"></div>
-
-    <nav class="subject-navbar frozen-nav">
+<body>
+    <nav class="subject-navbar">
         <div class="nav-container">
             <a href="../index.html" class="nav-brand">
                 <i class="fas fa-arrow-right"></i>
@@ -38,6 +23,9 @@
                 <i class="fas fa-atom"></i>
                 فيزياء 2
             </div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-chevron-down"></i>
+            </button>
             <div class="nav-links">
                 <a href="#hero" class="nav-link active">
                     <i class="fas fa-home"></i>
@@ -50,6 +38,10 @@
                 <a href="#bank" class="nav-link">
                     <i class="fas fa-book-open"></i>
                     <span>الأسئلة الاختيارية</span>
+                </a>
+                <a href="#essay-bank" class="nav-link">
+                    <i class="fas fa-pen-fancy"></i>
+                    <span>الأسئلة المقالية</span>
                 </a>
 
                 <a href="#leaderboard" class="nav-link">
@@ -92,7 +84,9 @@
                 <a href="#bank" class="btn btn-secondary">
                     <i class="fas fa-book-open"></i> الأسئلة الاختيارية
                 </a>
-
+                <a href="#essay-bank" class="btn btn-secondary">
+                    <i class="fas fa-pen-fancy"></i> الأسئلة المقالية
+                </a>
             </div>
         </div>
     </section>
@@ -186,6 +180,20 @@
         </div>
     </section>
 
+    <section id="essay-bank" class="section essay-bank-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
+            <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
+            <div class="essay-bank-controls">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput"
+                        placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="questions-count">إجمالي: <span id="essayDisplayedCount">0</span> سؤال مقالي</div>
+            </div>
+            <div class="essay-questions-grid" id="essayQuestionsList">
+                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>
+            </div>
+        </div>
+    </section>
 
 
     <section id="leaderboard" class="section leaderboard-section">
@@ -247,6 +255,27 @@
             </div>
         </div>
     </section>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="cycleTheme()" title="تغيير الثيم">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Theme Decorations -->
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="space-planet planet-1"></div>
+    <div class="space-planet planet-2"></div>
+    <div class="pyramid-3d pyramid-1"></div>
+    <div class="pyramid-3d pyramid-2"></div>
 
     <footer class="subject-footer">
         <p>© 2024 ليالي الامتحان - فيزياء 2 | تم تطويره بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
