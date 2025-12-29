@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="physics2.css">
     <link rel="stylesheet" href="english.css">
+    <link rel="stylesheet" href="essay-bank.css">
 </head>
 
 <body>
@@ -17,10 +18,14 @@
         <div class="nav-container">
             <a href="../index.html" class="nav-brand"><i class="fas fa-arrow-right"></i><span>العودة للرئيسية</span></a>
             <div class="nav-subject-title"><i class="fas fa-language"></i>لغة إنجليزية</div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-chevron-down"></i>
+            </button>
             <div class="nav-links">
                 <a href="#hero" class="nav-link active"><i class="fas fa-home"></i><span>الرئيسية</span></a>
                 <a href="#challenge" class="nav-link"><i class="fas fa-bolt"></i><span>التحدي</span></a>
                 <a href="#bank" class="nav-link"><i class="fas fa-book-open"></i><span>الأسئلة الاختيارية</span></a>
+                <a href="#essay-bank" class="nav-link"><i class="fas fa-pen-fancy"></i><span>الأسئلة المقالية</span></a>
 
                 <a href="#leaderboard" class="nav-link"><i class="fas fa-trophy"></i><span>المتصدرين</span></a>
                 <a href="#ask-ai" class="nav-link"><i class="fas fa-robot"></i><span>اسأل الذكاء</span></a>
@@ -43,7 +48,7 @@
             <div class="hero-buttons">
                 <a href="#challenge" class="btn btn-primary"><i class="fas fa-bolt"></i> ابدأ التحدي</a>
                 <a href="#bank" class="btn btn-secondary"><i class="fas fa-book-open"></i> الأسئلة الاختيارية</a>
-
+                <a href="#essay-bank" class="btn btn-secondary"><i class="fas fa-pen-fancy"></i> الأسئلة المقالية</a>
             </div>
         </div>
     </section>
@@ -121,6 +126,19 @@
         </div>
     </section>
 
+    <section id="essay-bank" class="section essay-bank-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
+            <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
+            <div class="essay-bank-controls">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput" placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="questions-count">إجمالي: <span id="essayDisplayedCount">0</span> سؤال مقالي</div>
+            </div>
+            <div class="essay-questions-grid" id="essayQuestionsList">
+                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>
+            </div>
+        </div>
+    </section>
 
 
     <section id="leaderboard" class="section leaderboard-section">
@@ -169,6 +187,17 @@
             </div>
         </div>
     </section>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="cycleTheme()" title="تغيير الثيم">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Theme Decorations -->
+    <div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❄</div><div class="snowflake">❅</div>
+    <div class="snowflake">❆</div><div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❄</div>
+    <div class="space-planet planet-1"></div><div class="space-planet planet-2"></div>
+    <div class="pyramid-3d pyramid-1"></div><div class="pyramid-3d pyramid-2"></div>
 
     <footer class="subject-footer">
         <p>© 2024 ليالي الامتحان - لغة إنجليزية | <a href="https://ibrahim88887.github.io/EAAAI/"

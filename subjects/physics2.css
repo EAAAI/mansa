@@ -148,6 +148,8 @@ body {
     font-size: 1.3rem;
     color: rgba(255, 255, 255, 0.7);
     margin-bottom: 40px;
+    text-align: center;
+    padding-right: 70px;
 }
 
 .hero-stats {
@@ -1601,3 +1603,541 @@ body {
 .bank-option-btn .option-text .opt-ar {
     font-size: 0.8rem;
 }
+
+/* Mobile Menu Toggle Button */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle:hover {
+    color: #667eea;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 900px) {
+    .nav-container {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 10px 0;
+    }
+
+    .nav-subject-title {
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: rgba(26, 26, 46, 0.98);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        padding: 10px 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        gap: 5px;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-link {
+        padding: 12px 15px;
+        border-radius: 10px;
+        justify-content: flex-start;
+    }
+
+    .nav-link span {
+        display: inline !important;
+    }
+
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content > p {
+        font-size: 1.1rem;
+        padding-right: 30px;
+    }
+
+    .hero-stats {
+        gap: 15px;
+    }
+
+    .hero-stat {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    .subject-badge {
+        width: 90px;
+        height: 90px;
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .nav-brand span {
+        display: none;
+    }
+
+    .nav-subject-title {
+        font-size: 0.9rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content > p {
+        font-size: 1rem;
+    }
+
+    .subject-badge {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+        border-radius: 20px;
+    }
+
+    .challenge-card {
+        padding: 30px 20px;
+    }
+
+    .section {
+        padding: 60px 15px;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* ========================================
+   THEME SYSTEM
+   ======================================== */
+
+/* Theme Toggle Button */
+.theme-toggle {
+    position: fixed;
+    bottom: 30px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    z-index: 1001;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+/* Smooth transitions for theme changes */
+.subject-navbar,
+.section,
+.subject-hero-section,
+.challenge-card,
+footer {
+    transition: all 0.5s ease;
+}
+
+/* ========================================
+   SPACE THEME
+   ======================================== */
+body.space-theme {
+    background: #05051a;
+}
+
+body.space-theme .subject-navbar {
+    background: rgba(10, 10, 42, 0.95);
+    border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+}
+
+body.space-theme .subject-hero-section {
+    background: linear-gradient(135deg, #0a0a2a 0%, #1a1a4a 50%, #4a1a6a 100%);
+}
+
+body.space-theme .section {
+    background: linear-gradient(180deg, #0a0a2a 0%, #05051a 100%);
+}
+
+body.space-theme h1,
+body.space-theme h2,
+body.space-theme h3,
+body.space-theme .section-title {
+    color: #00ffff;
+    text-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+body.space-theme .challenge-card {
+    background: linear-gradient(145deg, rgba(26, 26, 74, 0.8) 0%, rgba(74, 26, 106, 0.6) 100%);
+    border: 2px solid rgba(0, 255, 255, 0.15);
+}
+
+body.space-theme .challenge-card:hover {
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+body.space-theme .btn-primary {
+    background: linear-gradient(45deg, #00ffff, #1a1a4a);
+    color: #0a0a2a;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+body.space-theme .btn-secondary {
+    background: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+}
+
+body.space-theme footer {
+    background: rgba(10, 10, 42, 0.9);
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+body.space-theme .theme-toggle {
+    background: linear-gradient(135deg, #00ffff, #4a1a6a);
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+}
+
+/* Stars animation */
+body.space-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    background: transparent url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9IjAuNSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==') repeat;
+    animation: moveStars 200s linear infinite;
+    opacity: 0.4;
+}
+
+@keyframes moveStars {
+    from { transform: translateY(0) translateX(0); }
+    to { transform: translateY(-1000px) translateX(-500px); }
+}
+
+/* Space planets */
+.space-planet {
+    position: fixed;
+    border-radius: 50%;
+    z-index: -1;
+    filter: blur(1px);
+    display: none;
+}
+
+body.space-theme .space-planet {
+    display: block;
+}
+
+.planet-1 {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle at 30% 30%, #4a1a6a, #1a1a4a);
+    top: 10%;
+    right: 5%;
+    animation: floatPlanet 25s infinite ease-in-out;
+    box-shadow: 0 0 50px rgba(74, 26, 106, 0.5);
+}
+
+.planet-2 {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle at 40% 40%, #1a4a4a, #0a2a2a);
+    bottom: 15%;
+    left: 8%;
+    animation: floatPlanet 20s infinite ease-in-out reverse;
+    box-shadow: 0 0 40px rgba(26, 74, 74, 0.5);
+}
+
+@keyframes floatPlanet {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-30px) rotate(180deg); }
+}
+
+/* ========================================
+   OCEAN THEME
+   ======================================== */
+body.ocean-theme {
+    background: linear-gradient(180deg, #0a2942 0%, #051a2d 100%);
+}
+
+body.ocean-theme .subject-navbar {
+    background: rgba(10, 41, 66, 0.95);
+    border-bottom: 2px solid rgba(0, 200, 255, 0.3);
+}
+
+body.ocean-theme .subject-hero-section {
+    background: linear-gradient(135deg, #0a2942 0%, #1a5a7a 50%, #0a4060 100%);
+}
+
+body.ocean-theme .section {
+    background: linear-gradient(180deg, #0a2942 0%, #051a2d 100%);
+}
+
+body.ocean-theme h1,
+body.ocean-theme h2,
+body.ocean-theme h3,
+body.ocean-theme .section-title {
+    color: #00d4ff;
+    text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+}
+
+body.ocean-theme .challenge-card {
+    background: linear-gradient(145deg, rgba(10, 60, 90, 0.8) 0%, rgba(5, 40, 70, 0.6) 100%);
+    border: 2px solid rgba(0, 200, 255, 0.2);
+}
+
+body.ocean-theme .btn-primary {
+    background: linear-gradient(45deg, #00d4ff, #0a4060);
+    color: #051a2d;
+}
+
+body.ocean-theme .theme-toggle {
+    background: linear-gradient(135deg, #00d4ff, #0a4060);
+}
+
+/* ========================================
+   SUNSET THEME
+   ======================================== */
+body.sunset-theme {
+    background: linear-gradient(180deg, #2d1f3d 0%, #1a1020 100%);
+}
+
+body.sunset-theme .subject-navbar {
+    background: rgba(45, 31, 61, 0.95);
+    border-bottom: 2px solid rgba(255, 120, 100, 0.3);
+}
+
+body.sunset-theme .subject-hero-section {
+    background: linear-gradient(135deg, #2d1f3d 0%, #6a3050 50%, #4a2040 100%);
+}
+
+body.sunset-theme .section {
+    background: linear-gradient(180deg, #2d1f3d 0%, #1a1020 100%);
+}
+
+body.sunset-theme h1,
+body.sunset-theme h2,
+body.sunset-theme h3,
+body.sunset-theme .section-title {
+    color: #ff9a6c;
+    text-shadow: 0 0 15px rgba(255, 154, 108, 0.4);
+}
+
+body.sunset-theme .challenge-card {
+    background: linear-gradient(145deg, rgba(106, 48, 80, 0.8) 0%, rgba(74, 32, 64, 0.6) 100%);
+    border: 2px solid rgba(255, 120, 100, 0.2);
+}
+
+body.sunset-theme .btn-primary {
+    background: linear-gradient(45deg, #ff9a6c, #6a3050);
+    color: #1a1020;
+}
+
+body.sunset-theme .theme-toggle {
+    background: linear-gradient(135deg, #ff9a6c, #6a3050);
+}
+
+/* ========================================
+   PYRAMIDS THEME
+   ======================================== */
+body.pyramids-theme {
+    background: linear-gradient(180deg, #1a1510 0%, #2d2015 50%, #1a1510 100%);
+}
+
+body.pyramids-theme .subject-navbar {
+    background: rgba(45, 32, 21, 0.95);
+    border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+}
+
+body.pyramids-theme .subject-hero-section {
+    background: linear-gradient(135deg, #2d2015 0%, #4a3520 50%, #2d2015 100%);
+}
+
+body.pyramids-theme .section {
+    background: linear-gradient(180deg, #1a1510 0%, #2d2015 100%);
+}
+
+body.pyramids-theme h1,
+body.pyramids-theme h2,
+body.pyramids-theme h3,
+body.pyramids-theme .section-title {
+    color: #d4af37;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+body.pyramids-theme .challenge-card {
+    background: linear-gradient(145deg, rgba(74, 53, 32, 0.9) 0%, rgba(45, 32, 21, 0.7) 100%);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+body.pyramids-theme .btn-primary {
+    background: linear-gradient(45deg, #d4af37, #aa8a2e);
+    color: #1a1510;
+}
+
+body.pyramids-theme .theme-toggle {
+    background: linear-gradient(135deg, #d4af37, #aa8a2e);
+}
+
+/* Pyramids decoration */
+.pyramid-3d {
+    position: fixed;
+    z-index: -1;
+    display: none;
+}
+
+body.pyramids-theme .pyramid-3d {
+    display: block;
+}
+
+.pyramid-1 {
+    bottom: 0;
+    right: 10%;
+    width: 0;
+    height: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-bottom: 160px solid rgba(139, 107, 55, 0.5);
+    filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
+}
+
+.pyramid-2 {
+    bottom: 0;
+    left: 15%;
+    width: 0;
+    height: 0;
+    border-left: 70px solid transparent;
+    border-right: 70px solid transparent;
+    border-bottom: 120px solid rgba(160, 125, 65, 0.4);
+    filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.2));
+}
+
+/* ========================================
+   WINTER THEME
+   ======================================== */
+body.winter-theme {
+    background: linear-gradient(180deg, #151922 0%, #1e2832 100%);
+}
+
+body.winter-theme .subject-navbar {
+    background: rgba(21, 25, 34, 0.95);
+    border-bottom: 2px solid rgba(135, 206, 250, 0.3);
+}
+
+body.winter-theme .subject-hero-section {
+    background: linear-gradient(135deg, #1e2832 0%, #2c3e50 100%);
+}
+
+body.winter-theme .section {
+    background: transparent;
+}
+
+body.winter-theme h1,
+body.winter-theme h2,
+body.winter-theme h3,
+body.winter-theme .section-title {
+    color: #87cefa;
+    text-shadow: 0 0 10px rgba(135, 206, 250, 0.5);
+}
+
+body.winter-theme .challenge-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(135, 206, 250, 0.2);
+}
+
+body.winter-theme .btn-primary {
+    background: linear-gradient(135deg, #5da2d5, #87cefa);
+    color: #151922;
+}
+
+body.winter-theme .theme-toggle {
+    background: linear-gradient(135deg, #87cefa, #5da2d5);
+}
+
+/* Snowflakes */
+.snowflake {
+    color: #fff;
+    font-size: 1.5rem;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px #000;
+    position: fixed;
+    top: -10%;
+    z-index: 9999;
+    user-select: none;
+    cursor: default;
+    animation-name: snowflakes-fall, snowflakes-shake;
+    animation-duration: 10s, 3s;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: infinite, infinite;
+    animation-play-state: running, running;
+    display: none;
+}
+
+body.winter-theme .snowflake {
+    display: block;
+}
+
+@keyframes snowflakes-fall {
+    0% { top: -10%; }
+    100% { top: 100%; }
+}
+
+@keyframes snowflakes-shake {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(80px); }
+}
+
+.snowflake:nth-of-type(1) { left: 5%; animation-delay: 0s, 0s; }
+.snowflake:nth-of-type(2) { left: 15%; animation-delay: 1s, 1s; }
+.snowflake:nth-of-type(3) { left: 25%; animation-delay: 6s, .5s; }
+.snowflake:nth-of-type(4) { left: 35%; animation-delay: 4s, 2s; }
+.snowflake:nth-of-type(5) { left: 45%; animation-delay: 2s, 2s; }
+.snowflake:nth-of-type(6) { left: 55%; animation-delay: 8s, 3s; }
+.snowflake:nth-of-type(7) { left: 65%; animation-delay: 6s, 2s; }
+.snowflake:nth-of-type(8) { left: 75%; animation-delay: 2.5s, 1s; }
+.snowflake:nth-of-type(9) { left: 85%; animation-delay: 1s, 0s; }
+.snowflake:nth-of-type(10) { left: 95%; animation-delay: 3s, 1.5s; }
+

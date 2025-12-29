@@ -3086,32 +3086,41 @@ async function loadUnifiedLeaderboard(subject) {
 
     try {
         let entries = [];
+        
+        // List of all subjects
+        const allSubjects = ['physics2', 'english', 'it', 'electronics', 'math1', 'math0', 'history', 'law'];
 
         if (subject === 'all') {
-            // Load from unified leaderboard and aggregate by USER ID
-            const snapshot = await dbLeaderboard.collection('leaderboard').get();
+            // Load from ALL per-subject collections and aggregate by user
             const userTotals = {};
+            
+            for (const subj of allSubjects) {
+                try {
+                    const snapshot = await dbLeaderboard.collection(`leaderboard_${subj}`).get();
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const userId = data.userId || data.name || 'مجهول';
+                        const userName = data.name || 'مجهول';
 
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const userId = data.userId || data.userName || data.name;
-                const userName = data.userName || data.name || 'مجهول';
-
-                if (!userTotals[userId]) {
-                    userTotals[userId] = {
-                        userId: userId,
-                        name: userName,
-                        totalScore: 0,
-                        attempts: 0,
-                        lastDate: ''
-                    };
+                        if (!userTotals[userId]) {
+                            userTotals[userId] = {
+                                userId: userId,
+                                name: userName,
+                                totalScore: 0,
+                                attempts: 0,
+                                lastDate: ''
+                            };
+                        }
+                        userTotals[userId].totalScore += (data.score || 0);
+                        userTotals[userId].attempts += 1;
+                        if (!userTotals[userId].lastDate || data.date > userTotals[userId].lastDate) {
+                            userTotals[userId].lastDate = data.date || '';
+                        }
+                    });
+                } catch (err) {
+                    console.log(`No data for ${subj}:`, err.message);
                 }
-                userTotals[userId].totalScore += (data.score || 0);
-                userTotals[userId].attempts += 1;
-                if (!userTotals[userId].lastDate || data.date > userTotals[userId].lastDate) {
-                    userTotals[userId].lastDate = data.date || '';
-                }
-            });
+            }
 
             entries = Object.values(userTotals)
                 .sort((a, b) => b.totalScore - a.totalScore)
@@ -3123,23 +3132,22 @@ async function loadUnifiedLeaderboard(subject) {
                     date: u.lastDate
                 }));
         } else {
-            // Load from unified leaderboard filtered by specific subject
-            const snapshot = await dbLeaderboard.collection('leaderboard')
-                .where('subject', '==', subject)
+            // Load from the specific subject collection
+            const collectionName = `leaderboard_${subject}`;
+            const snapshot = await dbLeaderboard.collection(collectionName)
                 .orderBy('score', 'desc')
-                .orderBy('timeSeconds', 'asc')
                 .limit(50)
                 .get();
 
             snapshot.forEach(doc => {
                 const data = doc.data();
                 entries.push({
-                    name: data.userName || data.name || 'مجهول',
+                    name: data.name || 'مجهول',
                     score: data.score || 0,
-                    time: formatTime(data.timeSeconds || data.time || 0),
-                    timeSeconds: data.timeSeconds || data.time || 0,
+                    time: formatTime(data.time || data.timeSeconds || 0),
+                    timeSeconds: data.time || data.timeSeconds || 0,
                     date: data.date || '',
-                    total: 5
+                    total: 15
                 });
             });
 

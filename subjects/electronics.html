@@ -4,23 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دوائر إلكترونية - ليالي الامتحان</title>
+    <title>الإلكترونيات - ليالي الامتحان</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="physics2.css">
     <link rel="stylesheet" href="electronics.css">
+    <link rel="stylesheet" href="essay-bank.css">
 </head>
 
 <body>
     <nav class="subject-navbar">
         <div class="nav-container">
             <a href="../index.html" class="nav-brand"><i class="fas fa-arrow-right"></i><span>العودة للرئيسية</span></a>
-            <div class="nav-subject-title"><i class="fas fa-microchip"></i>دوائر إلكترونية</div>
+            <div class="nav-subject-title"><i class="fas fa-microchip"></i>الإلكترونيات</div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-chevron-down"></i>
+            </button>
             <div class="nav-links">
                 <a href="#hero" class="nav-link active"><i class="fas fa-home"></i><span>الرئيسية</span></a>
                 <a href="#challenge" class="nav-link"><i class="fas fa-bolt"></i><span>التحدي</span></a>
                 <a href="#bank" class="nav-link"><i class="fas fa-book-open"></i><span>الأسئلة الاختيارية</span></a>
+                <a href="#essay-bank" class="nav-link"><i class="fas fa-pen-fancy"></i><span>الأسئلة المقالية</span></a>
 
                 <a href="#leaderboard" class="nav-link"><i class="fas fa-trophy"></i><span>المتصدرين</span></a>
                 <a href="#ask-ai" class="nav-link"><i class="fas fa-robot"></i><span>اسأل الذكاء</span></a>
@@ -32,8 +37,8 @@
         <div class="hero-background"></div>
         <div class="hero-content">
             <div class="subject-badge"><i class="fas fa-microchip"></i></div>
-            <h1>دوائر إلكترونية</h1>
-            <p>Electronic Circuits</p>
+            <h1>الإلكترونيات</h1>
+            <p>Electronics</p>
             <div class="hero-stats">
                 <div class="hero-stat"><i class="fas fa-question-circle"></i><span id="totalQuestions">0</span> سؤال
                     اختياري</div>
@@ -43,7 +48,7 @@
             <div class="hero-buttons">
                 <a href="#challenge" class="btn btn-primary"><i class="fas fa-bolt"></i> ابدأ التحدي</a>
                 <a href="#bank" class="btn btn-secondary"><i class="fas fa-book-open"></i> الأسئلة الاختيارية</a>
-
+                <a href="#essay-bank" class="btn btn-secondary"><i class="fas fa-pen-fancy"></i> الأسئلة المقالية</a>
             </div>
         </div>
     </section>
@@ -115,12 +120,25 @@
         </div>
     </section>
 
+    <section id="essay-bank" class="section essay-bank-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
+            <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
+            <div class="essay-bank-controls">
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput" placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="questions-count">إجمالي: <span id="essayDisplayedCount">0</span> سؤال مقالي</div>
+            </div>
+            <div class="essay-questions-grid" id="essayQuestionsList">
+                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>
+            </div>
+        </div>
+    </section>
 
 
     <section id="leaderboard" class="section leaderboard-section">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-trophy"></i>لوحة المتصدرين</h2>
-            <p class="section-subtitle">أفضل النتائج في تحدي الدوائر الإلكترونية</p>
+            <p class="section-subtitle">أفضل النتائج في تحدي الإلكترونيات</p>
             <div class="leaderboard-card">
                 <div class="leaderboard-header"><button class="refresh-btn" onclick="loadLeaderboard()"><i
                             class="fas fa-sync-alt"></i> تحديث</button></div>
@@ -146,13 +164,13 @@
     <section id="ask-ai" class="section ai-section">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-robot"></i>اسأل الذكاء الاصطناعي</h2>
-            <p class="section-subtitle">اسأل أي سؤال عن الدوائر الإلكترونية</p>
+            <p class="section-subtitle">اسأل أي سؤال عن الإلكترونيات</p>
             <div class="ai-chat-container">
                 <div class="ai-messages" id="aiMessages">
                     <div class="ai-message bot">
                         <div class="message-avatar"><i class="fas fa-robot"></i></div>
                         <div class="message-content">
-                            <p>مرحباً! اسألني أي سؤال عن الدوائر الإلكترونية!</p>
+                            <p>مرحباً! اسألني أي سؤال عن الإلكترونيات!</p>
                         </div>
                     </div>
                 </div>
@@ -163,8 +181,19 @@
         </div>
     </section>
 
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="cycleTheme()" title="تغيير الثيم">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Theme Decorations -->
+    <div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❄</div><div class="snowflake">❅</div>
+    <div class="snowflake">❆</div><div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❄</div>
+    <div class="space-planet planet-1"></div><div class="space-planet planet-2"></div>
+    <div class="pyramid-3d pyramid-1"></div><div class="pyramid-3d pyramid-2"></div>
+
     <footer class="subject-footer">
-        <p>© 2024 ليالي الامتحان - دوائر إلكترونية | <a href="https://ibrahim88887.github.io/EAAAI/"
+        <p>© 2024 ليالي الامتحان - الإلكترونيات | <a href="https://ibrahim88887.github.io/EAAAI/"
                 target="_blank">EAAAI</a></p>
     </footer>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
