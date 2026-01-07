@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="physics2.css">
     <link rel="stylesheet" href="it.css">
     <link rel="stylesheet" href="essay-bank.css">
+    <link rel="stylesheet" href="essay-challenge.css">
 </head>
 
 <body>
@@ -26,7 +27,8 @@
                 <a href="#challenge" class="nav-link"><i class="fas fa-bolt"></i><span>التحدي</span></a>
                 <a href="#bank" class="nav-link"><i class="fas fa-book-open"></i><span>الأسئلة الاختيارية</span></a>
                 <a href="#essay-bank" class="nav-link"><i class="fas fa-pen-fancy"></i><span>الأسئلة المقالية</span></a>
-
+                <a href="#essay-challenge" class="nav-link"><i class="fas fa-robot"></i><span>تحدي المقالي</span></a>
+                <a href="#summaries" class="nav-link"><i class="fas fa-file-alt"></i><span>الملخصات</span></a>
                 <a href="#leaderboard" class="nav-link"><i class="fas fa-trophy"></i><span>المتصدرين</span></a>
                 <a href="#ask-ai" class="nav-link"><i class="fas fa-robot"></i><span>اسأل الذكاء</span></a>
             </div>
@@ -49,6 +51,7 @@
                 <a href="#challenge" class="btn btn-primary"><i class="fas fa-bolt"></i> ابدأ التحدي</a>
                 <a href="#bank" class="btn btn-secondary"><i class="fas fa-book-open"></i> الأسئلة الاختيارية</a>
                 <a href="#essay-bank" class="btn btn-secondary"><i class="fas fa-pen-fancy"></i> الأسئلة المقالية</a>
+                <a href="#summaries" class="btn btn-secondary"><i class="fas fa-file-alt"></i> الملخصات</a>
             </div>
         </div>
     </section>
@@ -131,11 +134,84 @@
             <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
             <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
             <div class="essay-bank-controls">
-                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput" placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput"
+                        placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
                 <div class="questions-count">إجمالي: <span id="essayDisplayedCount">0</span> سؤال مقالي</div>
             </div>
             <div class="essay-questions-grid" id="essayQuestionsList">
                 <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الأسئلة...</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="essay-challenge" class="section essay-challenge-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-pen-fancy"></i>تحدي المقالي - تصحيح بالذكاء الاصطناعي</h2>
+            <p class="section-subtitle">ارفع صورة إجابتك المكتوبة بخط اليد واحصل على تصحيح فوري!</p>
+            <div class="essay-challenge-intro" id="essayChallengeIntro">
+                <div class="challenge-icon">📝</div>
+                <h3>تحدي الأسئلة المقالية</h3>
+                <p>أجب على 5 أسئلة مقالية في 15 دقيقة واحصل على تصحيح بالذكاء الاصطناعي!</p>
+                <div class="essay-challenge-rules">
+                    <div class="rule"><i class="fas fa-clock"></i><span>15 دقيقة</span><small>وقت التحدي</small></div>
+                    <div class="rule"><i class="fas fa-question-circle"></i><span>5 أسئلة</span><small>أسئلة
+                            مقالية</small></div>
+                    <div class="rule"><i class="fas fa-star"></i><span>25 درجة</span><small>الدرجة الكاملة</small></div>
+                    <div class="rule"><i class="fas fa-camera"></i><span>رفع صور</span><small>إجابة بخط اليد</small>
+                    </div>
+                </div>
+                <div class="name-input-box">
+                    <label><i class="fas fa-user"></i> أدخل اسمك للبدء</label>
+                    <input type="text" id="essayChallengerName" placeholder="اسمك هنا..." maxlength="30">
+                    <button class="start-btn" onclick="return startEssayChallengeMode(event)"><i
+                            class="fas fa-play"></i> ابدأ تحدي
+                        المقالي</button>
+                </div>
+            </div>
+            <div class="essay-challenge-active" id="essayChallengeActive" style="display: none;">
+                <div class="essay-challenge-status">
+                    <div class="essay-timer" id="essayChallengeTimer"><i class="fas fa-clock"></i><span
+                            id="essayChallengeTimerText">15:00</span></div>
+                    <div class="essay-progress-info">
+                        <div class="essay-info-badge"><i class="fas fa-list-ol"></i><span>5 أسئلة</span></div>
+                        <div class="essay-info-badge points"><i class="fas fa-star"></i><span>25 درجة</span></div>
+                    </div>
+                </div>
+                <div class="essay-challenge-questions" id="essayChallengeQuestionsContainer"></div>
+                <button class="essay-submit-btn" id="essaySubmitBtn" onclick="return submitEssayChallenge(event)"><i
+                        class="fas fa-paper-plane"></i> إنهاء التحدي وتصحيح الإجابات</button>
+            </div>
+            <div class="essay-challenge-result" id="essayChallengeResult" style="display: none;">
+                <div class="essay-result-icon" id="essayResultIcon">🏆</div>
+                <h2 class="essay-result-title" id="essayResultTitle">أحسنت!</h2>
+                <p id="essayResultSubtitle">أداء رائع، استمر على هذا المستوى!</p>
+                <div class="essay-result-stats">
+                    <div class="essay-result-stat">
+                        <div class="essay-result-stat-value" id="essayFinalScore">0/25</div>
+                        <div class="essay-result-stat-label">النتيجة</div>
+                    </div>
+                    <div class="essay-result-stat">
+                        <div class="essay-result-stat-value" id="essayFinalTime">00:00</div>
+                        <div class="essay-result-stat-label">الوقت المستغرق</div>
+                    </div>
+                    <div class="essay-result-stat">
+                        <div class="essay-result-stat-value" id="essayAnsweredCount">0/5</div>
+                        <div class="essay-result-stat-label">الأسئلة المجابة</div>
+                    </div>
+                </div>
+                <button class="essay-restart-btn" onclick="return restartEssayChallenge(event)"><i
+                        class="fas fa-redo"></i> حاول مرة
+                    أخرى</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="summaries" class="section summaries-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-file-alt"></i>الملخصات</h2>
+            <p class="section-subtitle">ملخصات المادة والمراجعات النهائية</p>
+            <div class="summaries-grid" id="summariesList">
+                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الملخصات...</div>
             </div>
         </div>
     </section>
@@ -194,10 +270,20 @@
     </button>
 
     <!-- Theme Decorations -->
-    <div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❄</div><div class="snowflake">❅</div>
-    <div class="snowflake">❆</div><div class="snowflake">❄</div><div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❄</div>
-    <div class="space-planet planet-1"></div><div class="space-planet planet-2"></div>
-    <div class="pyramid-3d pyramid-1"></div><div class="pyramid-3d pyramid-2"></div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="snowflake">❅</div>
+    <div class="snowflake">❆</div>
+    <div class="snowflake">❄</div>
+    <div class="space-planet planet-1"></div>
+    <div class="space-planet planet-2"></div>
+    <div class="pyramid-3d pyramid-1"></div>
+    <div class="pyramid-3d pyramid-2"></div>
 
     <footer class="subject-footer">
         <p>© 2024 ليالي الامتحان - IT | <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank">EAAAI</a></p>
@@ -205,6 +291,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="essay-challenge.js"></script>
     <script src="it.js"></script>
 </body>
 

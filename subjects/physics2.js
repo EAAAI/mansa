@@ -805,8 +805,8 @@ let essayChallenge = {
 const ESSAY_TIME = 660;
 const ESSAYS_PER_CHALLENGE = 5;
 
-// Essay Challenge Functions
-function startEssayChallenge() {
+// Old Essay Challenge Functions (Text-based - kept for backwards compatibility)
+function startOldEssayChallenge() {
     const nameInput = document.getElementById('essayPlayerName');
     const name = nameInput.value.trim() || document.getElementById('challengerName').value.trim();
 
@@ -891,7 +891,7 @@ function startEssayTimer() {
             document.getElementById('essayTimer').classList.add('warning');
         }
         if (essayChallenge.timeLeft <= 0) {
-            submitEssayChallenge();
+            submitOldEssayChallenge();
         }
     }, 1000);
 }
@@ -902,7 +902,7 @@ function updateEssayTimerDisplay() {
     document.getElementById('essayTimerDisplay').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-async function submitEssayChallenge() {
+async function submitOldEssayChallenge() {
     saveCurrentEssayAnswer();
     clearInterval(essayChallenge.timerInterval);
     essayChallenge.active = false;
@@ -977,7 +977,7 @@ async function submitEssayChallenge() {
     document.getElementById('essayScores').style.display = 'flex';
 }
 
-function restartEssayChallenge() {
+function restartOldEssayChallenge() {
     document.getElementById('essayResult').style.display = 'none';
     document.getElementById('essayIntro').style.display = 'block';
     document.getElementById('essayTimer').classList.remove('warning');
@@ -1101,6 +1101,10 @@ async function loadEssayBankFromFirebase() {
             if (essayQuestions.length > 0) {
                 document.getElementById('essayDisplayedCount').textContent = essayQuestions.length;
                 renderEssayBank();
+                // Initialize Essay Challenge with hardcoded questions
+                if (typeof initEssayChallenge === 'function') {
+                    initEssayChallenge(SUBJECT_ID, essayQuestions);
+                }
             } else {
                 container.innerHTML = '<div class="no-questions-message"><i class="fas fa-book-open"></i><h3>لا توجد أسئلة مقالية حالياً</h3><p>سيتم إضافة الأسئلة من لوحة الإدارة</p></div>';
                 document.getElementById('essayDisplayedCount').textContent = '0';
@@ -1124,11 +1128,16 @@ async function loadEssayBankFromFirebase() {
 
         // Merge Firebase questions with hardcoded ones
         essayQuestions.push(...firebaseEssays);
-        
+
         document.getElementById('essayDisplayedCount').textContent = essayQuestions.length;
         console.log(`✅ Loaded ${firebaseEssays.length} essay questions from Firebase for ${SUBJECT_ID}`);
-        
+
         renderEssayBank();
+
+        // Initialize Essay Challenge with all loaded questions
+        if (typeof initEssayChallenge === 'function') {
+            initEssayChallenge(SUBJECT_ID, essayQuestions);
+        }
 
     } catch (error) {
         console.error('Error loading essay questions:', error);
@@ -1136,8 +1145,106 @@ async function loadEssayBankFromFirebase() {
         if (essayQuestions.length > 0) {
             document.getElementById('essayDisplayedCount').textContent = essayQuestions.length;
             renderEssayBank();
+            // Initialize Essay Challenge with fallback questions
+            if (typeof initEssayChallenge === 'function') {
+                initEssayChallenge(SUBJECT_ID, essayQuestions);
+            }
         } else {
             container.innerHTML = '<div class="no-questions-message"><i class="fas fa-exclamation-circle"></i><h3>حدث خطأ في تحميل الأسئلة</h3></div>';
         }
     }
 }
+
+// =============================================
+// SUMMARIES SECTION
+// =============================================
+
+// Load summaries from Firebase
+async function loadSummaries() {
+    const container = document.getElementById('summariesList');
+    if (!container) return;
+
+    try {
+        container.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الملخصات...</div>';
+
+        if (!db) {
+            container.innerHTML = `
+                <div class="no-summaries-message">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>لا توجد ملخصات حالياً</h3>
+                    <p>سيتم إضافة ملخصات قريباً</p>
+                </div>
+            `;
+            return;
+        }
+
+        const snapshot = await db.collection(`summaries_${SUBJECT_ID}`).orderBy('order', 'asc').get();
+
+        if (snapshot.empty) {
+            container.innerHTML = `
+                <div class="no-summaries-message">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>لا توجد ملخصات حالياً</h3>
+                    <p>سيتم إضافة ملخصات من لوحة الإدارة</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const card = createSummaryCard(data, doc.id);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error loading summaries:', error);
+        container.innerHTML = `
+            <div class="no-summaries-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>خطأ في تحميل الملخصات</h3>
+                <p>حاول تحديث الصفحة</p>
+            </div>
+        `;
+    }
+}
+
+// Create summary card element
+function createSummaryCard(summary, docId) {
+    const card = document.createElement('div');
+    card.className = 'summary-card';
+
+    let actionButton = '';
+    if (summary.pdfUrl) {
+        actionButton = `<a href="${summary.pdfUrl}" target="_blank" class="summary-btn"><i class="fas fa-download"></i> تحميل PDF</a>`;
+    } else if (summary.externalUrl) {
+        actionButton = `<a href="${summary.externalUrl}" target="_blank" class="summary-btn external-link"><i class="fas fa-external-link-alt"></i> فتح الرابط</a>`;
+    } else if (summary.content) {
+        actionButton = `<button class="summary-btn" onclick="viewSummaryContent('${docId}')"><i class="fas fa-eye"></i> عرض المحتوى</button>`;
+    }
+
+    card.innerHTML = `
+        ${summary.imageUrl ? `<div class="summary-image"><img src="${summary.imageUrl}" alt="${summary.title}" loading="lazy"></div>` : ''}
+        <div class="summary-content">
+            <h3>${summary.title || 'ملخص'}</h3>
+            ${summary.description ? `<p>${summary.description}</p>` : ''}
+            <div class="summary-meta">
+                ${summary.author ? `<span><i class="fas fa-user"></i> ${summary.author}</span>` : ''}
+            </div>
+            ${actionButton}
+        </div>
+    `;
+
+    return card;
+}
+
+// View summary content in modal
+function viewSummaryContent(docId) {
+    console.log('View summary:', docId);
+}
+
+// Load summaries on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadSummaries();
+});
