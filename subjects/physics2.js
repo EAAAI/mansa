@@ -217,7 +217,8 @@ let challenge = {
 
 // Navigation Active State
 function updateActiveNav() {
-    const sections = ['hero', 'challenge', 'bank', 'essay', 'leaderboard', 'ask-ai'];
+    // Updated section order to match reorganized page
+    const sections = ['hero', 'summaries', 'bank', 'challenge', 'essay-bank', 'essay-challenge', 'leaderboard', 'ask-ai'];
     const navLinks = document.querySelectorAll('.nav-link');
 
     let currentSection = 'hero';

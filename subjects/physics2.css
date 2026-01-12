@@ -12,19 +12,79 @@ body {
 }
 
 /* =============================================
-   NAVIGATION BAR - FULLY RESPONSIVE
+   SECTION COLOR THEMES
    ============================================= */
 
-/* iPhone Safe Area Insets */
-@supports (padding: env(safe-area-inset-top)) {
-    .subject-navbar {
-        padding-top: env(safe-area-inset-top);
-        padding-left: max(15px, env(safe-area-inset-left));
-        padding-right: max(15px, env(safe-area-inset-right));
-    }
+/* MCQ Section Theme - Cyan/Teal Accents */
+.mcq-theme {
+    --theme-primary: #06b6d4;
+    --theme-secondary: #0891b2;
+    --theme-gradient: linear-gradient(135deg, #06b6d4, #0891b2);
+    --theme-glow: rgba(6, 182, 212, 0.3);
+    --theme-border: rgba(6, 182, 212, 0.3);
+    --theme-bg: rgba(6, 182, 212, 0.05);
 }
 
-/* Base Navbar - Desktop First */
+.mcq-theme .section-title i {
+    color: var(--theme-primary);
+}
+
+.mcq-theme .section-title {
+    background: var(--theme-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mcq-theme .challenge-card,
+.mcq-theme .bank-question {
+    border: 1px solid var(--theme-border);
+    background: var(--theme-bg);
+}
+
+.mcq-theme .start-btn,
+.mcq-theme .nav-btn.primary {
+    background: var(--theme-gradient);
+}
+
+.mcq-theme .challenge-icon {
+    text-shadow: 0 0 20px var(--theme-glow);
+}
+
+/* Essay Section Theme - Purple/Violet Accents */
+.essay-theme {
+    --theme-primary: #8b5cf6;
+    --theme-secondary: #7c3aed;
+    --theme-gradient: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    --theme-glow: rgba(139, 92, 246, 0.3);
+    --theme-border: rgba(139, 92, 246, 0.3);
+    --theme-bg: rgba(139, 92, 246, 0.05);
+}
+
+.essay-theme .section-title i {
+    color: var(--theme-primary);
+}
+
+.essay-theme .section-title {
+    background: var(--theme-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.essay-theme .essay-question-item,
+.essay-theme .essay-challenge-intro {
+    border: 1px solid var(--theme-border);
+}
+
+.essay-theme .start-btn {
+    background: var(--theme-gradient);
+}
+
+/* =============================================
+   NAVIGATION BAR - CLEAN & RESPONSIVE
+   ============================================= */
+
 .subject-navbar {
     position: fixed;
     top: 0;
@@ -35,31 +95,52 @@ body {
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 9999;
-    padding: 0 20px;
+    padding: 0 15px;
+}
+
+@supports (padding: env(safe-area-inset-top)) {
+    .subject-navbar {
+        padding-top: env(safe-area-inset-top);
+    }
 }
 
 .nav-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: 70px;
+    justify-content: flex-start;
+    min-height: 70px;
     gap: 15px;
+    position: relative;
 }
 
-/* Back/Home Brand Link */
+/* Back Button - DESKTOP: After nav links, before logo */
 .nav-brand {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 4px;
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     font-weight: 600;
     transition: all 0.3s ease;
-    padding: 10px 15px;
+    padding: 8px 12px;
     border-radius: 10px;
     flex-shrink: 0;
+    min-width: 60px;
+    text-align: center;
+    order: 2;
+}
+
+.nav-brand i {
+    font-size: 1.2rem;
+}
+
+.nav-brand span {
+    font-size: 0.65rem;
+    white-space: nowrap;
 }
 
 .nav-brand:hover {
@@ -67,47 +148,79 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Subject Title */
+/* Subject Title - DESKTOP: Far right */
 .nav-subject-title {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 1.2rem;
+    gap: 8px;
+    font-size: 1.1rem;
     font-weight: 700;
     background: linear-gradient(90deg, #667eea, #764ba2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     flex-shrink: 0;
+    order: 1;
 }
 
-/* Navigation Links Container */
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex-wrap: nowrap;
-}
-
-/* Individual Nav Link - DESKTOP: Icons + Text */
-.nav-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 16px;
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
+/* Mobile Menu Toggle - Hidden on desktop */
+.mobile-menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 10px;
     border-radius: 10px;
     transition: all 0.3s ease;
-    font-weight: 500;
-    white-space: nowrap;
     flex-shrink: 0;
 }
 
+.mobile-menu-toggle span {
+    display: none;
+}
+
+.mobile-menu-toggle:hover {
+    color: #fff;
+}
+
+/* Navigation Links - DESKTOP: Compact, professional layout */
+.nav-links {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 15px;
+    flex: 1;
+    order: 3;
+    margin-left: 185px;
+}
+
+.nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 10px 14px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    min-width: 60px;
+    text-align: center;
+}
+
+.nav-link i {
+    font-size: 1.25rem;
+}
+
 .nav-link span {
-    display: inline;
-    font-size: 0.9rem;
+    display: block;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0.9;
 }
 
 .nav-link:hover {
@@ -120,134 +233,123 @@ body {
     background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-/* Hide hamburger menu - not needed */
-.mobile-menu-toggle {
-    display: none !important;
-}
-
 /* =============================================
-   TABLET (max-width: 1024px) - Icons Only + Tooltip
+   MOBILE (max-width: 900px) - Simple Top Bar + Dropdown
    ============================================= */
-@media (max-width: 1024px) {
+@media (max-width: 900px) {
     .nav-container {
-        height: 65px;
+        min-height: 50px;
+        gap: 0;
     }
 
+    /* Mobile: Toggle on RIGHT */
+    .mobile-menu-toggle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        order: 3;
+        padding: 12px;
+    }
+
+    /* Mobile: Subject title in CENTER */
     .nav-subject-title {
-        display: none;
+        order: 2;
+        flex: 1;
+        justify-content: center;
+        font-size: 1rem;
     }
 
-    .nav-link {
-        padding: 10px 14px;
-        position: relative;
-    }
-
-    .nav-link span {
-        display: none;
-    }
-
-    /* Tooltip on hover for desktop/tablet */
-    .nav-link:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: #fff;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        white-space: nowrap;
-        z-index: 100;
-        margin-top: 8px;
-        pointer-events: none;
-    }
-}
-
-/* =============================================
-   MOBILE (max-width: 768px) - Compact Icon Bar
-   ============================================= */
-@media (max-width: 768px) {
-    .subject-navbar {
-        padding: 8px 10px;
-        padding-top: max(8px, env(safe-area-inset-top));
-    }
-
-    .nav-container {
-        height: 55px;
-        gap: 8px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .nav-container::-webkit-scrollbar {
-        display: none;
-    }
-
+    /* Mobile: Back button on LEFT */
     .nav-brand {
-        padding: 8px 10px;
+        order: 1;
+        flex-direction: row;
+        gap: 0;
+        min-width: auto;
+        padding: 12px;
     }
 
     .nav-brand span {
         display: none;
     }
 
+    /* Dropdown menu - hidden by default on mobile */
     .nav-links {
-        gap: 4px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        display: none !important;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        margin-left: 0;
+        background: rgba(26, 26, 46, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        gap: 5px;
     }
 
-    .nav-links::-webkit-scrollbar {
-        display: none;
+    .nav-links.active {
+        display: flex !important;
+        animation: slideDown 0.3s ease;
     }
 
+    @keyframes slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile nav links - horizontal layout with icon + text */
     .nav-link {
-        padding: 10px 12px;
-        min-width: 44px;
-        min-height: 44px;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 14px 18px;
+        width: 100%;
+        gap: 15px;
+        min-width: auto;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
     }
 
     .nav-link i {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        width: 28px;
+        text-align: center;
     }
 
-    /* Disable tooltip on touch */
-    .nav-link:hover::after {
-        display: none;
+    .nav-link span {
+        font-size: 1rem;
+        opacity: 1;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
     }
 }
 
 /* =============================================
-   SMALL MOBILE / iPhone Mini (max-width: 380px)
+   SMALL MOBILE (max-width: 480px)
    ============================================= */
-@media (max-width: 380px) {
+@media (max-width: 480px) {
     .nav-container {
-        height: 50px;
-        gap: 5px;
+        min-height: 45px;
+    }
+
+    .nav-subject-title {
+        font-size: 0.9rem;
+    }
+
+    .mobile-menu-toggle {
+        padding: 10px;
     }
 
     .nav-brand {
-        padding: 6px 8px;
+        padding: 10px;
     }
 
     .nav-link {
-        padding: 8px 10px;
-        min-width: 40px;
-        min-height: 40px;
-    }
-
-    .nav-link i {
-        font-size: 1rem;
-    }
-
-    /* Hide secondary nav items on very small screens */
-    .nav-link:nth-child(n+6) {
-        display: none;
+        padding: 12px 15px;
     }
 }
 
@@ -306,7 +408,9 @@ body {
 .hero-content h1 {
     font-size: 3.5rem;
     font-weight: 800;
-    margin-bottom: 15px;
+    margin: 0 auto 15px;
+    width: 100%;
+    padding: 0;
     background: linear-gradient(90deg, #fff, #667eea);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -316,9 +420,11 @@ body {
 .hero-content>p {
     font-size: 1.3rem;
     color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 40px;
+    margin: 0 auto 40px;
     text-align: center;
-    padding-right: 70px;
+    padding: 0;
+    width: 100%;
+    max-width: 600px;
 }
 
 .hero-stats {
@@ -1320,37 +1426,12 @@ body {
     text-decoration: none;
 }
 
-/* Responsive */
+/* Responsive - Non-navbar elements */
 @media (max-width: 768px) {
-    .nav-container {
-        flex-wrap: wrap;
-        height: auto;
-        padding: 15px 0;
-        gap: 10px;
-    }
-
-    .nav-subject-title {
-        order: -1;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .nav-links {
-        width: 100%;
-        justify-content: center;
-        overflow-x: auto;
-    }
-
-    .nav-link span {
-        display: none;
-    }
-
-    .nav-link {
-        padding: 10px;
-    }
+    /* NOTE: Navbar styles defined at top of file - don't duplicate here! */
 
     .subject-hero-section {
-        padding-top: 150px;
+        padding-top: 100px;
     }
 
     .hero-content h1 {
@@ -1780,98 +1861,11 @@ body {
     font-size: 0.8rem;
 }
 
-/* Mobile Menu Toggle Button - HIDDEN (not needed anymore) */
-.mobile-menu-toggle {
-    display: none !important;
-}
+/* NOTE: Mobile navbar styles are defined at the top of this file (lines 162-254)
+   with the dropdown menu system. Do not add conflicting styles here! */
 
-/* Mobile Responsive Styles */
+/* Mobile Responsive Styles for non-navbar elements */
 @media (max-width: 900px) {
-    .subject-navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 9999;
-        padding: 8px 10px;
-        padding-top: max(8px, env(safe-area-inset-top));
-        background: rgba(26, 26, 46, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-    }
-
-    .nav-container {
-        height: auto;
-        min-height: 50px;
-        flex-wrap: nowrap;
-        gap: 8px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .nav-container::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-brand {
-        flex-shrink: 0;
-        padding: 8px;
-        font-size: 0.85rem;
-    }
-
-    .nav-brand span {
-        display: none;
-    }
-
-    .nav-subject-title {
-        display: none;
-    }
-
-    /* NAV LINKS - ALWAYS VISIBLE, HORIZONTAL SCROLL */
-    .nav-links {
-        display: flex !important;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 4px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding: 0;
-        background: transparent;
-        position: relative;
-        top: auto;
-        left: auto;
-        right: auto;
-        border: none;
-    }
-
-    .nav-links::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-link {
-        flex-shrink: 0;
-        padding: 10px 12px;
-        border-radius: 8px;
-        min-width: 44px;
-        min-height: 44px;
-        justify-content: center;
-    }
-
-    .nav-link i {
-        font-size: 1.1rem;
-    }
-
-    .nav-link span {
-        display: none !important;
-    }
-
-    /* Disable tooltip hover on touch devices */
-    .nav-link:hover span {
-        display: none !important;
-    }
 
     .hero-content h1 {
         font-size: 2rem;
@@ -2577,73 +2571,8 @@ body.winter-theme .snowflake {
 /* Tablet and Mobile (max-width: 768px) */
 @media (max-width: 768px) {
 
-    /* Navbar - Fixed and Visible */
-    .subject-navbar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 9999;
-        padding: 10px 15px;
-        background: rgba(26, 26, 46, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-    }
-
-    .nav-container {
-        height: 60px;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-
-    .nav-container::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-brand {
-        padding: 8px 10px;
-        font-size: 0.9rem;
-        flex-shrink: 0;
-    }
-
-    .nav-subject-title {
-        font-size: 1rem;
-        display: none;
-    }
-
-    /* Nav Links - Horizontal Scroll */
-    .nav-links {
-        display: flex;
-        gap: 5px;
-        flex-shrink: 0;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-
-    .nav-links::-webkit-scrollbar {
-        display: none;
-    }
-
-    .nav-link {
-        padding: 10px 14px;
-        font-size: 1rem;
-        flex-shrink: 0;
-        min-width: 44px;
-        min-height: 44px;
-    }
-
-    .nav-link i {
-        font-size: 1.1rem;
-    }
-
-    /* Disable tooltip on mobile - show on tap */
-    .nav-link:hover span {
-        display: none;
-    }
+    /* NOTE: Navbar styles are defined earlier in the file (lines 162-254)
+       with the dropdown menu system. Don't duplicate here! */
 
     /* Hero Section - Padding for fixed navbar */
     .subject-hero-section {

@@ -28,36 +28,35 @@
                 <i class="fas fa-chevron-down"></i>
             </button>
             <div class="nav-links">
-                <a href="#hero" class="nav-link active">
+                <a href="#hero" class="nav-link active" data-tooltip="الرئيسية">
                     <i class="fas fa-home"></i>
                     <span>الرئيسية</span>
                 </a>
-                <a href="#challenge" class="nav-link">
-                    <i class="fas fa-bolt"></i>
-                    <span>التحدي</span>
-                </a>
-                <a href="#bank" class="nav-link">
-                    <i class="fas fa-book-open"></i>
-                    <span>الأسئلة الاختيارية</span>
-                </a>
-                <a href="#essay-bank" class="nav-link">
-                    <i class="fas fa-pen-fancy"></i>
-                    <span>الأسئلة المقالية</span>
-                </a>
-                <a href="#essay-challenge" class="nav-link">
-                    <i class="fas fa-robot"></i>
-                    <span>تحدي المقالي</span>
-                </a>
-
-                <a href="#summaries" class="nav-link">
+                <a href="#summaries" class="nav-link" data-tooltip="الملخصات">
                     <i class="fas fa-file-alt"></i>
                     <span>الملخصات</span>
                 </a>
-                <a href="#leaderboard" class="nav-link">
+                <a href="#bank" class="nav-link" data-tooltip="الأسئلة الاختيارية">
+                    <i class="fas fa-book-open"></i>
+                    <span>الاختياري</span>
+                </a>
+                <a href="#challenge" class="nav-link" data-tooltip="التحدي الاختياري">
+                    <i class="fas fa-bolt"></i>
+                    <span>تحدي الاختياري</span>
+                </a>
+                <a href="#essay-bank" class="nav-link" data-tooltip="الأسئلة المقالية">
+                    <i class="fas fa-pen-fancy"></i>
+                    <span>المقالي</span>
+                </a>
+                <a href="#essay-challenge" class="nav-link" data-tooltip="تحدي المقالي">
+                    <i class="fas fa-brain"></i>
+                    <span>تحدي المقالي</span>
+                </a>
+                <a href="#leaderboard" class="nav-link" data-tooltip="المتصدرين">
                     <i class="fas fa-trophy"></i>
                     <span>المتصدرين</span>
                 </a>
-                <a href="#ask-ai" class="nav-link">
+                <a href="#ask-ai" class="nav-link" data-tooltip="اسأل الذكاء">
                     <i class="fas fa-robot"></i>
                     <span>اسأل الذكاء</span>
                 </a>
@@ -87,8 +86,8 @@
                 </div>
             </div>
             <div class="hero-buttons">
-                <a href="#challenge" class="btn btn-primary">
-                    <i class="fas fa-bolt"></i> ابدأ التحدي
+                <a href="#summaries" class="btn btn-primary">
+                    <i class="fas fa-file-alt"></i> الملخصات
                 </a>
                 <a href="#bank" class="btn btn-secondary">
                     <i class="fas fa-book-open"></i> الأسئلة الاختيارية
@@ -96,14 +95,45 @@
                 <a href="#essay-bank" class="btn btn-secondary">
                     <i class="fas fa-pen-fancy"></i> الأسئلة المقالية
                 </a>
-                <a href="#summaries" class="btn btn-secondary">
-                    <i class="fas fa-file-alt"></i> الملخصات
-                </a>
             </div>
         </div>
     </section>
 
-    <section id="challenge" class="section challenge-section">
+    <!-- SUMMARIES SECTION - First after hero -->
+    <section id="summaries" class="section summaries-section">
+        <div class="container">
+            <h2 class="section-title"><i class="fas fa-file-alt"></i>الملخصات</h2>
+            <p class="section-subtitle">ملخصات المادة والمراجعات النهائية</p>
+            <div class="summaries-grid" id="summariesList">
+                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الملخصات...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MCQ SECTION GROUP - Cyan/Blue Theme -->
+    <section id="bank" class="section bank-section mcq-theme">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-book-open"></i>
+                الأسئلة الاختيارية
+            </h2>
+            <p class="section-subtitle">تصفح جميع أسئلة الاختيار من متعدد وإجاباتها</p>
+
+            <div class="bank-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث في الأسئلة..." oninput="filterQuestions()">
+                </div>
+                <div class="questions-count">
+                    إجمالي: <span id="displayedCount">0</span> سؤال
+                </div>
+            </div>
+
+            <div class="questions-list" id="questionsList"></div>
+        </div>
+    </section>
+
+    <section id="challenge" class="section challenge-section mcq-theme">
         <div class="container">
             <h2 class="section-title">
                 <i class="fas fa-bolt"></i>
@@ -170,29 +200,8 @@
         </div>
     </section>
 
-    <section id="bank" class="section bank-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-book-open"></i>
-                الأسئلة الاختيارية
-            </h2>
-            <p class="section-subtitle">تصفح جميع أسئلة الاختيار من متعدد وإجاباتها</p>
-
-            <div class="bank-controls">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="ابحث في الأسئلة..." oninput="filterQuestions()">
-                </div>
-                <div class="questions-count">
-                    إجمالي: <span id="displayedCount">0</span> سؤال
-                </div>
-            </div>
-
-            <div class="questions-list" id="questionsList"></div>
-        </div>
-    </section>
-
-    <section id="essay-bank" class="section essay-bank-section">
+    <!-- ESSAY SECTION GROUP - Purple/Violet Theme -->
+    <section id="essay-bank" class="section essay-bank-section essay-theme">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
             <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
@@ -207,7 +216,7 @@
         </div>
     </section>
 
-    <section id="essay-challenge" class="section essay-challenge-section">
+    <section id="essay-challenge" class="section essay-challenge-section essay-theme">
         <div class="container">
             <h2 class="section-title">
                 <i class="fas fa-pen-fancy"></i>
@@ -304,16 +313,6 @@
                     <i class="fas fa-redo"></i>
                     حاول مرة أخرى
                 </button>
-            </div>
-        </div>
-    </section>
-
-    <section id="summaries" class="section summaries-section">
-        <div class="container">
-            <h2 class="section-title"><i class="fas fa-file-alt"></i>الملخصات</h2>
-            <p class="section-subtitle">ملخصات المادة والمراجعات النهائية</p>
-            <div class="summaries-grid" id="summariesList">
-                <div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الملخصات...</div>
             </div>
         </div>
     </section>
