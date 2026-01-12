@@ -773,7 +773,68 @@ const IT_DATA_CONTENT = `
         </h3>
         
         <div class="section-content collapsed">
-            <p style="margin-bottom: 15px;">هذا الجدول يلخص كيف تستهلك البيانات مساحة في الـ RAM بناءً على نوعها:</p>
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">1. التمثيل الفريد (Unique Representation):</h4>
+                <p style="line-height: 1.8; margin-bottom: 20px;">
+                    لكي يتمكن الحاسوب من التعامل مع البيانات المختلفة، يجب أن يكون لكل عنصر (سواء كان حرفاً، رقماً، أو لوناً) <strong>تمثيل ثنائي فريد (Unique Binary Representation)</strong> خاص به لا يتكرر مع أي عنصر آخر. هذا التمثيل هو ما نسميه <span class="interactive-term">Data Type</span>، وهو الذي يحدد للحاسوب:
+                    <br>1. كم مساحة يحتاجها هذا العنصر في الذاكرة (Size).
+                    <br>2. كيف يتعامل معه المعالج (مثلاً هل يجمعه كرقم أم يعرضه كحرف).
+                </p>
+
+                <div style="background: rgba(79, 172, 254, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong style="color: #4facfe; display: block; margin-bottom: 10px;">فكرة "الأكواد المميزة" (Student Codes Example):</strong>
+                    <p style="font-size: 0.9em; margin-bottom: 10px;">
+                        تخيل أنك تريد وضع "كود" لكل طالب. إذا كان عندك <strong>4 طلاب</strong> فقط، يكفيك خانتان (00, 01, 10, 11). لكن إذا زاد العدد، ستحتاج لزيادة عدد الخانات.
+                    </p>
+                    <div style="direction: ltr; text-align: center; font-family: monospace; font-weight: bold; margin: 10px 0;">
+                        2<sup>X</sup> ≥ N
+                    </div>
+                    <p style="font-size: 0.9em; text-align: center; color: #aaa;">
+                        (حيث X عدد البتات، و N عدد الرموز)
+                    </p>
+                    <ul style="list-style: none; padding: 0; margin-top: 10px; font-size: 0.9em;">
+                        <li>• 4 رموز ← نحتاج <strong>2 بت</strong> (2<sup>2</sup> = 4).</li>
+                        <li>• 256 رمز ← نحتاج <strong>8 بت</strong> (1 بايت) (2<sup>8</sup> = 256).</li>
+                    </ul>
+                    <p style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 5px;">
+                        <strong>الخلاصة:</strong> كلما زاد حجم "مجموعة الحروف" (Character Set)، احتجنا لعدد "بتات" أكثر لكل حرف لكي يمتلك كل حرف كوداً فريداً.
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                    <strong style="color: #51cf66; display: block; margin-bottom: 10px;">مثال عملي: الفرق بين ASCII و Unicode</strong>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; font-size: 0.85em; text-align: center;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #555;">
+                                    <th style="padding: 5px;">وجه المقارنة</th>
+                                    <th style="padding: 5px; color: #4facfe;">ASCII</th>
+                                    <th style="padding: 5px; color: #51cf66;">Unicode</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 8px; font-weight: bold;">الحجم</td>
+                                    <td>يستخدم <strong>7 أو 8 بت</strong> فقط.</td>
+                                    <td>يستخدم <strong>16 أو 32 بت</strong>.</td>
+                                </tr>
+                                <tr style="background: rgba(255,255,255,0.02);">
+                                    <td style="padding: 8px; font-weight: bold;">القدرة</td>
+                                    <td>يتسع لـ <strong>256 رمز</strong> كحد أقصى.</td>
+                                    <td>يتسع لـ <strong>ملايين الرموز</strong>.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; font-weight: bold;">اللغات</td>
+                                    <td>الإنجليزية، الأرقام، والرموز الأساسية.</td>
+                                    <td>كل لغات العالم (عربي، صيني..) + الإيموجي.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-bottom: 15px;">بناءً على هذا المبدأ، تم تقسيم أنواع البيانات في الذاكرة كالتالي:</p>
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em;">
                     <thead>
