@@ -294,36 +294,36 @@ const IT_PART_1_CONTENT = `
         
         <div class="section-content collapsed">
             <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">وحدة المعالجة المركزية (CPU)</h4>
-                <p>تتكون من شقين أساسيين:</p>
-                <ul style="list-style: none; padding-right: 20px;">
-                    <li style="margin-bottom: 15px;">
-                        <span class="interactive-term">وحدة التحكم (CU)</span> 
-                        <span class="term-expansion">"الدماغ المدير" الذي يجلب التعليمات، يحللها، ويوجه تدفق البيانات بين أجزاء الحاسوب.</span>
-                    </li>
-                    <li style="margin-bottom: 15px;">
-                        <span class="interactive-term">وحدة الحساب والمنطق (ALU)</span> 
-                        <span class="term-expansion">"المنفذ" الذي يقوم بالعمليات الرياضية (+، -، *، /) والعمليات المنطقية (AND, OR, NOT).</span>
-                    </li>
-                </ul>
+                <p style="line-height: 2; margin-bottom: 15px;">
+                    <strong style="color: #4facfe; font-size: 1.1em;">وحدة المعالجة المركزية (CPU):</strong><br>
+                    هي العقل المدبر للحاسوب، وتعمل بشقين متكاملين: <span class="interactive-term">وحدة التحكم (CU)</span><span class="term-expansion">"الدماغ المدير" الذي يجلب التعليمات، يحللها، ويوجه تدفق البيانات بين أجزاء الحاسوب.</span> التي تصدر الأوامر، و<span class="interactive-term">وحدة الحساب والمنطق (ALU)</span><span class="term-expansion">"المنفذ" الذي يقوم بالعمليات الرياضية (+، -، *، /) والعمليات المنطقية (AND, OR, NOT).</span> التي تنفذ العمليات الفعلية.
+                </p>
+                <p style="line-height: 2;">
+                    كل هذا يتركب على <span class="interactive-term">اللوحة الأم (Motherboard)</span><span class="term-expansion">هي اللوحة التي تحتضن جميع المكونات وتسمح لها بالتواصل عبر النواقل (Buses).</span>، التي تعتبر العمود الفقري للجهاز.
+                </p>
             </div>
 
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">
-                    <span class="interactive-term">اللوحة الأم (Motherboard)</span>
-                    <span class="term-expansion">هي اللوحة التي تحتضن جميع المكونات وتسمح لها بالتواصل عبر النواقل (Buses).</span>
-                </h4>
-            </div>
-
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">المنافذ (Ports) وشقوق التوسعة</h4>
-                <ul style="list-style: none; padding-right: 20px;">
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">Serial Ports (COM1 & COM2)</span> <span class="term-expansion">تنقل البيانات بت تلو الآخر (تسلسلي). كانت تُستخدم قديماً للفأرة.</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">Parallel Ports (LPT1 & LPT2)</span> <span class="term-expansion">تنقل عدة بتات (8 بت) في وقت واحد. كانت مخصصة للطابعات.</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">PS/2 Ports</span> <span class="term-expansion">منافذ دائرية؛ البنفسجي للوحة المفاتيح والأخضر للفأرة.</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">USB (Universal Serial Bus)</span> <span class="term-expansion">المنفذ العالمي الحديث؛ سريع، يدعم نقل البيانات والطاقة، ويدعم "التوصيل والتشغيل" (Plug and Play).</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">Expansion Slots</span> <span class="term-expansion">فتحات تسمح بإضافة وظائف جديدة للجهاز عبر "كروت" (مثل كارت الشاشة أو كارت الشبكة).</span></li>
-                </ul>
+            <div class="term-group" style="margin-top: 20px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px;">
+                <h4 style="margin-bottom: 10px; color: #aaa;">المنافذ (Ports) وشقوق التوسعة:</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                     <!-- Legacy Ports -->
+                     <div style="flex: 1; min-width: 200px;">
+                        <strong style="display: block; margin-bottom: 5px; color: #ff6b6b;">منافذ قديمة (Legacy):</strong>
+                        <ul style="list-style: none; padding-right: 10px; font-size: 0.9em;">
+                            <li>• <span class="interactive-term">Serial (COM)</span><span class="term-expansion">نقل تسلسلي (بت تلو الآخر). للفأرة قديماً.</span></li>
+                            <li>• <span class="interactive-term">Parallel (LPT)</span><span class="term-expansion">نقل متوازي (8 بت معاً). للطابعات قديماً.</span></li>
+                            <li>• <span class="interactive-term">PS/2</span><span class="term-expansion">دائري؛ بنفسجي للكيبورد، أخضر للماوس.</span></li>
+                        </ul>
+                     </div>
+                     <!-- Modern Ports -->
+                     <div style="flex: 1; min-width: 200px;">
+                        <strong style="display: block; margin-bottom: 5px; color: #51cf66;">منافذ حديثة (Modern):</strong>
+                        <ul style="list-style: none; padding-right: 10px; font-size: 0.9em;">
+                            <li>• <span class="interactive-term">USB</span><span class="term-expansion">المنفذ العالمي الحديث؛ سريع، يدعم نقل الطاقة وPlug & Play.</span></li>
+                            <li>• <span class="interactive-term">Expansion Slots</span><span class="term-expansion">فتحات لإضافة كروت جديدة (شاشة، شبكة) لزيادة قدرات الجهاز.</span></li>
+                        </ul>
+                     </div>
+                </div>
             </div>
         </div>
     </div>
@@ -335,133 +335,131 @@ const IT_PART_1_CONTENT = `
         </h3>
         
         <div class="section-content collapsed">
-            <p>تترتب الذاكرة من الأسرع والأصغر (داخل المعالج) إلى الأبطأ والأكبر (خارج المعالج):</p>
+            <p style="margin-bottom: 15px;">كلما اقتربنا من المعالج، زادت السرعة وقل الحجم:</p>
             
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">أولاً: المسجلات (Registers)</h4>
-                <p>وهي أسرع أنواع الذاكرة، وتنقسم حسب وظيفتها:</p>
-                <ul style="list-style: none; padding-right: 20px;">
-                    <li style="margin-bottom: 10px;"><strong>1. واجهة الذاكرة:</strong>
-                        <ul>
-                            <li><span class="interactive-term">MAR</span> <span class="term-expansion">يحمل "عنوان" الخلية المطلوب الوصول إليها.</span></li>
-                            <li><span class="interactive-term">MDR</span> <span class="term-expansion">يحمل "البيانات" الفعالية المتبادلة مع الذاكرة.</span></li>
-                        </ul>
-                    </li>
-                    <li style="margin-bottom: 10px;"><strong>2. وحدة التحكم:</strong>
-                        <ul>
-                            <li><span class="interactive-term">PC</span> <span class="term-expansion">يحمل عنوان التعليمة "التالية".</span></li>
-                            <li><span class="interactive-term">IR</span> <span class="term-expansion">يحمل التعليمة "الحالية" التي يتم تنفيذها.</span></li>
-                        </ul>
-                    </li>
-                    <li style="margin-bottom: 10px;"><strong>3. وحدة المعالجة:</strong>
-                        <ul>
-                            <li><span class="interactive-term">TEMP</span> <span class="term-expansion">مسجل مؤقت لنتائج الـ ALU الوسيطة.</span></li>
-                        </ul>
-                    </li>
-                    <li style="margin-bottom: 10px;"><strong>4. واجهة الإدخال/الإخراج (I/O):</strong>
-                        <ul>
-                            <li><span class="interactive-term">لوحة المفاتيح</span> <span class="term-expansion">KBDR للبيانات، KBSR للحالة.</span></li>
-                            <li><span class="interactive-term">الشاشة</span> <span class="term-expansion">DDR للبيانات، DSR للحالة.</span></li>
-                        </ul>
-                    </li>
-                </ul>
+            <!-- Registers Grouped -->
+            <div style="margin-bottom: 20px;">
+                <h4 style="color: #4facfe; margin-bottom: 10px;">أولاً: المسجلات (Registers) - الأسرع على الإطلاق</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <div style="background: rgba(79, 172, 254, 0.1); padding: 10px; border-radius: 5px;">
+                        <strong>1. واجهة الذاكرة (Memory Interface):</strong>
+                        <div style="font-size: 0.9em; margin-top: 5px;">
+                            <span class="interactive-term">MAR</span> 
+                            <span class="term-expansion">
+                                <div><strong>Memory Address Register:</strong> يحمل "عنوان" المكان في الذاكرة الذي يريد المعالج القراءة منه أو الكتابة فيه.</div>
+                                <div style="font-size:0.9em; color:#aaa; margin-top:4px;">اتجاهه: يخرج من المعالج باتجاه الذاكرة فقط.</div>
+                            </span><br>
+                            <span class="interactive-term">MDR</span> 
+                            <span class="term-expansion">
+                                <div><strong>Memory Data Register:</strong> هو "صندوق النقل"؛ يحمل البيانات الفعلية القادمة من الذاكرة أو الذاهبة إليها.</div>
+                                <div style="font-size:0.9em; color:#aaa; margin-top:4px;">ملاحظة: يسمى أحياناً MBR (Memory Buffer Register).</div>
+                            </span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(79, 172, 254, 0.1); padding: 10px; border-radius: 5px;">
+                        <strong>2. التحكم (Control Registers):</strong>
+                        <div style="font-size: 0.9em; margin-top: 5px;">
+                            <span class="interactive-term">PC</span> 
+                            <span class="term-expansion">
+                                <div><strong>Program Counter:</strong> يحمل عنوان العملية القادمة. بمجرد جلب الأمر، يزيد تلقائياً ليشير للعنوان التالي.</div>
+                                <div style="font-size:0.9em; color:#aaa; margin-top:4px;">ببساطة: يخبرنا "أين نذهب".</div>
+                            </span><br>
+                            <span class="interactive-term">IR</span> 
+                            <span class="term-expansion">
+                                <div><strong>Instruction Register:</strong> يحفظ الأمر الحالي الذي يتم فكه وتحليله (Decoding) الآن.</div>
+                                <div style="font-size:0.9em; color:#aaa; margin-top:4px;">ببساطة: يحمل "الامر الذي جلبناه".</div>
+                            </span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(79, 172, 254, 0.1); padding: 10px; border-radius: 5px;">
+                        <strong>3. مسجلات الحساب (ALU Registers):</strong>
+                        <div style="font-size: 0.9em; margin-top: 5px;">
+                            <span class="interactive-term">ACC</span> 
+                            <span class="term-expansion">
+                                <div><strong>Accumulator (المُراكم):</strong> المسجل الأهم في ALU. يُستخدم لتخزين نتائج العمليات الحسابية والمنطقية.</div>
+                                <div style="font-size:0.9em; color:#aaa; margin-top:4px;">مثال: 3 + 5 = 8 (الـ 8 تخزن في ACC).</div>
+                            </span><br>
+                            <span class="interactive-term">TEMP</span> 
+                            <span class="term-expansion">
+                                <strong>Temporary Register:</strong> مخزن مؤقت للقيم أثناء العمليات المعقدة لكي لا تضيع البيانات الأصلية.
+                            </span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(79, 172, 254, 0.1); padding: 10px; border-radius: 5px;">
+                        <strong>4. I/O Registers:</strong>
+                        <div style="font-size: 0.9em; margin-top: 5px;">
+                            <span class="interactive-term">Keyboard</span> 
+                            <span class="term-expansion">
+                                <div style="margin-bottom:8px;"><strong>KBDR (Data):</strong> يحمل كود الحرف المضغوط (ASCII). "المخزن".</div>
+                                <div><strong>KBSR (Status):</strong> "الجرس" (Ready Bit). يصبح (1) عند وجود حرف جديد.</div>
+                            </span><br>
+                            <span class="interactive-term">Monitor</span> 
+                            <span class="term-expansion">
+                                <div style="margin-bottom:8px;"><strong>DDR (Data):</strong> يحمل كود الحرف المراد عرضه.</div>
+                                <div><strong>DSR (Status):</strong> "الاستئذان". (1) تعني الشاشة جاهزة، (0) مشغولة.</div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">
-                    <span class="interactive-term">ثانياً: الذاكرة المخبئية (Cache)</span>
-                    <span class="term-expansion">ذاكرة وسيطة سريعة جداً تقع بين المعالج والرام لتخزين البيانات المتكررة.</span>
-                </h4>
-            </div>
-
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">ثالثاً: الذاكرة العشوائية (RAM)</h4>
-                <ul style="list-style: none; padding-right: 20px;">
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">SRAM (Static)</span> <span class="term-expansion">سريعة جداً، غالية، لا تحتاج لتنشيط (Refresh)؛ تستخدم في الـ Cache.</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">DRAM (Dynamic)</span> <span class="term-expansion">أبطأ قليلاً، أرخص، تحتاج لتنشيط مستمر؛ هي الـ RAM الأساسية.</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">DDR RAM</span> <span class="term-expansion">تقنية تضاعف سرعة نقل البيانات في كل دورة ساعة.</span></li>
-                </ul>
-            </div>
-
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">رابعاً: الذاكرة الدائمة (ROM)</h4>
-                <ul style="list-style: none; padding-right: 20px;">
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">PROM</span> <span class="term-expansion">تبرمج مرة واحدة فقط من قبل المستخدم.</span></li>
-                    <li style="margin-bottom: 10px;"><span class="interactive-term">EPROM</span> <span class="term-expansion">يمكن مسحها وإعادة برمجتها باستخدام الأشعة فوق البنفسجية (UV).</span></li>
-                </ul>
+            <!-- RAM vs ROM Comparison -->
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                 <div style="flex: 1; min-width: 250px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <h4 style="margin-bottom: 10px; border-bottom: 1px solid #555; padding-bottom: 5px;">الذاكرة العشوائية (RAM)</h4>
+                    <p style="font-size: 0.9em; margin-bottom: 5px; color: #aaa;">(مؤقتة - تطير بانقطاع الكهرباء)</p>
+                    <ul style="list-style: none; padding-right: 15px; font-size: 0.95em;">
+                        <li style="margin-bottom: 8px;"><span class="interactive-term">SRAM</span><span class="term-expansion">سريعة وغالية (Cache).</span></li>
+                        <li style="margin-bottom: 8px;"><span class="interactive-term">DRAM</span><span class="term-expansion">أبطأ وأرخص (الرام العادية).</span></li>
+                        <li><span class="interactive-term">DDR</span><span class="term-expansion">تقنية لمضاعفة السرعة.</span></li>
+                    </ul>
+                 </div>
+                 <div style="flex: 1; min-width: 250px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <h4 style="margin-bottom: 10px; border-bottom: 1px solid #555; padding-bottom: 5px;">الذاكرة الدائمة (ROM)</h4>
+                    <p style="font-size: 0.9em; margin-bottom: 5px; color: #aaa;">(ثابتة - لا تمسح)</p>
+                    <ul style="list-style: none; padding-right: 15px; font-size: 0.95em;">
+                        <li style="margin-bottom: 8px;"><span class="interactive-term">PROM</span><span class="term-expansion">تُبرمج مرة واحدة.</span></li>
+                        <li><span class="interactive-term">EPROM</span><span class="term-expansion">يمكن مسحها بالأشعة (UV) وإعادة برمجتها.</span></li>
+                    </ul>
+                 </div>
             </div>
         </div>
     </div>
 
     <div class="summary-section">
         <h3 class="section-toggle" style="color: #4facfe; margin: 40px 0 20px; border-bottom: 2px solid #4facfe; padding-bottom: 10px;">
-            3. وحدات التخزين الثانوية (Secondary Storage)
+            3. التخزين وسرعة الساعة
             <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
         </h3>
         
         <div class="section-content collapsed">
-            <p>تستخدم للتخزين الدائم طويل الأمد لأنها لا تفقد بياناتها بانقطاع الكهرباء:</p>
-            
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">
-                    <span class="interactive-term">القرص الصلب (Hard Disk)</span>
-                    <span class="term-expansion">
-                        • يعتمد على تقنية المغناطيسية (أقراص تدور ورأس قراءة/كتابة).<br>
-                        • يتميز بسعة تخزينية ضخمة وسعر منخفض مقارنة بالرام، لكنه أبطأ بكثير.
-                    </span>
-                </h4>
-            </div>
-
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">
-                    <span class="interactive-term">الشريط المغناطيسي (Magnetic Tape)</span>
-                    <span class="term-expansion">
-                        • أقدم وسائل التخزين؛ يعتمد على الوصول التسلسلي (Sequential Access) للبيانات (يجب أن تمر على كل البيانات لتصل لما تريد).<br>
-                        • يستخدم حالياً فقط لعمل "نسخ احتياطية" (Backups) ضخمة للأرشيف لرخص ثمنه الشديد.
-                    </span>
-                </h4>
-            </div>
-        </div>
-    </div>
-
-    <div class="summary-section">
-        <h3 class="section-toggle" style="color: #4facfe; margin: 40px 0 20px; border-bottom: 2px solid #4facfe; padding-bottom: 10px;">
-            4. تعريف سرعة الساعة (Clock Speed)
-            <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
-        </h3>
-        
-        <div class="section-content collapsed">
-            <p>هي التردد الذي يعمل به المعالج، وهي التي تحدد عدد العمليات أو النبضات التي يمكن للمعالج تنفيذها في الثانية الواحدة.</p>
-            
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">
-                    <span class="interactive-term">الوظيفة التقنية (Synchronizer)</span>
-                    <span class="term-expansion">
-                        تعمل الساعة كمنسق؛ حيث تضمن أن جميع أجزاء المعالج (الـ CU والـ ALU والمسجلات) تعمل في تناغم تام. مع كل "نبضة" (Tick)، تنتقل البيانات من مسجل إلى آخر أو يتم تنفيذ جزء من التعليمة.
-                    </span>
-                </h4>
-            </div>
-
-            <div class="term-group">
-                <h4 style="margin: 20px 0 10px;">وحدات القياس:</h4>
-                <ul style="list-style: none; padding-right: 20px;">
-                    <li style="margin-bottom: 10px;">
-                        <span class="interactive-term">Hertz (Hz)</span>
-                        <span class="term-expansion">نبضة واحدة في الثانية.</span>
-                    </li>
-                    <li style="margin-bottom: 10px;">
-                        <span class="interactive-term">Megahertz (MHz)</span>
-                        <span class="term-expansion">مليون نبضة في الثانية.</span>
-                    </li>
-                     <li style="margin-bottom: 10px;">
-                        <span class="interactive-term">Gigahertz (GHz)</span>
-                        <span class="term-expansion">مليار نبضة في الثانية (وهو المعيار في المعالجات الحديثة).</span>
-                    </li>
-                </ul>
+            <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+                <!-- Storage -->
+                <div style="flex: 1; min-width: 300px;">
+                    <h4 style="margin-bottom: 10px;">وحدات التخزين (Secondary Storage)</h4>
+                    <ul style="list-style: none; padding-right: 15px;">
+                        <li style="margin-bottom: 10px;">
+                            <span class="interactive-term">القرص الصلب (HDD)</span>
+                            <span class="term-expansion">مغناطيسي، سعة كبيرة، رخيص، لكنه بطيء.</span>
+                        </li>
+                        <li>
+                            <span class="interactive-term">الشريط المغناطيسي (Tape)</span>
+                            <span class="term-expansion">الوصول تسلسلي (بطيء جداً)، يستخدم فقط للأرشيف والنسخ الاحتياطي الضخم (Backups).</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Clock -->
+                <div style="flex: 1; min-width: 300px;">
+                    <h4 style="margin-bottom: 10px;">سرعة الساعة (Clock Speed)</h4>
+                    <p style="margin-bottom: 10px; font-size: 0.9em;">هي "المايسترو" الذي يزامن (Synchronize) العمليات داخل المعالج.</p>
+                    <div style="background: rgba(79, 172, 254, 0.1); padding: 10px; border-radius: 5px; font-family: monospace; direction: ltr; text-align: center;">
+                        Hz (1/sec) → MHz (1M/sec) → <strong style="color: #4facfe;">GHz (1B/sec)</strong>
+                    </div>
+                    <p style="font-size: 0.8em; color: #aaa; text-align: center; margin-top: 5px;">(الجيجاهرتز هو المعيار الحالي)</p>
+                </div>
             </div>
         </div>
-    </div>
-</div>
     </div>
 </div>
 `;
