@@ -1086,11 +1086,178 @@ const IT_DATA_CONTENT = `
 </div>
 `;
 
+
+
+const IT_CYBERSECURITY_CONTENT = `
+<div class="interactive-summary" dir="rtl">
+    <div class="summary-intro" style="margin-bottom: 30px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+        <p style="font-size: 1.2em; line-height: 1.8;">في هذا الجزء سنتعرف على أساسيات الأمن السيبراني: من أهداف الحماية الثلاثة، مروراً بإدارة المخاطر، وحتى أنواع الهجمات وسوق العمل.</p>
+    </div>
+
+    <!-- Section 1: Pyramid & CIA -->
+    <div class="summary-section">
+        <h3 class="section-toggle" style="color: #4facfe; margin: 30px 0 20px; border-bottom: 2px solid #4facfe; padding-bottom: 10px;">
+            1. هرم المعلومات وأهداف الأمن (CIA Triad)
+            <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
+        </h3>
+        
+        <div class="section-content collapsed">
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">أولاً: هرم المعلومات (الفرق بينها)</h4>
+                <p style="margin-bottom: 10px;">قبل تأمين أي شيء، يجب أن نعرف ماذا نؤمن:</p>
+                <ul style="list-style: none; padding-right: 15px; margin-top: 10px;">
+                    <li style="margin-bottom: 10px;"><strong style="color: #4facfe;">البيانات (Data):</strong> حقائق خام (أرقام أو كلمات مجردة) ليس لها معنى بمفردها.</li>
+                    <li style="margin-bottom: 10px;"><strong style="color: #4facfe;">المعلومات (Information):</strong> بيانات تمت معالجتها لتعطي معنى ومفيدة.</li>
+                    <li style="margin-bottom: 10px;"><strong style="color: #4facfe;">المعرفة (Knowledge):</strong> استنتاج قرارات بناءً عل المعلومات وفهم السياق.</li>
+                </ul>
+                <p style="color: #aaa; margin-top: 10px; font-size: 0.9em;">* أمن المعلومات: هو حماية هذه العناصر والأنظمة التي تستخدمها أو تخزنها.</p>
+            </div>
+
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">ثانياً: أهداف الأمن السيبراني (مثلث CIA)</h4>
+                <p style="margin-bottom: 15px;">هذه الأهداف هي "دستور" الأمن السيبراني، وأي نظام آمن يجب أن يحققها:</p>
+                
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <strong style="color: #ff6b6b; font-size: 1.1em;">1. السرية (Confidentiality)</strong>
+                    <p style="margin-top: 5px;">المعلومات متاحة فقط للمصرح لهم (Privacy).</p>
+                    <p style="font-size: 0.9em; color: #4facfe;"><i class="fas fa-key"></i> تقنياً: تتم عبر <span class="interactive-term">التشفير (Encryption)</span><span class="term-expansion">تحويل البيانات لنص غير مفهوم لا يمكن قراءته إلا بمفتاح خاص.</span>.</p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <strong style="color: #51cf66; font-size: 1.1em;">2. السلامة (Integrity)</strong>
+                    <p style="margin-top: 5px;">التأكد من عدم تعديل البيانات أو التلاعب بها (Trust).</p>
+                    <p style="font-size: 0.9em; color: #4facfe;"><i class="fas fa-check-circle"></i> تقنياً: تتم عبر <span class="interactive-term">الـ Hashing</span><span class="term-expansion">بصمة رقمية فريدة للملف؛ إذا تغير حرف واحد في الملف، تتغير البصمة بالكامل، فنكتشف التلاعب.</span>.</p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px;">
+                    <strong style="color: #339af0; font-size: 1.1em;">3. التوافر (Availability)</strong>
+                    <p style="margin-top: 5px;">الخدمة متاحة دائماً للمستخدمين الشرعيين عند الحاجة إليها.</p>
+                    <p style="font-size: 0.9em; color: #4facfe;"><i class="fas fa-server"></i> تقنياً: تتم عبر <span class="interactive-term">التكرار (Redundancy)</span><span class="term-expansion">وجود نسخ احتياطية وسيرفرات بديلة تعمل فوراً إذا تعطل السيرفر الأساسي.</span> ونسخ البيانات.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Risk & Defense -->
+    <div class="summary-section">
+        <h3 class="section-toggle" style="color: #4facfe; margin: 40px 0 20px; border-bottom: 2px solid #4facfe; padding-bottom: 10px;">
+            2. إدارة المخاطر وطبقات الدفاع
+            <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
+        </h3>
+        
+        <div class="section-content collapsed">
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">إدارة المخاطر (The Core of Security)</h4>
+                <p style="line-height: 1.8;">الأمن ليس "منع" كل شيء، بل هو "إدارة" المخاطر لتقليلها لمستوى مقبول.</p>
+                
+                <div style="background: rgba(79, 172, 254, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center;">
+                    <strong style="font-size: 1.1em;">المعادلة الذهبية:</strong><br>
+                    <span style="direction: ltr; display: inline-block; margin-top: 5px;">Risk = Vulnerability × Threat</span><br>
+                    <span style="font-size: 0.9em;">الخطر = الثغرة × التهديد</span>
+                </div>
+
+                <ul style="list-style: none; padding-right: 15px;">
+                    <li style="margin-bottom: 10px;"><strong>الثغرة (Vulnerability):</strong> نقطة ضعف متأصلة في النظام (كود سيئ، باسورد ضعيف).</li>
+                    <li style="margin-bottom: 10px;"><strong>التهديد (Threat):</strong> هو الشخص أو الحدث الذي يستغل الثغرة (هاكر، فيروس، أو حتى كارثة طبيعية).</li>
+                    <li style="margin-bottom: 10px;"><strong>الأصول (Assets):</strong> كل ما له قيمة للمؤسسة (موظفين، عتاد، برمجيات، مستندات).</li>
+                </ul>
+            </div>
+
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">طبقات الأمن (Defense in Depth)</h4>
+                <p>الأمن منظومة متكاملة من 5 طبقات رئيسية (مثل البصلة)، إذا فشلت طبقة تحمي الأخرى:</p>
+                <ol style="padding-right: 20px; line-height: 1.8;">
+                    <li><strong>المادي (Physical):</strong> حماية السيرفرات والراوترات (أبواب، كاميرات، حراس).</li>
+                    <li><strong>الأفراد (Personal):</strong> حماية وتدريب الموظفين (لأنهم غالباً الحلقة الأضعف).</li>
+                    <li><strong>الشبكات (Network):</strong> حماية مكونات الربط (Firewalls, VPN).</li>
+                    <li><strong>الاتصالات (Communications):</strong> حماية وسائط نقل البيانات (التشفير أثناء النقل).</li>
+                    <li><strong>المعلومات (Information):</strong> حماية جوهر البيانات وعناصرها الحساسة (تشفير الملفات ذاتها).</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Attack Types -->
+    <div class="summary-section">
+        <h3 class="section-toggle" style="color: #4facfe; margin: 40px 0 20px; border-bottom: 2px solid #4facfe; padding-bottom: 10px;">
+            3. أنواع الهجمات السيبرانية
+            <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
+        </h3>
+        
+        <div class="section-content collapsed">
+            <ul style="list-style: none; padding-right: 10px;">
+                <li style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 5px;">
+                    <strong style="color: #ff6b6b;">سرقة الهوية (Identity Theft):</strong><br>
+                    سرقة بياناتك الشخصية لانتحال صفتك (مثلاً سرقة صفحات فيسبوك أو حسابات بنكية).
+                </li>
+                <li style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 5px;">
+                    <strong style="color: #ff6b6b;">تعطيل الخدمة (DoS - Denial of Service):</strong><br>
+                    منع المستخدمين الشرعيين من الوصول لمواقعهم أو خدماتهم البنكية (مثل الهجوم بإغراق السيرفر بطلبات وهمية).
+                </li>
+                <li style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 5px;">
+                    <strong style="color: #ff6b6b;">الهندسة الاجتماعية (Social Engineering):</strong><br>
+                    التلاعب بالبشر للحصول على كلمات المرور. تعتبر <span class="interactive-term">"أهم سلاح للمخترقين"</span> لأن اختراق العقل البشري أسهل من اختراق الأنظمة.
+                </li>
+                <li style="margin-bottom: 15px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 5px;">
+                    <strong style="color: #ff6b6b;">التصيد (Phishing):</strong><br>
+                    إرسال روابط وهمية أو إيميلات باسم بنك أو جهة موثوقة لسرقة بياناتك عند الضغط عليها.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Section 4: Market & Career -->
+    <div class="summary-section">
+        <h3 class="section-toggle" style="color: #4facfe; margin: 40px 0 20px; border-bottom: 2px solid #4facfe; padding-bottom: 10px;">
+            4. سوق العمل والوظائف
+            <i class="fas fa-chevron-down" style="font-size: 0.8em;"></i>
+        </h3>
+        
+        <div class="section-content collapsed">
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">أولاً: المعسكرات (Red vs Blue)</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px; background: rgba(255, 0, 0, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,0,0,0.3);">
+                        <strong style="color: #ff6b6b;"><i class="fas fa-skull"></i> الفريق الأحمر (Red Team)</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">"الهجوم الأخلاقي". وظيفته اختبار الاختراق (<span class="interactive-term">Pentesting</span>)؛ يقوم بمحاكاة الهجمات (بإذن مسبق) للبحث عن الثغرات قبل أن يجدها المخترقون.</p>
+                    </div>
+                    <div style="flex: 1; min-width: 250px; background: rgba(0, 0, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(0,0,255,0.3);">
+                        <strong style="color: #4facfe;"><i class="fas fa-shield-alt"></i> الفريق الأزرق (Blue Team)</strong>
+                        <p style="font-size: 0.9em; margin-top: 5px;">"الدفاع". وظيفته العمل في مركز العمليات الأمنية (<span class="interactive-term">SOC</span>)؛ وهي وحدة مركزية تراقب الشبكة 24/7، تحلل الطوارئ، وتحقق جنائياً في الهجمات.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="term-group">
+                <h4 style="margin: 20px 0 10px;">ثانياً: خريطة الشركات في مصر</h4>
+                <p>سوق العمل ينقسم لثلاثة أنواع من الشركات:</p>
+                <ul style="list-style: none; padding-right: 15px; margin-top: 10px;">
+                    <li style="margin-bottom: 10px;">
+                        <strong style="color: #4facfe;">1. المنتجون (Vendors):</strong> الشركات التي تصنع التكنولوجيا والأدوات الأمنية.<br>
+                        <span style="color: #aaa; font-size: 0.9em;">(مثل: Cisco, IBM, Palo Alto)</span>
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        <strong style="color: #4facfe;">2. المتكاملون (Integrators):</strong> شركات تأخذ منتجات الـ Vendors وتركبها وتديرها للعملاء (ينفذون الحلول الأمنية).<br>
+                        <span style="color: #aaa; font-size: 0.9em;">(مثل: Zinad, Secure Misr, Raya)</span>
+                    </li>
+                    <li style="margin-bottom: 10px;">
+                        <strong style="color: #4facfe;">3. العملاء (Customers):</strong> الجهات التي تشتري الخدمة لتحمي نفسها.<br>
+                        <span style="color: #aaa; font-size: 0.9em;">(مثل: البنوك CIB/Alex Bank، شركات الاتصالات Vodafone/Orange)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+
+
 const interactiveContent = {
     'part1': IT_PART_1_CONTENT,
     'part2': IT_PART_2_CONTENT,
     'assembly': IT_ASSEMBLY_CONTENT,
-    'data': IT_DATA_CONTENT
+    'data': IT_DATA_CONTENT,
+    'cybersecurity': IT_CYBERSECURITY_CONTENT
 };
 
 async function loadSummaries() {
@@ -1130,6 +1297,14 @@ async function loadSummaries() {
             imageUrl: '', 
             isInteractive: true,
             contentKey: 'data'
+        },
+        {
+            title: 'محاضرتين السايبر سيكيوريتي',
+            description: 'أساسيات الأمن السيبراني وحماية البيانات',
+            author: 'IT Team',
+            imageUrl: '', 
+            isInteractive: true,
+            contentKey: 'cybersecurity'
         }
     ];
 
