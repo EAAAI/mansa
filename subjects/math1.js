@@ -144,7 +144,7 @@ function getCorrectAnswerText(q) {
 }
 
 // Navigation
-function updateActiveNav() { const sections = ['hero', 'challenge', 'bank', 'essay', 'leaderboard', 'ask-ai']; const navLinks = document.querySelectorAll('.nav-link'); let current = 'hero'; sections.forEach(id => { const s = document.getElementById(id); if (s && s.getBoundingClientRect().top <= 150) current = id; }); navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current)); }
+function updateActiveNav() { const sections = ['hero', 'summaries', 'bank', 'challenge', 'essay-bank', 'essay-challenge', 'leaderboard', 'ask-ai']; const navLinks = document.querySelectorAll('.nav-link'); let current = 'hero'; sections.forEach(id => { const s = document.getElementById(id); if (s && s.getBoundingClientRect().top <= 150) current = id; }); navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current)); }
 document.querySelectorAll('.nav-link, .btn[href^="#"]').forEach(l => { l.addEventListener('click', function (e) { const h = this.getAttribute('href'); if (h.startsWith('#')) { e.preventDefault(); const t = document.querySelector(h); if (t) { const nav = document.querySelector('.subject-navbar').offsetHeight; window.scrollTo({ top: t.offsetTop - nav, behavior: 'smooth' }); } } }); });
 window.addEventListener('scroll', updateActiveNav);
 
@@ -710,8 +710,8 @@ async function translateExplanation(questionIndex, isBank = false) {
 
 function filterQuestions() { currentBankPage = 1; renderQuestionsBank(); }
 
-// Essay Challenge Functions
-function startEssayChallenge() { const nameInput = document.getElementById('essayPlayerName'); const name = nameInput.value.trim() || document.getElementById('challengerName').value.trim(); if (!name) { alert('من فضلك أدخل اسمك!'); nameInput.focus(); return; } if (essayQuestions.length < ESSAYS_PER_CHALLENGE) { alert('لا توجد أسئلة مقالية كافية'); return; } essayChallenge.userName = name; essayChallenge.questions = shuffleArray([...essayQuestions]).slice(0, ESSAYS_PER_CHALLENGE); essayChallenge.currentIndex = 0; essayChallenge.answers = new Array(ESSAYS_PER_CHALLENGE).fill(''); essayChallenge.timeLeft = ESSAY_TIME; essayChallenge.active = true; document.getElementById('essayIntro').style.display = 'none'; document.getElementById('essayContainer').style.display = 'block'; document.getElementById('essayResult').style.display = 'none'; showEssayQuestion(0); startEssayTimer(); }
+// Old Essay Challenge Functions (Text-based - kept for backwards compatibility)
+function startOldEssayChallenge() { const nameInput = document.getElementById('essayPlayerName'); const name = nameInput.value.trim() || document.getElementById('challengerName').value.trim(); if (!name) { alert('من فضلك أدخل اسمك!'); nameInput.focus(); return; } if (essayQuestions.length < ESSAYS_PER_CHALLENGE) { alert('لا توجد أسئلة مقالية كافية'); return; } essayChallenge.userName = name; essayChallenge.questions = shuffleArray([...essayQuestions]).slice(0, ESSAYS_PER_CHALLENGE); essayChallenge.currentIndex = 0; essayChallenge.answers = new Array(ESSAYS_PER_CHALLENGE).fill(''); essayChallenge.timeLeft = ESSAY_TIME; essayChallenge.active = true; document.getElementById('essayIntro').style.display = 'none'; document.getElementById('essayContainer').style.display = 'block'; document.getElementById('essayResult').style.display = 'none'; showEssayQuestion(0); startEssayTimer(); }
 function showEssayQuestion(index) { const q = essayChallenge.questions[index]; document.getElementById('essayQuestionBadge').textContent = `السؤال ${index + 1}`; document.getElementById('essayQuestionText').innerHTML = `<div class="bilingual-question"><p class="q-ar"><span class="lang-label">🇸🇦</span> ${q.questionAr}</p><p class="q-en"><span class="lang-label">🇬🇧</span> ${q.questionEn}</p></div>`; document.getElementById('essayProgress').textContent = `${index + 1}/${ESSAYS_PER_CHALLENGE}`; document.getElementById('essayAnswer').value = essayChallenge.answers[index] || ''; document.getElementById('essayPrevBtn').disabled = index === 0; document.getElementById('essayNextBtn').style.display = index === ESSAYS_PER_CHALLENGE - 1 ? 'none' : 'flex'; document.getElementById('essaySubmitBtn').style.display = index === ESSAYS_PER_CHALLENGE - 1 ? 'flex' : 'none'; }
 function saveCurrentEssayAnswer() { essayChallenge.answers[essayChallenge.currentIndex] = document.getElementById('essayAnswer').value.trim(); }
 function nextEssayQuestion() { saveCurrentEssayAnswer(); if (essayChallenge.currentIndex < ESSAYS_PER_CHALLENGE - 1) { essayChallenge.currentIndex++; showEssayQuestion(essayChallenge.currentIndex); } }
@@ -996,3 +996,143 @@ showQuestion = function (i) {
         if (optionsContainer) renderMathInContent(optionsContainer);
     }, 50);
 };
+
+// =============================================
+// SUMMARIES SECTION
+// =============================================
+
+// Load summaries from Firebase
+async function loadSummaries() {
+    const container = document.getElementById('summariesList');
+    if (!container) return;
+
+    try {
+        container.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> جاري تحميل الملخصات...</div>';
+
+        if (!db) {
+            container.innerHTML = `
+                <div class="no-summaries-message">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>لا توجد ملخصات حالياً</h3>
+                    <p>سيتم إضافة ملخصات قريباً</p>
+                </div>
+            `;
+            return;
+        }
+
+        const snapshot = await db.collection(`summaries_${SUBJECT_ID}`).orderBy('order', 'asc').get();
+
+        if (snapshot.empty) {
+            container.innerHTML = `
+                <div class="no-summaries-message">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>لا توجد ملخصات حالياً</h3>
+                    <p>سيتم إضافة ملخصات من لوحة الإدارة</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = '';
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const card = createSummaryCard(data, doc.id);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error('Error loading summaries:', error);
+        container.innerHTML = `
+            <div class="no-summaries-message">
+                <i class="fas fa-exclamation-circle"></i>
+                <h3>خطأ في تحميل الملخصات</h3>
+                <p>حاول تحديث الصفحة</p>
+            </div>
+        `;
+    }
+}
+
+// Create summary card element
+function createSummaryCard(summary, docId) {
+    const card = document.createElement('div');
+    card.className = 'summary-card';
+
+    let actionButton = '';
+    if (summary.pdfUrl) {
+        actionButton = `<a href="${summary.pdfUrl}" target="_blank" class="summary-btn"><i class="fas fa-download"></i> تحميل PDF</a>`;
+    } else if (summary.externalUrl) {
+        actionButton = `<a href="${summary.externalUrl}" target="_blank" class="summary-btn external-link"><i class="fas fa-external-link-alt"></i> فتح الرابط</a>`;
+    } else if (summary.content) {
+        actionButton = `<button class="summary-btn" onclick="viewSummaryContent('${docId}')"><i class="fas fa-eye"></i> عرض المحتوى</button>`;
+    }
+
+    card.innerHTML = `
+        ${summary.imageUrl ? `<div class="summary-image"><img src="${summary.imageUrl}" alt="${summary.title}" loading="lazy"></div>` : ''}
+        <div class="summary-content">
+            <h3>${summary.title || 'ملخص'}</h3>
+            ${summary.description ? `<p>${summary.description}</p>` : ''}
+            <div class="summary-meta">
+                ${summary.author ? `<span><i class="fas fa-user"></i> ${summary.author}</span>` : ''}
+            </div>
+            ${actionButton}
+        </div>
+    `;
+
+    return card;
+}
+
+// View summary content in modal (optional feature)
+function viewSummaryContent(docId) {
+    // This can be expanded to show content in a modal
+    console.log('View summary:', docId);
+}
+
+// Load summaries on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    loadSummaries();
+    // Initialize Essay Challenge with Firebase questions
+    await loadEssayChallengeQuestions();
+});
+
+// Load Essay Challenge Questions from Firebase
+async function loadEssayChallengeQuestions() {
+    if (!db) {
+        if (essayQuestions.length > 0 && typeof initEssayChallenge === 'function') {
+            initEssayChallenge(SUBJECT_ID, essayQuestions);
+        }
+        return;
+    }
+    try {
+        const snapshot = await db.collection(`essay_questions_${SUBJECT_ID}`).get();
+        if (snapshot.empty) {
+            if (essayQuestions.length > 0 && typeof initEssayChallenge === 'function') {
+                initEssayChallenge(SUBJECT_ID, essayQuestions);
+            }
+            return;
+        }
+        const firebaseEssays = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            firebaseEssays.push({
+                id: doc.id,
+                questionAr: data.question || data.questionAr || '',
+                questionEn: data.questionEn || data.question || '',
+                answerAr: data.answer || data.answerAr || '',
+                answerEn: data.answerEn || data.answer || '',
+                source: 'firebase'
+            });
+        });
+        essayQuestions.push(...firebaseEssays);
+        const countEl = document.getElementById('essayDisplayedCount');
+        if (countEl) countEl.textContent = essayQuestions.length;
+        if (typeof initEssayChallenge === 'function') {
+            initEssayChallenge(SUBJECT_ID, essayQuestions);
+        }
+        console.log(`✅ Loaded ${firebaseEssays.length} essay questions for ${SUBJECT_ID}`);
+    } catch (error) {
+        console.error('Error loading essay questions:', error);
+        if (essayQuestions.length > 0 && typeof initEssayChallenge === 'function') {
+            initEssayChallenge(SUBJECT_ID, essayQuestions);
+        }
+    }
+}

@@ -11,3 +11,228 @@
 .option-btn:hover, .option-btn.selected { border-color: #4facfe !important; background: rgba(79, 172, 254, 0.1) !important; }
 .option-btn.selected .option-letter { background: #4facfe !important; }
 .search-box input:focus { border-color: #4facfe !important; }
+
+/* Interactive Summary Styles */
+.summary-viewer-modal {
+    display: none;
+    position: fixed;
+    z-index: 2147483647; /* Max Z-Index to cover navbar */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+}
+
+.summary-modal-content {
+    background: #1a1a2e;
+    margin: 5% auto;
+    padding: 0;
+    border: 1px solid #4facfe;
+    width: 90%;
+    max-width: 900px;
+    border-radius: 20px;
+    box-shadow: 0 0 50px rgba(79, 172, 254, 0.3);
+    position: relative;
+    animation: modalSlideIn 0.4s ease;
+}
+
+.summary-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid rgba(79, 172, 254, 0.3);
+    background: linear-gradient(90deg, rgba(79, 172, 254, 0.1), transparent);
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-header h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #fff, #4facfe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.summary-body {
+    padding: 40px;
+    color: #e0e0e0;
+    font-size: 1.3rem; /* User requested "a lil bit big" */
+    line-height: 2.2;
+    text-align: right;
+    direction: rtl;
+    min-height: 400px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Scrollbar for summary text */
+.summary-body::-webkit-scrollbar {
+    width: 10px;
+}
+.summary-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+.summary-body::-webkit-scrollbar-thumb {
+    background: #4facfe;
+    border-radius: 5px;
+}
+
+/* Interactive Terms */
+.interactive-term {
+    color: #4facfe;
+    border-bottom: 2px dotted #4facfe;
+    cursor: pointer;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+    transition: all 0.3s ease;
+    margin: 0 5px;
+}
+
+.interactive-term:hover, .interactive-term.active {
+    background: rgba(79, 172, 254, 0.15);
+    border-radius: 4px;
+    padding: 0 5px;
+    border-bottom-style: solid;
+}
+
+/* Inline Explanation */
+.term-expansion {
+    display: none;
+    background-color: rgba(79, 172, 254, 0.15);
+    color: #e0e0e0;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin: 0 5px;
+    border: 1px dashed #4facfe;
+    font-size: 0.95em;
+    vertical-align: middle;
+    line-height: 1.6;
+    animation: fadeIn 0.3s ease;
+}
+
+.term-expansion.show {
+    display: inline-block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Collapsible Sections */
+.section-toggle {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s;
+}
+
+.section-toggle:hover {
+    background: rgba(79, 172, 254, 0.1);
+    border-radius: 8px;
+    padding-right: 10px;
+}
+
+.section-content {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+.section-content.collapsed {
+    display: none;
+}
+
+.section-toggle i {
+    transition: transform 0.3s;
+}
+
+.section-toggle.active i {
+    transform: rotate(180deg);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Fullscreen Mode */
+.summary-modal-content.fullscreen {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-modal-content.fullscreen .summary-body {
+    max-height: none;
+    flex: 1;
+}
+
+.summary-modal-content.fullscreen .summary-header {
+    border-radius: 0;
+}
+
+.summary-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 10;
+}
+
+.zoom-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zoom-btn:hover {
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.close-modal {
+    position: static; /* Reset absolute since it's in flex container now */
+    color: #aaa;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    line-height: 1;
+}
+
+.close-modal:hover {
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .summary-modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    .summary-modal-content.fullscreen {
+        margin: 0;
+        width: 100%;
+    }
+    .summary-body {
+        padding: 20px;
+        font-size: 1.1rem;
+    }
+}
