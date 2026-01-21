@@ -171,7 +171,7 @@ const questions = [
         questionAr: "كيف يتم تحديد سرقة وقت الإنترنت؟",
         questionEn: "Internet time theft is identified by?",
         options: ["Cyber terrorism", "Delayed network connectivity", "Frequent recharging despite low usage", "Unauthorized logins"],
-        correct: 3
+        correct: 2
     },
     {
         questionAr: "أي جريمة تصنف ضد الحكومة؟",
