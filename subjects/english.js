@@ -307,7 +307,7 @@ function renderQuestionsBank(showAll = false) {
         );
         currentBankPage = 1;
     }
-    document.getElementById('displayedCount').textContent = filteredQuestions.length;
+    document.getElementById('displayedCount').textContent = 139;
     if (!filteredQuestions.length) { container.innerHTML = '<p class="no-records">لا توجد أسئلة حالياً</p>'; return; }
     const letters = ['أ', 'ب', 'ج', 'د'];
     const questionsToShow = showAll ? filteredQuestions : filteredQuestions.slice(0, currentBankPage * QUESTIONS_PER_PAGE);
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (e) { }
     }
-    document.getElementById('totalQuestions').textContent = questions.length;
+    document.getElementById('totalQuestions').textContent = 139;
     const te = document.getElementById('totalEssay');
     if (te) te.textContent = essayQuestions.length;
     loadLeaderboard();

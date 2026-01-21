@@ -21,7 +21,490 @@ const GEMINI_API_KEY = 'AIzaSyBaUgHBLPT2VxapoYZ2SSGB7PKpxz45uB8';
 // Add your questions here in this format:
 // { questionAr: "السؤال بالعربية", questionEn: "Question in English", options: ["Option 1", "Option 2", "Option 3", "Option 4"], correct: 0 }
 const questions = [
-    // Empty - Add questions here
+    // Cybercrime & Cyber Law Questions
+    {
+        questionAr: "ما هو تعريف الجريمة الإلكترونية؟",
+        questionEn: "Definition of cybercrime?",
+        options: ["Offense targeting data", "Physical crimes with computers", "Writing malicious software", "Ethical hacking for security"],
+        correct: 0
+    },
+    {
+        questionAr: "أي من هؤلاء ليس مهنة في مجال الجرائم الإلكترونية؟",
+        questionEn: "NOT a profession in cybercrimes?",
+        options: ["Network Engineers", "Cyber Law Experts", "Cyber Forensic Pros", "Environmental Scientists"],
+        correct: 3
+    },
+    {
+        questionAr: "ما هو دور خبراء القانون السيبراني؟",
+        questionEn: "Role of cyber law experts?",
+        options: ["Conducting forensics", "Handling online fraud", "Designing hardware", "Developing anti-virus"],
+        correct: 1
+    },
+    {
+        questionAr: "كيف تساعد ضوابط الأجهزة المادية في تأمين أنظمة المعلومات؟",
+        questionEn: "How can physical hardware controls help secure information systems?",
+        options: ["Enabling dynamic web services", "Ensuring equipment security and functionality", "Simplifying database structures", "Limiting software installations"],
+        correct: 1
+    },
+    {
+        questionAr: "مثال على جريمة إلكترونية ضد شخص؟",
+        questionEn: "Example of cybercrime against a person?",
+        options: ["Hacking govt. systems", "Cyber-stalking via emails", "Installing software", "Attacking public databases"],
+        correct: 1
+    },
+    {
+        questionAr: "ما التحدي الذي تشكله الإدارة السيئة للأمن؟",
+        questionEn: "What challenge does poor management pose to security?",
+        options: ["Encouraging network monitoring", "Increasing backup redundancy", "Adding risks to organizational and environmental factors", "Reducing administrative controls"],
+        correct: 2
+    },
+    {
+        questionAr: "ما الغرض من انتحال البريد الإلكتروني؟",
+        questionEn: "Purpose of email spoofing?",
+        options: ["Tracking activities", "Misrepresenting email origin", "Encrypting contents", "Using emails for ransomware"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هو الهدف الرئيسي لمجرمي الإنترنت الذين يستخدمون برامج تسجيل ضغطات المفاتيح؟",
+        questionEn: "What is the primary goal of cybercriminals using keyloggers?",
+        options: ["Destroying files", "Installing spyware", "To capture and steal keystroke data", "Encrypting devices"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هو مثال على جريمة إلكترونية تستهدف البنية التحتية؟",
+        questionEn: "What is an example of a cybercrime targeting infrastructure?",
+        options: ["Distributed Denial-of-Service (DDoS) attack", "Phishing email", "Keylogging", "Social engineering"],
+        correct: 0
+    },
+    {
+        questionAr: "أي مما يلي يصف فيروس الفدية بشكل أفضل؟",
+        questionEn: "Which of the following best describes ransomware?",
+        options: ["Malware for stealing passwords", "A type of malware that encrypts data and demands payment", "Software vulnerability", "A phishing attack"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هو دور محترف تكنولوجيا المعلومات في الجريمة الإلكترونية؟",
+        questionEn: "IT professional's role in cybercrime?",
+        options: ["Protecting data", "Unauthorized intrusion", "Legal framework design", "Filing copyright violations"],
+        correct: 0
+    },
+    {
+        questionAr: "من يتعامل مع انتهاكات حقوق النشر؟",
+        questionEn: "Handles copyright infringement?",
+        options: ["Ethical hackers", "Cyber forensic labs", "Cyber law experts", "IT Governance Professionals"],
+        correct: 2
+    },
+    {
+        questionAr: "في سياق الجريمة الإلكترونية، على ماذا تعتمد الهندسة الاجتماعية؟",
+        questionEn: "In the context of cybercrime, what does 'social engineering' rely on?",
+        options: ["Manipulating human behavior", "Software vulnerabilities", "Hardware malfunctions", "Encryption"],
+        correct: 0
+    },
+    {
+        questionAr: "ما هو دور خلية أبحاث الجرائم الإلكترونية؟",
+        questionEn: "Role of cybercrime research cell?",
+        options: ["Preventing dev errors", "Researching crime patterns", "Data sharing enforcement", "Monitoring environmental impacts"],
+        correct: 1
+    },
+    {
+        questionAr: "أي جهة ليست منخرطة في القانون السيبراني؟",
+        questionEn: "Agency NOT involved in cyber law?",
+        options: ["Cyber forensic labs", "Law enforcement agencies", "Academic institutions", "e-Governance bodies"],
+        correct: 3
+    },
+    {
+        questionAr: "ما هو محور المطاردة الإلكترونية؟",
+        questionEn: "Focus of cyberstalking?",
+        options: ["Digital physical threats", "Sending unwanted ads", "Credit card theft", "Masking a mobile number"],
+        correct: 0
+    },
+    {
+        questionAr: "ماذا يتضمن الاختراق بشكل أساسي؟",
+        questionEn: "Hacking primarily involves?",
+        options: ["Authorized data access", "Unauthorized system access", "Writing email scripts", "Developing encryption tools"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هو الهدف من انتحال الرسائل القصيرة؟",
+        questionEn: "Target of SMS spoofing?",
+        options: ["Encrypting messages", "Impersonating phone identity", "Fake mobile networks", "Enforcing digital regulations"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هو محور الأمن السيبراني؟",
+        questionEn: "Focus of cybersecurity?",
+        options: ["Strong passwords", "Combating system threats", "Writing anti-virus", "Patent protections"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هي الجريمة الإلكترونية المستخدمة للاحتيال المالي؟",
+        questionEn: "Cybercrime for financial fraud?",
+        options: ["Defamation", "Carding", "Cyberstalking", "Spoofing"],
+        correct: 1
+    },
+    // Questions 21-40
+    {
+        questionAr: "ما هو الشكل الشائع لجرائم الملكية الفكرية؟",
+        questionEn: "What is a common form of intellectual property crime?",
+        options: ["Domain squatting", "Cyber stalking", "Software piracy", "Online banking fraud"],
+        correct: 2
+    },
+    {
+        questionAr: "ماذا يتضمن التخريب الإلكتروني؟",
+        questionEn: "Cyber vandalism involves?",
+        options: ["Deliberate damage to computer data", "Illegal credit card use", "Online gambling", "Unauthorized login"],
+        correct: 0
+    },
+    {
+        questionAr: "ماذا يتضمن الاستيلاء على النطاقات؟",
+        questionEn: "What does cyber squatting involve?",
+        options: ["Unauthorized system access", "Dispute over domain names", "Malware creation", "File encryption"],
+        correct: 1
+    },
+    {
+        questionAr: "ماذا يعني التعدي الإلكتروني؟",
+        questionEn: "What does cyber trespass mean?",
+        options: ["Financial fraud", "Unauthorized access to a computer", "Phishing attacks", "Trafficking human beings"],
+        correct: 1
+    },
+    {
+        questionAr: "كيف يتم تحديد سرقة وقت الإنترنت؟",
+        questionEn: "Internet time theft is identified by?",
+        options: ["Cyber terrorism", "Delayed network connectivity", "Frequent recharging despite low usage", "Unauthorized logins"],
+        correct: 3
+    },
+    {
+        questionAr: "أي جريمة تصنف ضد الحكومة؟",
+        questionEn: "Which crime is classified against the government?",
+        options: ["Cyber terrorism", "Phishing", "Spyware attacks", "Online auctions"],
+        correct: 0
+    },
+    {
+        questionAr: "ماذا تتضمن المواد الإباحية للأطفال؟",
+        questionEn: "Child pornography involves?",
+        options: ["Creation and distribution of exploitative materials", "Internet credit card fraud", "Cyberstalking", "Gambling with underage accounts"],
+        correct: 0
+    },
+    {
+        questionAr: "أي مما يلي ليس تقنية احتيال عبر الإنترنت؟",
+        questionEn: "Which is NOT an online fraud technique?",
+        options: ["Phishing", "Spyware", "Domain squatting", "Internet banking fraud"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هو هدف التصيد الاحتيالي؟",
+        questionEn: "Phishing aims to?",
+        options: ["Steal personal identity information", "Disable banking software", "Distribute fake emails", "Hack into devices"],
+        correct: 0
+    },
+    {
+        questionAr: "ما هو الإجراء الوقائي ضد الاحتيال عبر الإنترنت؟",
+        questionEn: "What is a preventative measure against online fraud?",
+        options: ["Avoiding online purchases", "Avoiding antivirus updates", "Sharing personal data online", "Using a separate low-limit card"],
+        correct: 3
+    },
+    {
+        questionAr: "ما هو منع الجريمة من المستوى الثالث؟",
+        questionEn: "What is tertiary crime prevention?",
+        options: ["Focus on at-risk youth", "Prevent successive incidents after crime", "Stop online frauds", "Analyze criminal psychology"],
+        correct: 1
+    },
+    {
+        questionAr: "ماذا تتضمن الجريمة الإلكترونية ضد المجتمع ككل؟",
+        questionEn: "What does 'cybercrime against society at large' include?",
+        options: ["Cyber vandalism", "Cyber stalking", "Cyber trafficking", "Domain disputes"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هو الدور الأساسي لجدار الحماية؟",
+        questionEn: "What is the primary role of a firewall?",
+        options: ["Block unauthorized access", "Encrypt sensitive files", "Remove spyware", "Prevent phishing attacks"],
+        correct: 0
+    },
+    {
+        questionAr: "كيف يحمي برنامج مكافحة الفيروسات جهاز الكمبيوتر الخاص بك؟",
+        questionEn: "How does antivirus software protect your computer?",
+        options: ["Managing passwords", "Securing Wi-Fi networks", "Monitoring online activity for malicious software", "Blocking spam emails"],
+        correct: 2
+    },
+    {
+        questionAr: "لماذا يجب تأمين شبكات Wi-Fi؟",
+        questionEn: "Why should Wi-Fi networks be secured?",
+        options: ["To prevent unauthorized intrusion", "To encrypt files", "To prevent software updates", "To disable unwanted emails"],
+        correct: 0
+    },
+    {
+        questionAr: "ما الذي يجعل كلمة المرور قوية؟",
+        questionEn: "What makes a strong password?",
+        options: ["Using dictionary words", "Avoiding numbers", "Combination of letters, numbers, and special characters", "Password longer than four digits"],
+        correct: 2
+    },
+    {
+        questionAr: "لماذا من المهم مراجعة البيانات المالية؟",
+        questionEn: "Why is it important to review financial statements?",
+        options: ["To avoid taxes", "To detect fraudulent activities early", "To manage your credit score", "To backup data"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هو الاحتياط لاستخدام وسائل التواصل الاجتماعي؟",
+        questionEn: "What is a precaution for social media usage?",
+        options: ["Set profiles to private", "Always post your location", "Share passwords with close friends", "Disable privacy settings"],
+        correct: 0
+    },
+    {
+        questionAr: "ما هي ميزة إيقاف تشغيل الكمبيوتر؟",
+        questionEn: "What is an advantage of turning off the computer?",
+        options: ["Keeps Wi-Fi secure", "Encrypts all data", "Scans files for viruses", "Severs attack connections"],
+        correct: 3
+    },
+    {
+        questionAr: "ما الذي يجب التأكد منه بشأن المواقع قبل إعطاء المعلومات الشخصية؟",
+        questionEn: "What should you ensure about websites before giving personal information?",
+        options: ["They load quickly", "They have many users", "They are secure", "They offer free services"],
+        correct: 2
+    },
+    // Questions 41-60
+    {
+        questionAr: "أي إجراء يمكن أن يساعد في تجنب عمليات الاحتيال عبر الإنترنت؟",
+        questionEn: "Which action can help avoid scams online?",
+        options: ["Always click on offers quickly", "Verify sources of emails and links", "Share personal details freely", "Respond to all messages"],
+        correct: 1
+    },
+    {
+        questionAr: "لمن يجب الإبلاغ عن المحتوى غير القانوني عبر الإنترنت؟",
+        questionEn: "Who should you report illegal online content to?",
+        options: ["Local police", "Antivirus providers", "Social media platforms", "Internet service providers"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هي الممارسة الأساسية لأمان الأجهزة المحمولة؟",
+        questionEn: "Which is a key practice for mobile device security?",
+        options: ["Disabling software updates", "Downloading apps from trusted sources", "Sharing login details", "Avoiding use of firewalls"],
+        correct: 1
+    },
+    {
+        questionAr: "ماذا يتضمن 'الذكاء في وسائل التواصل الاجتماعي'؟",
+        questionEn: "What does 'being social-media savvy' involve?",
+        options: ["Sharing personal information freely", "Turning off privacy settings", "Posting frequently to stay active", "Being cautious with shared information and adjusting security settings"],
+        correct: 3
+    },
+    {
+        questionAr: "ما الذي يحدد المخترق في أنظمة الكمبيوتر؟",
+        questionEn: "What defines a hacker in computer systems?",
+        options: ["Exploits weaknesses in systems", "Writes antivirus programs", "Encrypts online data", "Manages networks"],
+        correct: 0
+    },
+    {
+        questionAr: "ما هو الدافع الأساسي للمخترق الخبيث (Cracker)؟",
+        questionEn: "What is a cracker's primary motive?",
+        options: ["Enhancing software performance", "Writing secure code", "Destroying or breaching systems", "Upgrading firewalls"],
+        correct: 2
+    },
+    {
+        questionAr: "إلى ماذا يشير مصطلح البرامج الضارة (Malware)؟",
+        questionEn: "What does malware refer to?",
+        options: ["Malicious software", "Secure encryption tools", "Firewall programs", "System optimization software"],
+        correct: 0
+    },
+    {
+        questionAr: "كيف ينتشر الفيروس؟",
+        questionEn: "How does a virus spread?",
+        options: ["Through emails only", "By inserting itself into other code or documents", "By directly accessing the user's network", "Via unauthorized remote login"],
+        correct: 1
+    },
+    {
+        questionAr: "ما الذي يميز الدودة عن الفيروس؟",
+        questionEn: "What is unique about a worm compared to a virus?",
+        options: ["It spreads without user intervention", "It cannot self-replicate", "It requires manual activation", "It attaches to system files directly"],
+        correct: 0
+    },
+    {
+        questionAr: "ما هي السمة الرئيسية لحصان طروادة؟",
+        questionEn: "What is the primary trait of a Trojan Horse?",
+        options: ["Encrypts all data", "Deletes unnecessary files", "Appears benign but contains harmful content", "Functions as antivirus software"],
+        correct: 2
+    },
+    {
+        questionAr: "بماذا ترتبط البرامج الإضافية (Bonus software) عادةً؟",
+        questionEn: "What is bonus software commonly associated with?",
+        options: ["Boosting system performance", "Being included unknowingly in other packages", "Virus replication", "Collecting user data"],
+        correct: 1
+    },
+    {
+        questionAr: "ما الوظيفة الشائعة التي تستخدمها البرامج الضارة للانتشار؟",
+        questionEn: "What common function do malware programs use to spread?",
+        options: ["Sending email attachments", "Sharing system settings", "Encrypting sensitive data", "Monitoring ISP traffic"],
+        correct: 0
+    },
+    {
+        questionAr: "كيف يمكن للبرامج الضارة جمع معلومات المستخدم؟",
+        questionEn: "How can malware gather user information?",
+        options: ["By increasing system performance", "By scanning shared online files", "By sending computer data back to its creator", "By isolating critical networks"],
+        correct: 2
+    },
+    {
+        questionAr: "ما الإجراء الذي قد تقوم به البرامج الضارة فور إصابة النظام؟",
+        questionEn: "Which action might malware perform immediately upon infecting a system?",
+        options: ["Encrypt sensitive data", "Redirect user email", "Deactivate security settings", "Erase or overwrite hard disk files"],
+        correct: 2
+    },
+    {
+        questionAr: "ماذا تتضمن الجدولة في البرامج الضارة عادةً؟",
+        questionEn: "What does scheduling in malware commonly involve?",
+        options: ["Preventing future updates", "Activating harmful actions on a later date", "Securing backup files", "Enhancing scheduled scans"],
+        correct: 1
+    },
+    {
+        questionAr: "ما هما النوعان الرئيسيان لأنظمة كشف التسلل (IDS)؟",
+        questionEn: "What are the two main types of Intrusion Detection Systems (IDS)?",
+        options: ["Network-based and Host-based", "Firewall and malware-based", "Antivirus and Trojan monitoring", "Real-time and delayed alerts"],
+        correct: 0
+    },
+    {
+        questionAr: "ما هي وظيفة برنامج الحمولة (Payload)؟",
+        questionEn: "What is a function of payload software?",
+        options: ["Runs during system or program startup", "Strengthens system firewalls", "Deletes unnecessary system files", "Manages user access"],
+        correct: 0
+    },
+    {
+        questionAr: "ماذا يفعل برنامج تتبع/تعديل الويب؟",
+        questionEn: "What does web tracking/modification software do?",
+        options: ["Prevents pop-up ads", "Secures website transactions", "Tracks visited websites and displays ads", "Encrypts user sessions"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هو الغرض من برنامج الباب الخلفي (Backdoor)؟",
+        questionEn: "What is the purpose of backdoor software?",
+        options: ["Enables unauthorized remote access", "Removes malicious files", "Blocks malicious ads", "Optimizes application performance"],
+        correct: 0
+    },
+    {
+        questionAr: "لماذا تُستهدف أجهزة Windows بالبرامج الضارة أكثر من أنظمة Unix أو Macintosh؟",
+        questionEn: "Why are Windows machines more targeted by malware than Unix or Macintosh systems?",
+        options: ["They have stronger firewalls", "Their large user base makes them more attractive targets", "They have superior plug-ins", "They lack dynamic program support"],
+        correct: 1
+    },
+    // Questions 61-80
+    {
+        questionAr: "ما المخاطر التي يشكلها تشغيل البرامج الديناميكية (مثل Javascript) في المتصفحات؟",
+        questionEn: "What risk does running dynamic programs (e.g., Javascript) in browsers pose?",
+        options: ["Enhances page speed", "Automatically applies patches", "Allows programs to execute harmful actions", "Prevents unauthorized file sharing"],
+        correct: 2
+    },
+    {
+        questionAr: "ما الذي يجعل الإضافات والملحقات خطرة على المتصفحات؟",
+        questionEn: "What makes plug-ins and add-ons risky for browsers?",
+        options: ["They slow down system performance", "They monitor system usage", "They manage file sharing policies", "They can perform any action allowed by the base program"],
+        correct: 3
+    },
+    {
+        questionAr: "ما هي الثغرات الأمنية في نظام التشغيل؟",
+        questionEn: "What are security holes in an operating system?",
+        options: ["Programs managing security settings", "Bugs allowing unauthorized access", "Firewall breaches caused by users", "Invalid application patches"],
+        correct: 1
+    },
+    {
+        questionAr: "كيف يمكن جعل مشاركة الملفات أكثر أماناً؟",
+        questionEn: "How can file sharing be made more secure?",
+        options: ["Removing file permissions entirely", "Using dynamic Java programs", "Applying robust user credentials and limited privileges", "Increasing bandwidth"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هو هجوم تواطؤ تطبيقات Android؟",
+        questionEn: "What is an Android application collusion attack?",
+        options: ["Single apps breaching permissions", "Two or more apps working together maliciously", "Unauthorized use of external storage", "Eavesdropping solely on device settings"],
+        correct: 1
+    },
+    {
+        questionAr: "ما الأذونات التي يتم تقسيمها في مثال هجوم التواطؤ؟",
+        questionEn: "What permissions are split in a collusion attack example?",
+        options: ["Call eavesdropping via intent-based communication and external storage", "System shutdown control", "Mobile encryption settings", "Web tracking and ad-blocking controls"],
+        correct: 0
+    },
+    {
+        questionAr: "كيف يمكن للمستخدمين تقليل المخاطر المرتبطة بالثغرات الأمنية؟",
+        questionEn: "How can users mitigate risks associated with security holes?",
+        options: ["Disabling system patches", "Removing file-sharing features", "Increasing plug-in usage", "Regularly applying patches"],
+        correct: 3
+    },
+    {
+        questionAr: "ما الذي يمكن أن يفعله المحتوى الديناميكي للويب (مثل ActiveX) عند السماح به من المتصفحات؟",
+        questionEn: "What can dynamic web content (e.g., ActiveX) potentially do when allowed by browsers?",
+        options: ["Perform objectionable actions", "Improve site encryption", "Manage file sharing settings", "Block unwanted ads"],
+        correct: 0
+    },
+    {
+        questionAr: "لماذا تكون بيئات العميل/الخادم متعددة المستويات عرضة للخطر؟",
+        questionEn: "Why are multitier client/server environments vulnerable?",
+        options: ["Lack of user training", "Frequent software updates", "Overuse of encryption protocols", "Vulnerabilities at each layer and communication between layers"],
+        correct: 3
+    },
+    {
+        questionAr: "ما الذي يزيد من الثغرات أثناء نقل البيانات؟",
+        questionEn: "What increases vulnerability during data transmission?",
+        options: ["Lack of encryption", "Regular system backups", "Constant firewall monitoring", "Automated software updates"],
+        correct: 0
+    },
+    {
+        questionAr: "أي مما يلي ليس ثغرة إنترنت؟",
+        questionEn: "Which of the following is not an internet vulnerability?",
+        options: ["Open access by users", "Use of DSL with fixed IPs", "Local storage of passwords", "Widespread email and instant messaging use"],
+        correct: 2
+    },
+    {
+        questionAr: "لماذا تعتبر الشبكات اللاسلكية أقل أماناً؟",
+        questionEn: "Why are wireless networks considered less secure?",
+        options: ["Limited data transmission", "Radio frequencies are easy to scan", "Dependence on proprietary devices", "High cost of secure configurations"],
+        correct: 1
+    },
+    {
+        questionAr: "ما الأداة التي يستخدمها المخترقون لاكتشاف شبكات Wi-Fi غير المحمية؟",
+        questionEn: "What tool do hackers use to detect unprotected Wi-Fi networks?",
+        options: ["Laptops with external antennae and hacking software", "Encrypted hard drives", "Fingerprint scanners", "Virus-scanning utilities"],
+        correct: 0
+    },
+    {
+        questionAr: "ما أهمية تقييم المخاطر في تأمين أنظمة المعلومات؟",
+        questionEn: "What is the significance of risk assessment in securing information systems?",
+        options: ["Improving hardware lifespan", "Optimizing file sharing", "Identifying vulnerable assets and determining cost-effective controls", "Automating management processes"],
+        correct: 2
+    },
+    {
+        questionAr: "كيف تساهم الرقابة الإدارية في الأمن؟",
+        questionEn: "How does administrative control contribute to security?",
+        options: ["Detecting unauthorized emails", "Establishing and enforcing rules and standards", "Updating data encryption methods", "Automating system alerts"],
+        correct: 1
+    },
+    {
+        questionAr: "ما الذي يجعل مرفقات البريد الإلكتروني خطرة بشكل خاص؟",
+        questionEn: "What makes e-mail attachments particularly risky?",
+        options: ["Disabling operating systems", "Slowing down network traffic", "Serving as springboards for malicious software", "Preventing antivirus updates"],
+        correct: 2
+    },
+    {
+        questionAr: "ما هي الميزة الرئيسية لضوابط البرامج العامة؟",
+        questionEn: "What is a primary feature of general software controls?",
+        options: ["Monitoring system software use", "Encrypting data backups", "Disabling unused devices", "Checking hardware malfunctions"],
+        correct: 0
+    },
+    {
+        questionAr: "كيف تزيد الثغرات الأمنية من نقاط ضعف النظام؟",
+        questionEn: "How do security holes increase system vulnerabilities?",
+        options: ["Allow attackers unauthorized access", "Facilitate faster data transfers", "Enable data synchronization", "Optimize system updates"],
+        correct: 0
+    },
+    {
+        questionAr: "ما الذي يجعل خدمات الهاتف القائمة على تقنية الإنترنت عرضة للخطر؟",
+        questionEn: "What makes telephone services based on Internet technology vulnerable?",
+        options: ["Constant monitoring by firewalls", "Lack of private secure networks", "Overuse of hardware controls", "Dependency on system patches"],
+        correct: 1
+    },
+    {
+        questionAr: "لماذا تعتبر ضوابط أمن البيانات العامة مهمة؟",
+        questionEn: "Why do general data security controls matter?",
+        options: ["They monitor email usage", "Enable remote system access", "Manage updates automatically", "Protect against unauthorized data access or changes"],
+        correct: 3
+    }
 ];
 
 // Essay Questions (Bilingual)
