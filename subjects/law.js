@@ -504,6 +504,248 @@ const questions = [
         questionEn: "Why do general data security controls matter?",
         options: ["They monitor email usage", "Enable remote system access", "Manage updates automatically", "Protect against unauthorized data access or changes"],
         correct: 3
+    },
+    // True or False Questions (81-100)
+    {
+        questionAr: "التصيد الاحتيالي (Phishing) هو نوع من الهجمات الإلكترونية حيث يحاول المهاجمون خداع الأفراد للكشف عن معلومات حساسة من خلال انتحال شخصية جهة موثوقة.",
+        questionEn: "Phishing is a type of cyber-attack where attackers attempt to trick individuals into revealing sensitive information by posing as a trustworthy entity.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "برامج الفدية (Ransomware) هي شكل من البرامج الضارة التي تشفر ملفات المستخدم وتطالب بدفع فدية لفك تشفيرها.",
+        questionEn: "Ransomware is a form of malicious software that encrypts a user's files and demands payment for their release.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "المصادقة الثنائية (2FA) تضيف طبقة إضافية من الأمان من خلال طلب عاملين مختلفين للتحقق قبل الوصول إلى الحساب أو النظام.",
+        questionEn: "Two-factor authentication (2FA) adds an extra layer of security by requiring users to provide two different authentication factors before accessing an account or system.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "الأمن السيبراني هو مسؤولية قسم تكنولوجيا المعلومات فقط، والمستخدمون الأفراد لا يلعبون دوراً مهماً في منع التهديدات السيبرانية.",
+        questionEn: "Cybersecurity is solely the responsibility of the IT department, and individual users do not play a significant role in preventing cyber threats.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "البرامج الضارة (Malware) هو مصطلح واسع يشمل أنواعاً مختلفة من البرامج الضارة، بما في ذلك الفيروسات والديدان وأحصنة طروادة.",
+        questionEn: "Malware is a broad term that encompasses various types of malicious software, including viruses, worms, and trojans.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "التشفير هو عملية تحويل المعلومات إلى رمز لمنع الوصول غير المصرح به، مما يجعله أداة أساسية في الأمن السيبراني.",
+        questionEn: "Encryption is a process that converts information into code to prevent unauthorized access, making it an essential tool in cybersecurity.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "أجهزة إنترنت الأشياء (IoT)، مثل منظمات الحرارة الذكية والكاميرات، ليست عرضة للهجمات الإلكترونية.",
+        questionEn: "Internet of Things (IoT) devices, such as smart thermostats and cameras, are not susceptible to cyber attacks.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "حوادث الأمن السيبراني، بمجرد اكتشافها، يجب إبقاؤها سرية داخل المنظمة لتجنب الضرر السمعوي.",
+        questionEn: "Cybersecurity incidents, once identified, should be kept confidential within an organization to avoid reputational damage.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "اللائحة العامة لحماية البيانات (GDPR) تنطبق فقط على الدول الأعضاء في الاتحاد الأوروبي.",
+        questionEn: "The General Data Protection Regulation (GDPR) applies only to European Union member states.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "قوانين الأمن السيبراني تركز فقط على معاقبة الأفراد الذين يرتكبون جرائم إلكترونية ولا تتضمن تدابير لحماية المنظمات.",
+        questionEn: "Cybersecurity laws focus solely on punishing individuals who commit cybercrimes and do not include measures to protect organizations.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "قانون مشاركة معلومات الأمن السيبراني (CISA) يشجع على مشاركة معلومات التهديدات السيبرانية بين الكيانات الخاصة والحكومة في الولايات المتحدة.",
+        questionEn: "The Cybersecurity Information Sharing Act (CISA) encourages the sharing of cybersecurity threat information between private entities and the government in the United States.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "قوانين الأمن السيبراني تركز بشكل أساسي على حماية خصوصية الأفراد ولا تتناول أمن البنية التحتية الحيوية.",
+        questionEn: "Cybersecurity laws primarily focus on protecting individuals' privacy and do not address the security of critical infrastructure.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "مبدأ 'تقليل البيانات' غالباً ما يُؤكد عليه في قوانين الأمن السيبراني، مما يشجع المنظمات على جمع الحد الأدنى فقط من المعلومات الشخصية اللازمة لأغراضها.",
+        questionEn: "The principle of 'data minimization' is often emphasized in cybersecurity laws, encouraging organizations to collect only the minimum amount of personal information necessary for their purposes.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "قوانين الأمن السيبراني لا تعتبر عموماً مسؤولية مطوري البرامج أو المصنعين عن الثغرات في منتجاتهم.",
+        questionEn: "Cybersecurity laws do not generally consider the liability of software developers or manufacturers for vulnerabilities in their products.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "المعاهدات والاتفاقيات الدولية تلعب دوراً مهماً في تسهيل التعاون بين الدول لمكافحة الجريمة الإلكترونية.",
+        questionEn: "International treaties and agreements play a significant role in facilitating cooperation among countries to combat cybercrime.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "قوانين الأمن السيبراني غالباً ما تتطلب من المنظمات الإفصاح الفوري عن انتهاكات البيانات للأفراد المتأثرين لتمكينهم من اتخاذ التدابير الوقائية المناسبة.",
+        questionEn: "Cybersecurity laws often require organizations to disclose data breaches promptly to affected individuals to enable them to take appropriate protective measures.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "قوانين الأمن السيبراني ثابتة ولا تتطور لمعالجة التهديدات والتقنيات الناشئة.",
+        questionEn: "Cybersecurity laws are static and do not evolve to address emerging threats and technologies.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "سرقة الهوية تتضمن سرقة المعلومات الشخصية لشخص ما، مثل أرقام الضمان الاجتماعي أو تفاصيل بطاقات الائتمان، لارتكاب الاحتيال.",
+        questionEn: "Identity theft involves stealing someone's personal information, such as social security numbers or credit card details, to commit fraud.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "التنمر الإلكتروني يشير فقط إلى التحرش عبر الإنترنت بين القاصرين ولا يعتبر جريمة إلكترونية للبالغين.",
+        questionEn: "Cyberbullying refers only to online harassment between minors and is not considered a form of cybercrime for adults.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "هجمات الرجل في المنتصف (Man-in-the-middle) تحدث عندما يعترض المهاجم ويحتمل أن يغير الاتصال بين طرفين دون علمهما.",
+        questionEn: "Man-in-the-middle attacks occur when an attacker intercepts and potentially alters the communication between two parties without their knowledge.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    // True or False Questions - Set 2 (101-120)
+    {
+        questionAr: "الانتحال (Spoofing) يتضمن إخفاء الاتصال من مصدر غير معروف ليبدو وكأنه من مصدر معروف وموثوق.",
+        questionEn: "Spoofing involves disguising communication from an unknown source as being from a known, trusted source.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "قوانين الجرائم الإلكترونية متسقة في جميع أنحاء العالم، مما يسهل ملاحقة المجرمين بغض النظر عن مكان ارتكاب الجريمة.",
+        questionEn: "Cybercrime laws are consistent worldwide, making it easy to prosecute offenders regardless of where the crime originated.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "تدابير الأمن السيبراني ضرورية فقط للشركات والمنظمات، والمستخدمون الأفراد ليسوا أهدافاً مهمة لمجرمي الإنترنت.",
+        questionEn: "Cybersecurity measures are only necessary for businesses and organizations, and individual users are not significant targets for cybercriminals.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "تنفيذ جدار حماية غير ضروري لأن أنظمة التشغيل الحديثة لديها ميزات أمان مدمجة.",
+        questionEn: "Implementing a firewall is unnecessary since modern operating systems have built-in security features.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "إنشاء ثقافة أمن سيبراني قوية داخل المنظمة أمر ضروري للوقاية الفعالة من الهجمات السيبرانية.",
+        questionEn: "Creating a strong cybersecurity culture within an organization is essential for effective cybersecurity prevention.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "السماح للموظفين باستخدام أجهزتهم الشخصية للعمل (BYOD) لا يشكل أي مخاطر أمنية إذا لم تكن متصلة بشبكة الشركة.",
+        questionEn: "Allowing employees to use personal devices for work (BYOD) does not pose any security risks if they are not connected to the company's network.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "اختبار الاختراق، المعروف أيضاً بالاختراق الأخلاقي، ليس أداة مفيدة لتقييم وتحسين دفاعات الأمن السيبراني للمنظمة.",
+        questionEn: "Penetration testing, also known as ethical hacking, is not a useful tool for assessing and improving an organization's cybersecurity defenses.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "المصادقة متعددة العوامل (MFA) والمصادقة الثنائية (2FA) تشيران إلى نفس إجراء الأمان.",
+        questionEn: "Multifactor authentication (MFA) and two-factor authentication (2FA) refer to the same security measure.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "يجب تطبيق تصحيحات الأمان وتحديثات البرامج فوراً، لأنها غالباً ما تتضمن إصلاحات للثغرات المعروفة.",
+        questionEn: "Security patches and updates for software should be applied immediately, as they often include fixes for known vulnerabilities.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "عمليات التدقيق والتقييم الأمني من جهات خارجية غير ضرورية، لأن المنظمات يمكنها تقييم وضعها الأمني السيبراني بشكل فعال بنفسها.",
+        questionEn: "Third-party security audits and assessments are unnecessary, as organizations can effectively assess their own cybersecurity posture.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "السماح للموظفين باستخدام كلمات مرور سهلة التخمين مقبول طالما يتم تغييرها بانتظام.",
+        questionEn: "Allowing employees to use easily guessable passwords is acceptable as long as they are changed regularly.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "الوقاية من الأمن السيبراني جهد لمرة واحدة، وبمجرد تنفيذها، لا حاجة للمراقبة والتعديل المستمر.",
+        questionEn: "Cybersecurity prevention is a one-time effort, and once implemented, there is no need for ongoing monitoring and adjustment.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "السياسات والإجراءات الأمنية هي مكونات أساسية لاستراتيجية الوقاية من الأمن السيبراني ويجب توصيلها بشكل فعال داخل المنظمة.",
+        questionEn: "Security policies and procedures are essential components of a cybersecurity prevention strategy and should be communicated effectively within an organization.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "مراقبة وتحليل سجلات الشبكة بانتظام ليس أمراً حاسماً لاكتشاف ومنع التهديدات السيبرانية.",
+        questionEn: "Regularly monitoring and analyzing network logs is not crucial for detecting and preventing cyber threats.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "تدابير الوقاية من الأمن السيبراني ثابتة ولا تحتاج إلى تكييف مع التهديدات الناشئة أو التغييرات في التكنولوجيا.",
+        questionEn: "Cybersecurity prevention measures are static and do not need to be adapted to emerging threats or changes in technology.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "سياسات الاستخدام المقبول (AUPs) غير ضرورية، لأن الموظفين عموماً يتبعون الإرشادات الأخلاقية دون قواعد صريحة.",
+        questionEn: "Acceptable use policies (AUPs) are unnecessary, as employees generally follow ethical guidelines without explicit rules.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "يمكن الاستعانة بمصادر خارجية بالكامل لتدابير الوقاية من الأمن السيبراني لموردين خارجيين، مما يعفي المنظمات من أي مسؤولية.",
+        questionEn: "Cybersecurity prevention measures can be entirely outsourced to third-party vendors, relieving organizations of any responsibility.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "فيروس الكمبيوتر هو برنامج مستقل لا يتطلب ملفاً أو برنامجاً مضيفاً للتنفيذ والتكاثر.",
+        questionEn: "A computer virus is a standalone program that does not require a host file or program to execute and replicate.",
+        options: ["True", "False"],
+        correct: 1
+    },
+    {
+        questionAr: "الديدان (Worms) هي برامج ضارة ذاتية التكاثر تنتشر عبر شبكات الكمبيوتر دون الحاجة لتدخل المستخدم.",
+        questionEn: "Worms are self-replicating malware that spread across computer networks without requiring user intervention.",
+        options: ["True", "False"],
+        correct: 0
+    },
+    {
+        questionAr: "حصان طروادة يبدو كبرنامج شرعي ومرغوب فيه لكنه يحتوي على كود خبيث مخفي.",
+        questionEn: "A Trojan horse appears to be a legitimate and desirable program but contains hidden malicious code.",
+        options: ["True", "False"],
+        correct: 0
     }
 ];
 
