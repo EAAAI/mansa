@@ -20,8 +20,10 @@
             justify-content: center;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
             font-family: 'Cairo', sans-serif;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             position: relative;
+            padding: 50px 0;
         }
 
         /* Animated background particles */
@@ -156,35 +158,7 @@
             }
         }
 
-        /* Sound control button */
-        .sound-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #ffc107, #ff9800);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.4);
-            transition: all 0.3s ease;
-            z-index: 100;
-        }
 
-        .sound-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 30px rgba(255, 193, 7, 0.6);
-        }
-
-        .sound-btn.muted {
-            background: linear-gradient(135deg, #666, #444);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
 
         /* Progress bar animation */
         .progress-container {
@@ -286,10 +260,7 @@
         <p class="status-text">جاري العمل على التحديثات...</p>
     </div>
 
-    <!-- Sound control button -->
-    <button class="sound-btn" id="soundBtn" onclick="toggleSound()">
-        🔊
-    </button>
+
 
     <!-- Background audio -->
     <audio id="constructionAudio" loop autoplay>
@@ -300,8 +271,7 @@
 
     <script>
         const audio = document.getElementById('constructionAudio');
-        const soundBtn = document.getElementById('soundBtn');
-        let isMuted = false;
+        let audioStarted = false;
 
         // Set volume
         audio.volume = 0.3;
@@ -309,15 +279,10 @@
         // Try to play immediately
         function tryPlayAudio() {
             audio.play().then(() => {
-                // Audio started successfully
-                isMuted = false;
-                soundBtn.textContent = '🔊';
-                soundBtn.classList.remove('muted');
+                audioStarted = true;
             }).catch(() => {
                 // Autoplay blocked - wait for user interaction
-                isMuted = true;
-                soundBtn.textContent = '🔇';
-                soundBtn.classList.add('muted');
+                audioStarted = false;
             });
         }
 
@@ -325,38 +290,13 @@
         tryPlayAudio();
 
         // Also try when user interacts with page (clicks anywhere)
-        document.addEventListener('click', function playOnClick() {
-            if (isMuted) {
+        document.addEventListener('click', function () {
+            if (!audioStarted) {
                 audio.play().then(() => {
-                    isMuted = false;
-                    soundBtn.textContent = '🔊';
-                    soundBtn.classList.remove('muted');
+                    audioStarted = true;
                 });
             }
         }, { once: false });
-
-        function toggleSound() {
-            if (isMuted) {
-                audio.play();
-                soundBtn.textContent = '🔊';
-                soundBtn.classList.remove('muted');
-                isMuted = false;
-            } else {
-                audio.pause();
-                soundBtn.textContent = '🔇';
-                soundBtn.classList.add('muted');
-                isMuted = true;
-            }
-        }
-
-        // Initialize button state based on audio state
-        if (!audio.paused) {
-            soundBtn.textContent = '🔊';
-            soundBtn.classList.remove('muted');
-        } else {
-            soundBtn.textContent = '🔇';
-            soundBtn.classList.add('muted');
-        }
     </script>
 </body>
 
