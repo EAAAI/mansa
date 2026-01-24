@@ -198,6 +198,46 @@
             margin-top: 15px;
         }
 
+        /* Game Button */
+        .game-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+            animation: float-btn 3s ease-in-out infinite;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 193, 7, 0.5);
+        }
+
+        .game-btn .emoji {
+            font-size: 1.5rem;
+        }
+
+        @keyframes float-btn {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
@@ -258,6 +298,11 @@
         </div>
 
         <p class="status-text">جاري العمل على التحديثات...</p>
+
+        <a href="tower-bloxx.html" class="game-btn">
+            <span class="emoji">🎮</span>
+            العب Tower Bloxx
+        </a>
     </div>
 
 
