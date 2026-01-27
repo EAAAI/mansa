@@ -274,7 +274,7 @@ const questions = [
         questionAr: "لمن يجب الإبلاغ عن المحتوى غير القانوني عبر الإنترنت؟",
         questionEn: "Who should you report illegal online content to?",
         options: ["Local police", "Antivirus providers", "Social media platforms", "Internet service providers"],
-        correct: 0
+        correct: 2
     },
     {
         questionAr: "ما هي الممارسة الأساسية لأمان الأجهزة المحمولة؟",
