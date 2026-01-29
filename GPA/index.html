@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة GPA | ليالي الامتحان</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Hero Header -->
+    <header class="hero-header">
+        <h1><i class="fas fa-graduation-cap"></i> حاسبة المعدل التراكمي</h1>
+        <p class="hero-university">كلية الحاسبات والمعلومات - جامعة كفر الشيخ</p>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <a href="../index.html" class="back-link">
+            <i class="fas fa-arrow-right"></i>
+            العودة لليالي الامتحان
+        </a>
+
+        <!-- Main Options Section -->
+        <div class="section-card main-options-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-pie"></i>
+                اختر التخصص
+            </h2>
+
+            <div class="specialization-grid">
+                <div class="specialization-card" onclick="showGPACalculator('general')">
+                    <div class="specialization-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="specialization-name">عام</div>
+                    <div class="specialization-desc">حاسبات ومعلومات عام</div>
+                </div>
+
+                <div class="specialization-card cyber" onclick="showGPACalculator('cyber')">
+                    <div class="specialization-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="specialization-name">الأمن السيبراني</div>
+                    <div class="specialization-desc">Cyber Security</div>
+                </div>
+
+                <div class="specialization-card ahlia" onclick="showGPACalculator('ahlia')">
+                    <div class="specialization-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <div class="specialization-name">الأهلية CS</div>
+                    <div class="specialization-desc">Computer Science</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h2 class="section-title">
+                <i class="fas fa-link"></i>
+                روابط مفيدة
+            </h2>
+
+            <a href="https://mis.kfs.edu.eg/newresult/stud_credithours.aspx" target="_blank" class="link-card">
+                <div class="link-card-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="link-card-text">الاستعلام عن النتيجة</div>
+            </a>
+        </div>
+
+        <!-- Previous GPA Section -->
+        <div class="section-card hidden" id="previousGPASection">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i>
+                المعدل التراكمي السابق (اختياري)
+            </h2>
+
+            <div class="input-grid">
+                <div class="input-wrapper">
+                    <label>المعدل التراكمي السابق (CGPA)</label>
+                    <input type="number" id="previousGPA" min="0" max="4" step="0.01" placeholder="0.00">
+                </div>
+                <div class="input-wrapper">
+                    <label>عدد الساعات المعتمدة السابقة</label>
+                    <input type="number" id="previousHours" min="0" step="1" placeholder="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+        <div class="section-card hidden" id="coursesSection">
+            <h2 class="section-title" id="coursesTitle">
+                <i class="fas fa-book-open"></i>
+                المواد الدراسية - الترم الأول
+            </h2>
+
+            <div id="coursesContainer">
+                <!-- Courses will be added here dynamically -->
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="section-card hidden" id="resultsSection">
+            <button class="btn-calculate" onclick="calculateGPA()">
+                <i class="fas fa-calculator"></i>
+                احسب المعدل
+            </button>
+
+            <div id="results" class="hidden">
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>المعدل الفصلي (GPA)</h3>
+                        <p class="result-value" id="semesterGPA">0.00</p>
+                    </div>
+                    <div class="result-card">
+                        <h3>المعدل التراكمي (CGPA)</h3>
+                        <p class="result-value" id="cumulativeGPA">0.00</p>
+                    </div>
+                    <div class="result-card">
+                        <h3>إجمالي الساعات</h3>
+                        <p class="result-value" id="totalHours">0</p>
+                    </div>
+                    <div class="result-card full-width">
+                        <h3>التقدير العام</h3>
+                        <p class="result-grade" id="overallGrade">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-action" onclick="resetCalculator()">
+                    <i class="fas fa-redo"></i>
+                    إعادة تعيين
+                </button>
+                <button class="btn-action" onclick="toggleGradeTable()">
+                    <i class="fas fa-table"></i>
+                    جدول التقديرات
+                </button>
+            </div>
+        </div>
+
+        <!-- Grade Table Section -->
+        <div class="section-card hidden" id="gradeTable">
+            <h2 class="section-title">
+                <i class="fas fa-list-alt"></i>
+                جدول التقديرات حسب اللائحة
+            </h2>
+
+            <div class="grade-table-container">
+                <table class="grade-table">
+                    <thead>
+                        <tr>
+                            <th>النسبة المئوية</th>
+                            <th>رمز التقدير</th>
+                            <th>نقاط التقدير</th>
+                            <th>وصف التقدير</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="excellent">
+                            <td>96% فأكثر</td>
+                            <td>A+</td>
+                            <td>4.0</td>
+                            <td>ممتاز</td>
+                        </tr>
+                        <tr class="excellent">
+                            <td>92% - أقل من 96%</td>
+                            <td>A</td>
+                            <td>3.7</td>
+                            <td>ممتاز</td>
+                        </tr>
+                        <tr class="excellent">
+                            <td>88% - أقل من 92%</td>
+                            <td>A-</td>
+                            <td>3.4</td>
+                            <td>ممتاز</td>
+                        </tr>
+                        <tr class="very-good">
+                            <td>84% - أقل من 88%</td>
+                            <td>B+</td>
+                            <td>3.2</td>
+                            <td>جيد جداً</td>
+                        </tr>
+                        <tr class="very-good">
+                            <td>80% - أقل من 84%</td>
+                            <td>B</td>
+                            <td>3.0</td>
+                            <td>جيد جداً</td>
+                        </tr>
+                        <tr class="very-good">
+                            <td>76% - أقل من 80%</td>
+                            <td>B-</td>
+                            <td>2.8</td>
+                            <td>جيد جداً</td>
+                        </tr>
+                        <tr class="good">
+                            <td>72% - أقل من 76%</td>
+                            <td>C+</td>
+                            <td>2.6</td>
+                            <td>جيد</td>
+                        </tr>
+                        <tr class="good">
+                            <td>68% - أقل من 72%</td>
+                            <td>C</td>
+                            <td>2.4</td>
+                            <td>جيد</td>
+                        </tr>
+                        <tr class="good">
+                            <td>64% - أقل من 68%</td>
+                            <td>C-</td>
+                            <td>2.2</td>
+                            <td>جيد</td>
+                        </tr>
+                        <tr class="acceptable">
+                            <td>60% - أقل من 64%</td>
+                            <td>D+</td>
+                            <td>2.0</td>
+                            <td>مقبول</td>
+                        </tr>
+                        <tr class="acceptable">
+                            <td>55% - أقل من 60%</td>
+                            <td>D</td>
+                            <td>1.5</td>
+                            <td>مقبول</td>
+                        </tr>
+                        <tr class="acceptable">
+                            <td>50% - أقل من 55%</td>
+                            <td>D-</td>
+                            <td>1.0</td>
+                            <td>مقبول</td>
+                        </tr>
+                        <tr class="fail">
+                            <td>أقل من 50%</td>
+                            <td>F</td>
+                            <td>0.0</td>
+                            <td>راسب</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="special-grades-card">
+                <h3><i class="fas fa-info-circle"></i> الحالات الخاصة</h3>
+                <ul class="special-grades-list">
+                    <li><strong>Abs (غياب):</strong> غياب عن حضور الامتحان النهائي بدون عذر مقبول - صفر</li>
+                    <li><strong>Con (مستمر):</strong> مقرر مستمر في الفصل التالي</li>
+                    <li><strong>I (غير مكتمل):</strong> مقرر غير مكتمل</li>
+                    <li><strong>W (انسحاب):</strong> الانسحاب من المقرر</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p><i class="fas fa-moon"></i> جزء من منصة <a href="../index.html">ليالي الامتحان</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
