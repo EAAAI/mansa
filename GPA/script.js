@@ -40,16 +40,7 @@ const cyberCourses = [
     { name: 'تصميم منطقي', hours: 3, counted: true }
 ];
 
-// مواد الأهلية CS
-const ahliaCourses = [
-    { name: 'فيزياء', hours: 3, counted: true },
-    { name: 'الالكترونيات', hours: 3, counted: true },
-    { name: 'Math 1', hours: 3, counted: true },
-    { name: 'اساسيات تكنولوجيا المعلومات', hours: 3, counted: true },
-    { name: 'قوانين الكمبيوتر', hours: 2, counted: true },
-    { name: 'الانجليزي', hours: 2, counted: true },
-    { name: 'تاريخ الحوسبه', hours: 2, counted: true }
-];
+
 
 let currentSpecialization = 'general';
 
@@ -62,13 +53,8 @@ function showGPACalculator(specialization) {
         document.body.classList.remove('ahlia-theme');
         document.body.classList.add('cyber-theme');
         document.getElementById('coursesTitle').innerHTML = '<i class="fas fa-shield-alt"></i> المواد الدراسية - الأمن السيبراني';
-    } else if (specialization === 'ahlia') {
-        document.body.classList.remove('cyber-theme');
-        document.body.classList.add('ahlia-theme');
-        document.getElementById('coursesTitle').innerHTML = '<i class="fas fa-bullseye"></i> المواد الدراسية - الأهلية CS';
     } else {
         document.body.classList.remove('cyber-theme');
-        document.body.classList.remove('ahlia-theme');
         document.getElementById('coursesTitle').innerHTML = '<i class="fas fa-book-open"></i> المواد الدراسية - الترم الأول';
     }
 
@@ -98,8 +84,6 @@ function loadCourses() {
     let selectedCourses;
     if (currentSpecialization === 'cyber') {
         selectedCourses = cyberCourses;
-    } else if (currentSpecialization === 'ahlia') {
-        selectedCourses = ahliaCourses;
     } else {
         selectedCourses = courses;
     }
