@@ -1,13 +1,13 @@
 
-const CACHE_NAME = 'mansa-cache-v2'; // Increment version to invalidate old cache
+const CACHE_NAME = 'mansa-cache-v3'; // Increment version to invalidate old cache
 const urlsToCache = [
   '/',
   '/index.html',
   '/subject.html',
   '/admin-dashboard.html',
-  '/css/styles.css',
-  '/js/subject-logic.js',
-  '/js/script.js'
+  '/src/css/pages/home.css',
+  '/src/js/pages/subject.js',
+  '/src/js/utils/ui.js'
 ];
 
 self.addEventListener('install', event => {

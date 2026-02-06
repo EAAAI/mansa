@@ -7,11 +7,10 @@
     <title id="page-title">ليالي الامتحان</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="src/css/pages/home.css">
     <!-- Subject-specific CSS loaded dynamically -->
     <link id="subject-css" rel="stylesheet" href="">
-    <link rel="stylesheet" href="css/essay-bank.css">
-    <link rel="stylesheet" href="css/essay-challenge.css">
+    <link rel="stylesheet" href="src/css/features/essay.css">
     <style>
         /* Critical CSS for Zero-Flicker: Loader covers everything until ready */
         #main-loader { 
@@ -417,17 +416,17 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <!-- JS Modules (in dependency order) -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/user-profile.js"></script>
-    <script src="js/ai-chat.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/essay-challenge.js"></script>
+    <script src="src/js/config/firebase.js"></script>
+    <script src="src/js/features/user-profile.js"></script>
+    <script src="src/js/features/ai-chat.js"></script>
+    <script src="src/js/utils/ui.js"></script>
+    <script src="src/js/features/essay.js"></script>
     
     <!-- Subject Core (shared challenge/bank/leaderboard logic) -->
-    <script src="js/subject-core.js"></script>
+    <script src="src/js/features/challenge.js"></script>
     
     <!-- Dynamic Subject Loader (loads subject-specific data) -->
-    <script src="js/subject-logic.js"></script>
+    <script src="src/js/pages/subject.js"></script>
 </body>
 
 </html>

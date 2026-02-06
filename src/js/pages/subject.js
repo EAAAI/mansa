@@ -6,57 +6,57 @@ const SUBJECT_DATA = {
         title: 'فيزياء 2',
         subtitle: 'Modern Physics & Electricity',
         icon: 'fas fa-atom',
-        css: 'css/subjects/physics2.css',
-        data: 'subjects/physics2-data.js'
+        css: 'src/css/subjects/physics2.css',
+        data: 'src/data/physics2-data.js'
     },
     'it': {
         title: 'IT',
         subtitle: 'Information Technology',
         icon: 'fas fa-laptop-code',
-        css: 'css/subjects/it.css',
-        data: 'subjects/it-data.js'
+        css: 'src/css/subjects/it.css',
+        data: 'src/data/it-data.js'
     },
     'electronics': {
         title: 'إلكترونيات',
         subtitle: 'Electronics & Circuits',
         icon: 'fas fa-microchip',
-        css: 'css/subjects/electronics.css',
-        data: 'subjects/electronics-data.js'
+        css: 'src/css/subjects/electronics.css',
+        data: 'src/data/electronics-data.js'
     },
     'math0': {
         title: 'رياضيات 0',
         subtitle: 'Calculus & Algebra',
         icon: 'fas fa-calculator',
-        css: 'css/subjects/math0.css',
-        data: 'subjects/math0-data.js'
+        css: 'src/css/subjects/math0.css',
+        data: 'src/data/math0-data.js'
     },
     'math1': {
         title: 'رياضيات 1',
         subtitle: 'Advanced Calculus',
         icon: 'fas fa-square-root-alt',
-        css: 'css/subjects/math1.css',
-        data: 'subjects/math1-data.js'
+        css: 'src/css/subjects/math1.css',
+        data: 'src/data/math1-data.js'
     },
     'history': {
         title: 'تاريخ الحوسبة',
         subtitle: 'History of Computing',
         icon: 'fas fa-history',
-        css: 'css/subjects/history.css',
-        data: 'subjects/history-data.js'
+        css: 'src/css/subjects/history.css',
+        data: 'src/data/history-data.js'
     },
     'law': {
         title: 'قوانين الحاسب',
         subtitle: 'Computer Law & Ethics',
         icon: 'fas fa-gavel',
-        css: 'css/subjects/law.css',
-        data: 'subjects/law-data.js'
+        css: 'src/css/subjects/law.css',
+        data: 'src/data/law-data.js'
     },
     'english': {
         title: 'اللغة الإنجليزية',
         subtitle: 'English for Computing',
         icon: 'fas fa-language',
-        css: 'css/subjects/english.css',
-        data: 'subjects/english-data.js'
+        css: 'src/css/subjects/english.css',
+        data: 'src/data/english-data.js'
     }
 };
 
