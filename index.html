@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ليالي الامتحان - كلية الحاسبات والمعلومات</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="ramadan-styles.css">
+    <link rel="stylesheet" href="css/ramadan-styles.css">
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -1408,7 +1408,7 @@
         <i class="fas fa-bell" style="margin-left: 8px;"></i>
         <span id="notificationsText"></span>
     </div>
-
+    
     <div id="topScorerAlert" class="top-scorer-alert" style="display:none;">
         <span id="topScorerText"></span>
         <button onclick="document.getElementById('topScorerAlert').style.display='none'" class="close-alert-btn"
@@ -1573,7 +1573,7 @@
 
             <div class="subjects-grid">
 
-                <a href="subjects/physics2.html" class="subject-card"
+                <a href="subject.html?id=physics2" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #667eea, #764ba2);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
@@ -1604,7 +1604,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/english.html" class="subject-card"
+                <a href="subject.html?id=english" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #f093fb, #f5576c);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
@@ -1631,7 +1631,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/it.html" class="subject-card"
+                <a href="subject.html?id=it" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #4facfe, #00f2fe);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
@@ -1658,7 +1658,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/electronics.html" class="subject-card"
+                <a href="subject.html?id=electronics" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #fa709a, #fee140);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
@@ -1685,7 +1685,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/math1.html" class="subject-card"
+                <a href="subject.html?id=math1" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #a8edea, #fed6e3);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
@@ -1712,7 +1712,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/math0.html" class="subject-card"
+                <a href="subject.html?id=math0" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #d299c2, #fef9d7);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #d299c2, #fef9d7);">
@@ -1739,7 +1739,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/history.html" class="subject-card"
+                <a href="subject.html?id=history" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #8B4513, #DAA520);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #8B4513, #DAA520);">
@@ -1766,7 +1766,7 @@
                     </div>
                 </a>
 
-                <a href="subjects/law.html" class="subject-card"
+                <a href="subject.html?id=law" class="subject-card"
                     style="--card-gradient: linear-gradient(135deg, #4a69bd, #82ccdd);">
                     <div class="subject-card-header">
                         <div class="subject-icon" style="background: linear-gradient(135deg, #4a69bd, #82ccdd);">
@@ -2070,7 +2070,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
     <script>
 
         async function loadNotificationFromFirebase() {

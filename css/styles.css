@@ -56,6 +56,47 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+/* Loading State & Main Loader */
+body.loading-state {
+    pointer-events: none;
+    overflow: hidden; /* Prevent scrolling while loading */
+}
+
+/* Hide everything except the loader when in loading state */
+body.loading-state > *:not(#main-loader) {
+    opacity: 0;
+    transition: opacity 0.1s ease-out; /* Quick hide to prevent flicker */
+}
+
+#main-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1a1a2e; /* Match body bg */
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1; /* Always visible itself */
+    transition: opacity 0.5s ease-out, visibility 0.5s;
+}
+
+/* Micro-animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
 body {
     font-family: 'Cairo', sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);

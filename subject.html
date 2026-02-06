@@ -1,28 +1,52 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فيزياء 2 - ليالي الامتحان</title>
+    <title id="page-title">ليالي الامتحان</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="physics2.css">
-    <link rel="stylesheet" href="essay-bank.css">
-    <link rel="stylesheet" href="essay-challenge.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Subject-specific CSS loaded dynamically -->
+    <link id="subject-css" rel="stylesheet" href="">
+    <link rel="stylesheet" href="css/essay-bank.css">
+    <link rel="stylesheet" href="css/essay-challenge.css">
+    <style>
+        /* Critical CSS for Zero-Flicker: Loader covers everything until ready */
+        #main-loader { 
+            position: fixed; inset: 0; 
+            display: flex; align-items: center; justify-content: center; 
+            background: #1a1a2e; z-index: 99999; 
+            opacity: 1;
+            transition: opacity 0.4s ease-out;
+        }
+        #main-loader.hidden { opacity: 0; pointer-events: none; }
+        .spinner {
+            width: 50px; height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 </head>
 
 <body>
+    <!-- Loading Overlay - covers everything until content is ready -->
+    <div id="main-loader">
+        <div class="spinner"></div>
+    </div>
+
     <nav class="subject-navbar">
         <div class="nav-container">
-            <a href="../index.html" class="nav-brand">
+            <a href="index.html" class="nav-brand">
                 <i class="fas fa-arrow-right"></i>
                 <span>العودة للرئيسية</span>
             </a>
-            <div class="nav-subject-title">
-                <i class="fas fa-atom"></i>
-                فيزياء 2
+            <div class="nav-subject-title" id="nav-subject-title">
+                <!-- Icon and Title will be injected here -->
             </div>
             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
                 <i class="fas fa-chevron-down"></i>
@@ -69,20 +93,19 @@
             <div class="hero-particles"></div>
         </div>
         <div class="hero-content">
-            <div class="subject-badge">
-                <i class="fas fa-atom"></i>
+            <div class="subject-badge" id="hero-badge">
+                <!-- Icon will be injected here -->
             </div>
-            <h1>فيزياء 2</h1>
-            <p>Modern Physics & Electricity</p>
+            <h1 id="hero-title">Loading...</h1>
+            <p id="hero-subtitle">...</p>
             <div class="hero-stats">
                 <div class="hero-stat">
                     <i class="fas fa-question-circle"></i>
-                    <span id="totalQuestions">44</span> سؤال اختياري
+                    <span id="totalQuestions">0</span> سؤال اختياري
                 </div>
-
                 <div class="hero-stat">
                     <i class="fas fa-users"></i>
-                    <span id="totalPlayers">378</span> متحدي
+                    <span id="totalPlayers">0</span> متحدي
                 </div>
             </div>
             <div class="hero-buttons">
@@ -99,7 +122,7 @@
         </div>
     </section>
 
-    <!-- SUMMARIES SECTION - First after hero -->
+    <!-- SUMMARIES SECTION -->
     <section id="summaries" class="section summaries-section">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-file-alt"></i>الملخصات</h2>
@@ -110,7 +133,7 @@
         </div>
     </section>
 
-    <!-- MCQ SECTION GROUP - Cyan/Blue Theme -->
+    <!-- MCQ BANK SECTION -->
     <section id="bank" class="section bank-section mcq-theme">
         <div class="container">
             <h2 class="section-title">
@@ -118,7 +141,6 @@
                 الأسئلة الاختيارية
             </h2>
             <p class="section-subtitle">تصفح جميع أسئلة الاختيار من متعدد وإجاباتها</p>
-
             <div class="bank-controls">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -128,11 +150,11 @@
                     إجمالي: <span id="displayedCount">0</span> سؤال
                 </div>
             </div>
-
             <div class="questions-list" id="questionsList"></div>
         </div>
     </section>
 
+    <!-- MCQ CHALLENGE SECTION -->
     <section id="challenge" class="section challenge-section mcq-theme">
         <div class="container">
             <h2 class="section-title">
@@ -145,7 +167,7 @@
                 <div class="challenge-card">
                     <div class="challenge-icon">⚡</div>
                     <h3>تحدي الـ 15 سؤال</h3>
-                    <p>اختبر سرعتك ودقتك في أسئلة فيزياء 2</p>
+                    <p id="challenge-description">اختبر سرعتك ودقتك</p>
                     <div class="challenge-rules">
                         <div class="rule"><i class="fas fa-clock"></i><span>5 دقائق</span></div>
                         <div class="rule"><i class="fas fa-question-circle"></i><span>15 سؤال</span></div>
@@ -174,12 +196,9 @@
                 </div>
                 <div class="options-container" id="optionsContainer"></div>
                 <div class="challenge-nav">
-                    <button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i
-                            class="fas fa-arrow-right"></i> السابق</button>
-                    <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">التالي <i
-                            class="fas fa-arrow-left"></i></button>
-                    <button class="nav-btn success" id="submitBtn" onclick="submitChallenge()" style="display: none;"><i
-                            class="fas fa-paper-plane"></i> إنهاء</button>
+                    <button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled><i class="fas fa-arrow-right"></i> السابق</button>
+                    <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">التالي <i class="fas fa-arrow-left"></i></button>
+                    <button class="nav-btn success" id="submitBtn" onclick="submitChallenge()" style="display: none;"><i class="fas fa-paper-plane"></i> إنهاء</button>
                 </div>
             </div>
 
@@ -187,27 +206,22 @@
                 <div class="result-icon" id="resultIcon">🏆</div>
                 <h2 id="resultTitle">أحسنت!</h2>
                 <div class="result-stats">
-                    <div class="stat"><span class="stat-value" id="finalScore">0/15</span><span
-                            class="stat-label">الدرجة</span></div>
-                    <div class="stat"><span class="stat-value" id="finalTime">00:00</span><span
-                            class="stat-label">الوقت</span></div>
-                    <div class="stat"><span class="stat-value" id="percentage">0%</span><span
-                            class="stat-label">النسبة</span></div>
+                    <div class="stat"><span class="stat-value" id="finalScore">0/15</span><span class="stat-label">الدرجة</span></div>
+                    <div class="stat"><span class="stat-value" id="finalTime">00:00</span><span class="stat-label">الوقت</span></div>
+                    <div class="stat"><span class="stat-value" id="percentage">0%</span><span class="stat-label">النسبة</span></div>
                 </div>
-                <button class="restart-btn" onclick="restartChallenge()"><i class="fas fa-redo"></i> حاول مرة
-                    أخرى</button>
+                <button class="restart-btn" onclick="restartChallenge()"><i class="fas fa-redo"></i> حاول مرة أخرى</button>
             </div>
         </div>
     </section>
 
-    <!-- ESSAY SECTION GROUP - Purple/Violet Theme -->
+    <!-- ESSAY BANK SECTION -->
     <section id="essay-bank" class="section essay-bank-section essay-theme">
         <div class="container">
             <h2 class="section-title"><i class="fas fa-pen-fancy"></i>الأسئلة المقالية</h2>
             <p class="section-subtitle">تصفح جميع الأسئلة المقالية للمادة</p>
             <div class="essay-bank-controls">
-                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput"
-                        placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
+                <div class="search-box"><i class="fas fa-search"></i><input type="text" id="essaySearchInput" placeholder="ابحث في الأسئلة المقالية..." oninput="filterEssayQuestions()"></div>
                 <div class="questions-count">إجمالي: <span id="essayDisplayedCount">0</span> سؤال مقالي</div>
             </div>
             <div class="essay-questions-grid" id="essayQuestionsList">
@@ -216,6 +230,7 @@
         </div>
     </section>
 
+    <!-- ESSAY CHALLENGE SECTION -->
     <section id="essay-challenge" class="section essay-challenge-section essay-theme">
         <div class="container">
             <h2 class="section-title">
@@ -278,11 +293,7 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="essay-challenge-questions" id="essayChallengeQuestionsContainer">
-                    <!-- Questions will be rendered here dynamically -->
-                </div>
-
+                <div class="essay-challenge-questions" id="essayChallengeQuestionsContainer"></div>
                 <button class="essay-submit-btn" id="essaySubmitBtn" onclick="return submitEssayChallenge(event)">
                     <i class="fas fa-paper-plane"></i>
                     إنهاء التحدي وتصحيح الإجابات
@@ -293,7 +304,6 @@
                 <div class="essay-result-icon" id="essayResultIcon">🏆</div>
                 <h2 class="essay-result-title" id="essayResultTitle">أحسنت!</h2>
                 <p id="essayResultSubtitle">أداء رائع، استمر على هذا المستوى!</p>
-
                 <div class="essay-result-stats">
                     <div class="essay-result-stat">
                         <div class="essay-result-stat-value" id="essayFinalScore">0/25</div>
@@ -308,7 +318,6 @@
                         <div class="essay-result-stat-label">الأسئلة المجابة</div>
                     </div>
                 </div>
-
                 <button class="essay-restart-btn" onclick="return restartEssayChallenge(event)">
                     <i class="fas fa-redo"></i>
                     حاول مرة أخرى
@@ -317,14 +326,14 @@
         </div>
     </section>
 
-
+    <!-- LEADERBOARD SECTION -->
     <section id="leaderboard" class="section leaderboard-section">
         <div class="container">
             <h2 class="section-title">
                 <i class="fas fa-trophy"></i>
                 لوحة المتصدرين
             </h2>
-            <p class="section-subtitle">أفضل النتائج في تحدي فيزياء 2</p>
+            <p class="section-subtitle" id="leaderboard-subtitle">أفضل النتائج في التحدي</p>
 
             <div class="leaderboard-card">
                 <div class="leaderboard-header">
@@ -351,20 +360,21 @@
         </div>
     </section>
 
+    <!-- ASK AI SECTION -->
     <section id="ask-ai" class="section ai-section">
         <div class="container">
             <h2 class="section-title">
                 <i class="fas fa-robot"></i>
                 اسأل الذكاء الاصطناعي
             </h2>
-            <p class="section-subtitle">اسأل أي سؤال عن فيزياء 2 واحصل على إجابة فورية</p>
+            <p class="section-subtitle" id="ai-subtitle">اسأل أي سؤال واحصل على إجابة فورية</p>
 
             <div class="ai-chat-container">
                 <div class="ai-messages" id="aiMessages">
                     <div class="ai-message bot">
                         <div class="message-avatar"><i class="fas fa-robot"></i></div>
                         <div class="message-content">
-                            <p>مرحباً! أنا مساعدك الذكي في فيزياء 2. اسألني أي سؤال عن الفيزياء الحديثة والكهرباء!</p>
+                            <p id="ai-welcome">مرحباً! أنا مساعدك الذكي. اسألني أي سؤال!</p>
                         </div>
                     </div>
                 </div>
@@ -400,14 +410,18 @@
     <div class="pyramid-3d pyramid-2"></div>
 
     <footer class="subject-footer">
-        <p>© 2024 ليالي الامتحان - فيزياء 2 | تم تطويره بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
-                target="_blank">EAAAI</a></p>
+        <p>© 2024 ليالي الامتحان | تم تطويره بواسطة <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank">EAAAI</a></p>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="essay-challenge.js"></script>
-    <script src="physics2.js"></script>
+    <script src="js/essay-challenge.js"></script>
+    
+    <!-- Subject-specific JS will be loaded dynamically -->
+    <script id="subject-js"></script>
+    
+    <!-- Dynamic Loader -->
+    <script src="js/subject-logic.js"></script>
 </body>
 
 </html>
