@@ -7,58 +7,62 @@ const SUBJECT_DATA = {
         subtitle: 'Modern Physics & Electricity',
         icon: 'fas fa-atom',
         css: 'css/subjects/physics2.css',
-        js: 'subjects/physics2.js'
+        data: 'subjects/physics2-data.js'
     },
     'it': {
         title: 'IT',
         subtitle: 'Information Technology',
         icon: 'fas fa-laptop-code',
         css: 'css/subjects/it.css',
-        js: 'subjects/it.js'
+        data: 'subjects/it-data.js'
     },
     'electronics': {
         title: 'إلكترونيات',
         subtitle: 'Electronics & Circuits',
         icon: 'fas fa-microchip',
         css: 'css/subjects/electronics.css',
-        js: 'subjects/electronics.js'
+        data: 'subjects/electronics-data.js'
     },
     'math0': {
         title: 'رياضيات 0',
         subtitle: 'Calculus & Algebra',
         icon: 'fas fa-calculator',
         css: 'css/subjects/math0.css',
-        js: 'subjects/math0.js'
+        data: 'subjects/math0-data.js'
     },
     'math1': {
         title: 'رياضيات 1',
         subtitle: 'Advanced Calculus',
         icon: 'fas fa-square-root-alt',
         css: 'css/subjects/math1.css',
-        js: 'subjects/math1.js'
+        data: 'subjects/math1-data.js'
     },
     'history': {
         title: 'تاريخ الحوسبة',
         subtitle: 'History of Computing',
         icon: 'fas fa-history',
         css: 'css/subjects/history.css',
-        js: 'subjects/history.js'
+        data: 'subjects/history-data.js'
     },
     'law': {
         title: 'قوانين الحاسب',
         subtitle: 'Computer Law & Ethics',
         icon: 'fas fa-gavel',
         css: 'css/subjects/law.css',
-        js: 'subjects/law.js'
+        data: 'subjects/law-data.js'
     },
     'english': {
         title: 'اللغة الإنجليزية',
         subtitle: 'English for Computing',
         icon: 'fas fa-language',
         css: 'css/subjects/english.css',
-        js: 'subjects/english.js'
+        data: 'subjects/english-data.js'
     }
 };
+
+// Current subject info (accessible globally)
+let currentSubjectId = '';
+let currentSubjectData = null;
 
 // Run when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -68,29 +72,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 2. Validate ID
     if (!subjectId || !SUBJECT_DATA[subjectId]) {
-        console.error('Invalid or missing subject ID, redirecting...');
         window.location.href = 'index.html';
         return;
     }
 
-    // 3. Get subject data
-    const data = SUBJECT_DATA[subjectId];
+    // 3. Store current subject
+    currentSubjectId = subjectId;
+    currentSubjectData = SUBJECT_DATA[subjectId];
 
     // 4. Load CSS first
-    loadSubjectCSS(data.css);
+    loadSubjectCSS(currentSubjectData.css);
 
     // 5. Update static content
-    updatePageContent(subjectId, data);
+    updatePageContent(subjectId, currentSubjectData);
 
-    // 6. Load subject JS (which contains questions, summaries, etc.)
-    loadSubjectJS(data.js);
+    // 6. Load subject data file (which calls setSubjectData from subject-core.js)
+    loadSubjectData(subjectId, currentSubjectData);
 });
 
 function loadSubjectCSS(cssPath) {
     const cssLink = document.getElementById('subject-css');
     if (cssLink && cssPath) {
         cssLink.href = cssPath;
-
     }
 }
 
@@ -136,33 +139,39 @@ function updatePageContent(id, data) {
     if (aiWelcome) {
         aiWelcome.textContent = `مرحباً! أنا مساعدك الذكي في ${data.title}. اسألني أي سؤال!`;
     }
-
-
 }
 
-function loadSubjectJS(jsPath) {
-    if (!jsPath) {
-        hideLoader();
-        return;
-    }
-
-    // Create script element
+function loadSubjectData(subjectId, subjectInfo) {
+    // Create script element for the data file
     const script = document.createElement('script');
-    script.src = jsPath;
-    script.async = false; // Ensure it runs in order
+    script.src = subjectInfo.data;
+    script.async = false;
     
     script.onload = function() {
-
-        // Hide loader after JS loaded and executed
+        // After data loads, initialize with subject-core.js
+        // The data file should define: SUBJECT_MCQ_QUESTIONS, SUBJECT_ESSAY_QUESTIONS, SUBJECT_SUMMARIES
+        if (typeof setSubjectData === 'function') {
+            setSubjectData(
+                subjectId,
+                subjectInfo.title,
+                typeof SUBJECT_MCQ_QUESTIONS !== 'undefined' ? SUBJECT_MCQ_QUESTIONS : [],
+                typeof SUBJECT_ESSAY_QUESTIONS !== 'undefined' ? SUBJECT_ESSAY_QUESTIONS : [],
+                typeof SUBJECT_SUMMARIES !== 'undefined' ? SUBJECT_SUMMARIES : []
+            );
+        }
+        
+        // Hide loader
         setTimeout(hideLoader, 100);
     };
     
     script.onerror = function() {
-
+        // Even if data fails to load, initialize with empty data
+        if (typeof setSubjectData === 'function') {
+            setSubjectData(subjectId, subjectInfo.title, [], [], []);
+        }
         hideLoader();
     };
 
-    // Append to body (after essay-challenge.js)
     document.body.appendChild(script);
 }
 
