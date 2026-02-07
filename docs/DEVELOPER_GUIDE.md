@@ -1,203 +1,358 @@
 # ليالي الامتحان - Developer Guide
 
-## Quick Reference
-
-### File Locations
-| What | Where |
-|------|-------|
-| New page navbar | `src/js/utils/ui.js` → `getMainNavbarHTML()` or `getSubjectNavbarHTML()` |
-| New subject CSS | `src/css/subjects/[subject].css` |
-| New theme | `src/css/themes/themes.css` + update ui.js |
-| New feature JS | `src/js/features/[feature].js` |
-| Firebase config | `src/js/config/firebase.js` |
-| Error handling | `src/js/utils/error-handler.js` |
+> Complete guide for developers to understand, maintain, and extend the codebase.
 
 ---
 
-## Adding New Pages
+## 📁 Project Structure
 
-### New Main Page (like index.html)
-```html
-<!-- Add to your new page -->
-<nav id="navbar-container" class="navbar main-navbar"></nav>
-<script src="src/js/utils/ui.js"></script>
+```
+mansa/
+├── index.html              # Main homepage
+├── subject.html            # Subject page template (dynamic)
+├── admin-dashboard.html    # Admin panel
+├── join-us.html            # Join team page
+├── maintenance.html        # Maintenance mode page
+├── service-worker.js       # PWA caching
+│
+├── src/
+│   ├── js/                 # JavaScript modules
+│   │   ├── main.js         # Entry point (index.html)
+│   │   ├── subject-main.js # Entry point (subject.html)
+│   │   ├── config/         # Configuration files
+│   │   ├── features/       # Feature modules
+│   │   ├── utils/          # Utility modules
+│   │   └── pages/          # Page-specific logic
+│   │
+│   ├── css/                # Stylesheets
+│   │   ├── components/     # Shared component styles
+│   │   ├── pages/          # Page-specific styles
+│   │   ├── subjects/       # Subject-specific colors
+│   │   ├── themes/         # Theme variants
+│   │   └── features/       # Feature-specific styles
+│   │
+│   └── data/               # Subject data files
+│
+├── questions/              # Exam PDFs and images
+├── assets/                 # Images, icons
+└── docs/                   # Documentation
 ```
 
-### New Subject Page
-```html
-<!-- Add to your new subject page -->
-<nav id="subject-navbar-container" class="subject-navbar"></nav>
-<script src="src/js/utils/ui.js"></script>
+---
+
+## 📜 JavaScript File Map
+
+### Entry Points (ES6 Modules)
+| File | Purpose |
+|------|---------|
+| `main.js` | Initializes index.html - imports navbar, themes, leaderboard, scroll |
+| `subject-main.js` | Initializes subject.html - imports navbar, themes, scroll |
+
+### Config (`src/js/config/`)
+| File | Purpose |
+|------|---------|
+| `subjects.js` | **Single source of truth** for all subjects - names, icons, colors, paths |
+| `firebase.js` | Firebase configuration for database connections |
+
+### Features (`src/js/features/`)
+| File | Purpose |
+|------|---------|
+| `challenge.js` | MCQ challenge mode - timer, scoring, leaderboard save |
+| `essay.js` | Essay challenge mode - AI grading, image upload |
+| `ai-chat.js` | AI chat assistant - Groq/Gemini API integration |
+| `user-profile.js` | User profile management and local storage |
+
+### Utils (`src/js/utils/`)
+| File | Purpose |
+|------|---------|
+| `navbar.js` | Dynamic navbar injection (main + subject) |
+| `themes.js` | Theme switching and persistence |
+| `leaderboard.js` | Main page leaderboard tabs and data loading |
+| `scroll.js` | Scroll behaviors, smooth scrolling, notifications |
+| `error-handler.js` | Global error handling and retry logic |
+
+### Pages (`src/js/pages/`)
+| File | Purpose |
+|------|---------|
+| `subject.js` | Dynamic subject loader - reads URL param, loads subject data |
+
+---
+
+## 🎨 CSS File Map
+
+### Components (`src/css/components/`)
+| File | Purpose |
+|------|---------|
+| `shared.css` | Shared styles - cards, modals, buttons, forms |
+
+### Pages (`src/css/pages/`)
+| File | Purpose |
+|------|---------|
+| `home.css` | Index.html specific styles |
+
+### Subjects (`src/css/subjects/`)
+| File | Purpose |
+|------|---------|
+| `physics2.css` | Physics 2 color scheme |
+| `math0.css` | Math 0 color scheme |
+| `math1.css` | Math 1 color scheme |
+| `english.css` | English color scheme |
+| `it.css` | IT color scheme |
+| `electronics.css` | Electronics color scheme |
+| `history.css` | History color scheme |
+| `law.css` | Law color scheme |
+
+### Themes (`src/css/themes/`)
+| File | Purpose |
+|------|---------|
+| `ramadan.css` | Ramadan decorations theme |
+
+---
+
+## ➕ How to Add a New Subject
+
+### Step 1: Add to `subjects.js`
+```javascript
+// src/js/config/subjects.js
+export const SUBJECTS = {
+    // ... existing subjects
+    
+    newsubject: {
+        id: 'newsubject',
+        title: 'اسم المادة',
+        subtitle: 'Subject Name',
+        icon: 'fa-icon-name',
+        color: '#HEX_COLOR',
+        gradient: 'linear-gradient(135deg, #color1 0%, #color2 100%)',
+        css: 'src/css/subjects/newsubject.css',
+        data: 'src/data/newsubject-data.js',
+        year: 1,  // 0, 1, 2, 3, 4
+        college: 'cs'  // 'cs', 'is', 'ai', 'ds'
+    }
+};
+```
+
+### Step 2: Create CSS File
+```css
+/* src/css/subjects/newsubject.css */
+:root {
+    --subject-primary: #HEX_COLOR;
+    --subject-secondary: #HEX_COLOR2;
+    --subject-gradient: linear-gradient(135deg, #color1 0%, #color2 100%);
+}
+```
+
+### Step 3: Create Data File
+```javascript
+// src/data/newsubject-data.js
+const SUBJECT_MCQ_QUESTIONS = [];
+const SUBJECT_ESSAY_QUESTIONS = [];
+const SUBJECT_SUMMARIES = [];
+```
+
+### Step 4: Add to Service Worker Cache (Optional)
+```javascript
+// service-worker.js - add to urlsToCache
+'/src/css/subjects/newsubject.css',
+'/src/data/newsubject-data.js',
+```
+
+### Step 5: Test
+Visit: `subject.html?id=newsubject`
+
+---
+
+## 📅 How to Add a New Year
+
+### Step 1: Update `subjects.js`
+Add `year` property to each subject:
+```javascript
+physics2: {
+    // ...existing config
+    year: 2,  // Second year
+}
+```
+
+### Step 2: Filter by Year
+```javascript
+import { getSubjectsByYear } from './config/subjects.js';
+
+// Get all second year subjects
+const year2Subjects = getSubjectsByYear(2);
+```
+
+### Step 3: Update UI (index.html)
+Add year tabs/filters in the subjects section to filter by year.
+
+---
+
+## 🏛️ How to Add a New College
+
+### Step 1: Update `subjects.js`
+Add `college` property:
+```javascript
+physics2: {
+    // ...existing config
+    college: 'cs',  // Computer Science
+}
+```
+
+### Step 2: Filter by College
+```javascript
+import { getSubjectsByCollege } from './config/subjects.js';
+
+// Get all CS subjects
+const csSubjects = getSubjectsByCollege('cs');
 ```
 
 ---
 
-## Adding New Subjects
+## ✨ How to Add a New Feature
 
-1. **Create CSS**: `src/css/subjects/[subject].css` (copy existing subject CSS)
-2. **Add questions**: `src/data/[subject]/questions.json`
-3. **Create page**: Copy `subject.html` → `[subject].html`
-4. **Update index.html**: Add subject card with correct link
-
----
-
-## Adding New Features
-
-### Pattern to Follow:
+### Step 1: Create Feature Module
 ```javascript
 // src/js/features/new-feature.js
 
-// 1. Configuration at top
-const FEATURE_CONFIG = {
-    API_URL: '...',
-    MAX_RETRIES: 3
-};
+/**
+ * New Feature Module
+ * Description of what it does
+ */
 
-// 2. Main functions
-async function featureMainFunction() {
-    try {
-        // Use retryAsync for API calls
-        const result = await retryAsync(() => fetch(url), 3, 1000);
-        showSuccess('Success message');
-    } catch (error) {
-        console.error('Feature error:', error);
-        showError('User-friendly error message');
-    }
+export function initNewFeature() {
+    // Implementation
 }
 
-// 3. Export or attach to window
-window.featureMainFunction = featureMainFunction;
+export function doSomething() {
+    // Implementation
+}
+
+// Make available globally if needed for onclick
+window.doSomething = doSomething;
 ```
 
----
-
-## Current Systems Overview
-
-### ✅ Working Well
-- **Dynamic navbars**: Centralized in ui.js
-- **Error handling**: showError/showSuccess utilities
-- **Theme system**: Multiple themes via CSS classes
-- **User profile**: localStorage persistence
-- **Leaderboard**: Firebase Firestore integration
-
-### ⚠️ Needs Work for Future
-
-| System | Current State | For Future Scaling |
-|--------|--------------|---------------------|
-| **Authentication** | Anonymous (name only) | Will need Firebase Auth |
-| **User data** | localStorage | Will need user accounts DB |
-| **Questions** | JSON files | Consider Firebase or API |
-| **Multiple years/colleges** | Not implemented | Create folder structure |
-
----
-
-## Recommended Folder Structure for Future
-
-```
-src/
-├── js/
-│   ├── config/
-│   │   ├── firebase.js       ← Firebase config
-│   │   └── subjects.js       ← [CREATE] Subject definitions
-│   ├── features/
-│   │   ├── ai-chat.js
-│   │   ├── challenge.js
-│   │   ├── essay.js
-│   │   ├── user-profile.js
-│   │   └── auth.js           ← [FUTURE] Authentication
-│   ├── utils/
-│   │   ├── ui.js             ← Navbars, themes, UI helpers
-│   │   └── error-handler.js  ← Error handling
-│   └── pages/
-│       └── subject.js        ← Subject page logic
-│
-├── data/                      ← [CREATE] for question data
-│   ├── physics/
-│   │   ├── questions.json
-│   │   └── essays.json
-│   ├── chemistry/
-│   └── ...
-│
-└── pages/                     ← [FUTURE] for multi-year structure
-    ├── year1/
-    │   ├── physics.html
-    │   └── chemistry.html
-    └── year2/
-```
-
----
-
-## What to Create Before Scaling
-
-### 1. Subject Configuration File (Recommended)
-Create `src/js/config/subjects.js`:
+### Step 2: Import in Entry Point
 ```javascript
-const SUBJECTS = {
-    physics: {
-        id: 'physics',
-        name: 'الفيزياء',
-        nameEn: 'Physics',
-        icon: 'fa-atom',
-        color: '#667eea',
-        year: 1,
-        college: 'pharmacy'
-    },
-    // Add more subjects...
-};
+// src/js/main.js or subject-main.js
+import { initNewFeature } from './features/new-feature.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+    initNewFeature();
+});
 ```
 
-### 2. Year/College Structure (When Needed)
-When adding multiple years:
-- Create folder per year: `pages/year1/`, `pages/year2/`
-- Update navbar to include year selector
-- Update subject config with year property
+### Step 3: Add HTML Section
+Add the feature section to `index.html` or `subject.html`.
 
-### 3. User Authentication (When Needed)
-- Add Firebase Authentication
-- Create `src/js/features/auth.js`
-- Update user-profile.js to sync with Firebase user
-
----
-
-## Best Practices Checklist
-
-### Before Adding Features
-- [ ] Check if similar pattern exists in codebase
-- [ ] Use error-handler.js utilities (showError, showSuccess, retryAsync)
-- [ ] Follow existing naming conventions
-
-### Before Editing Navbar
-- [ ] Edit in ui.js, not in HTML files
-- [ ] Test on both index.html and subject.html
-- [ ] Test mobile menu
-
-### Before Adding New Pages
-- [ ] Use dynamic navbar system
-- [ ] Include all required CSS/JS files
-- [ ] Test theme switching works
+### Step 4: Add CSS (if needed)
+```css
+/* src/css/features/new-feature.css */
+.new-feature {
+    /* styles */
+}
+```
 
 ---
 
-## Common Mistakes to Avoid
+## 🎨 How to Add a New Theme
 
-| ❌ Don't | ✅ Do |
-|----------|-------|
-| Copy navbar HTML into new pages | Use navbar placeholder |
-| Use console.log in production | Use console.error for errors only |
-| Hardcode API keys | Use config files |
-| Silent error handling | Show user-friendly messages |
-| Skip mobile testing | Test responsive design |
+### Step 1: Add Theme Class in `themes.js`
+```javascript
+// src/js/utils/themes.js
+const THEMES = ['default', 'space', 'ocean', 'sunset', 'pyramids', 'winter', 'newtheme'];
+```
+
+### Step 2: Add CSS Variables
+```css
+/* src/css/components/shared.css */
+body.newtheme-theme {
+    --bg-primary: #color;
+    --bg-secondary: #color;
+    --text-primary: #color;
+    /* ... other variables */
+}
+```
+
+### Step 3: Add to Theme Menu (navbar.js)
+```html
+<button class="theme-option" onclick="setTheme('newtheme')" data-theme="newtheme">
+    <i class="fas fa-icon"></i> اسم الثيم
+</button>
+```
 
 ---
 
-## Quick Commands
+## 🗺️ Future Roadmap
+
+### Phase 1: User System
+- [ ] Firebase Authentication integration
+- [ ] User profiles with progress tracking
+- [ ] Saved scores across devices
+
+### Phase 2: Content Management
+- [ ] Admin panel for adding questions
+- [ ] Firebase Firestore for questions database
+- [ ] Rich text editor for essays
+
+### Phase 3: Analytics
+- [ ] Firebase Analytics integration
+- [ ] Usage tracking dashboard
+- [ ] Popular questions insights
+
+### Phase 4: Advanced Features
+- [ ] Offline mode (PWA enhancements)
+- [ ] Push notifications for new content
+- [ ] Social sharing of scores
+
+### Phase 5: Mobile App
+- [ ] React Native or Flutter wrapper
+- [ ] Native push notifications
+- [ ] App store deployment
+
+---
+
+## 🔧 Development Commands
 
 ```bash
-# Start local server (if Node.js installed)
-npx serve
+# Start local server (Python)
+python -m http.server 8000
+
+# Start local server (Node)
+npx serve .
 
 # Git workflow
 git add -A
-git commit -m "description"
-git push
+git commit -m "Description"
+git push origin main
 ```
+
+---
+
+## 📝 Code Style Guidelines
+
+1. **Variables**: Use `const` and `let`, never `var`
+2. **Functions**: Use descriptive names, add JSDoc comments
+3. **Modules**: One responsibility per file
+4. **Comments**: Use `// ====` section headers
+5. **Arabic**: Keep UI text in Arabic, code in English
+
+---
+
+## 🐛 Debugging Tips
+
+1. **Console errors**: Check browser DevTools console
+2. **Module loading**: Ensure `type="module"` in script tags
+3. **Firebase**: Check Firebase console for database rules
+4. **Caching**: Clear service worker cache if changes don't appear
+
+```javascript
+// Clear service worker cache
+caches.keys().then(names => names.forEach(name => caches.delete(name)));
+```
+
+---
+
+## 📞 Need Help?
+
+- Check existing code patterns in similar files
+- Review `subjects.js` for configuration structure
+- Test changes locally before pushing
