@@ -15,6 +15,9 @@ import {
     injectNotificationStyles 
 } from './utils/scroll.js';
 
+// Home page specific functionality
+import './pages/home.js';
+
 // ============================================
 // INITIALIZATION
 // ============================================

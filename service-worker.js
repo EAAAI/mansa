@@ -39,7 +39,8 @@ const urlsToCache = [
     '/src/js/features/essay.js',
     
     // Pages
-    '/src/js/pages/subject.js'
+    '/src/js/pages/subject.js',
+    '/src/js/pages/home.js'
 ];
 
 // Install - cache all resources
