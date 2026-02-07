@@ -1329,3 +1329,71 @@
             }
         }
     
+/* ============================================
+   ACCESSIBILITY STYLES
+   ============================================ */
+
+/* Skip to main content link */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 0 0 12px 12px;
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 100000;
+    transition: top 0.3s ease;
+    font-family: 'Cairo', sans-serif;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: none;
+}
+
+/* Enhanced focus styles for keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #667eea;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Focus within cards */
+.subject-card:focus-within,
+.bank-question-card:focus-within {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5);
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Screen reader only text (for ARIA descriptions) */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

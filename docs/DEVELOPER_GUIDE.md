@@ -1,194 +1,203 @@
-# 📁 Mansa Developer Guide
+# ليالي الامتحان - Developer Guide
 
-## Project Structure Overview
+## Quick Reference
 
-```
-mansa/
-├── 📄 HTML Pages (root)
-├── 📁 src/              ← All source code
-│   ├── css/             ← Stylesheets
-│   ├── js/              ← JavaScript
-│   └── data/            ← Subject question data
-├── 📁 assets/           ← Images, audio, fonts
-├── 📁 tools/            ← Dev-only scripts
-└── 📁 docs/             ← Documentation
-```
+### File Locations
+| What | Where |
+|------|-------|
+| New page navbar | `src/js/utils/ui.js` → `getMainNavbarHTML()` or `getSubjectNavbarHTML()` |
+| New subject CSS | `src/css/subjects/[subject].css` |
+| New theme | `src/css/themes/themes.css` + update ui.js |
+| New feature JS | `src/js/features/[feature].js` |
+| Firebase config | `src/js/config/firebase.js` |
+| Error handling | `src/js/utils/error-handler.js` |
 
 ---
 
-## 📄 Root HTML Pages
+## Adding New Pages
 
-| File | Purpose |
-|------|---------|
-| `index.html` | Homepage with subjects, AI chat, leaderboard |
-| `subject.html` | Template for all subject pages (uses URL params) |
-| `admin-dashboard.html` | Admin panel for managing content |
-| `join-us.html` | Recruitment/join page |
-| `maintenance.html` | Maintenance mode page |
-| `migrate-leaderboard.html` | Migration utility |
-| `service-worker.js` | PWA caching (must stay at root) |
-
----
-
-## 📁 src/css/ - Stylesheets
-
-### `css/base/` - Foundation (empty, for future)
-Use for: CSS reset, variables, typography
-
-### `css/components/`
-| File | Contains |
-|------|----------|
-| `shared.css` | Themes (space, ocean, etc.), modals, cards, buttons |
-
-**When adding a new component:**
-1. Add styles to `shared.css`, OR
-2. Create new file like `navbar.css` if it's large
-
-### `css/features/`
-| File | Contains |
-|------|----------|
-| `essay.css` | Essay grading + essay bank styles |
-| `katex.css` | Math equation rendering |
-
-**When adding a new feature:**
-1. Create `src/css/features/[feature-name].css`
-2. Link in HTML: `<link rel="stylesheet" href="src/css/features/[feature-name].css">`
-
-### `css/themes/`
-| File | Contains |
-|------|----------|
-| `ramadan.css` | Seasonal Ramadan decorations |
-
-**When adding a new theme:**
-1. Create `src/css/themes/[theme-name].css`
-2. Theme gets applied via JS class: `body.classList.add('[theme]-theme')`
-
-### `css/pages/`
-| File | Contains |
-|------|----------|
-| `home.css` | Homepage-specific styles |
-
-### `css/subjects/`
-| File | Contains |
-|------|----------|
-| `physics2.css` | **BASE** - Full subject page styles |
-| `it.css`, `math0.css`, etc. | Color overrides only |
-
-**When adding a new subject:**
-1. Copy any override file (e.g., `it.css`)
-2. Rename to `[subject].css`
-3. Change the color values
-
----
-
-## 📁 src/js/ - JavaScript
-
-### `js/config/`
-| File | Contains |
-|------|----------|
-| `firebase.js` | Firebase init, API keys, Gemini/Groq config |
-
-⚠️ **Do NOT add more files here** - keep config centralized
-
-### `js/utils/`
-| File | Contains |
-|------|----------|
-| `ui.js` | Themes, scroll, mobile menu, notifications |
-
-**When adding utility functions:**
-Add to `ui.js` or create new file like `storage.js` for localStorage helpers
-
-### `js/features/`
-| File | Contains |
-|------|----------|
-| `challenge.js` | Quiz mode, question bank, leaderboard |
-| `essay.js` | AI essay grading with image upload |
-| `ai-chat.js` | AI chatbot functionality |
-| `user-profile.js` | User management, stats, nickname |
-
-**When adding a new feature:**
-1. Create `src/js/features/[feature-name].js`
-2. Add to HTML: `<script src="src/js/features/[feature-name].js"></script>`
-3. Load order matters! Dependencies first
-
-### `js/pages/`
-| File | Contains |
-|------|----------|
-| `subject.js` | Subject page loader (reads URL param, loads CSS/data) |
-
-**When adding a new page type:**
-Create `src/js/pages/[page-name].js`
-
----
-
-## 📁 src/data/ - Subject Data
-
-| File | Contains |
-|------|----------|
-| `physics2-data.js` | Questions, essays, summaries for Physics 2 |
-| `it-data.js` | Questions for IT subject |
-| ... | One file per subject |
-
-**When adding a new subject:**
-1. Create `src/data/[subject]-data.js`
-2. Define: `SUBJECT_MCQ_QUESTIONS`, `SUBJECT_ESSAY_QUESTIONS`, `SUBJECT_SUMMARIES`
-3. Add entry in `src/js/pages/subject.js` SUBJECT_DATA object
-4. Create CSS override in `src/css/subjects/[subject].css`
-
----
-
-## 📁 Other Folders
-
-| Folder | Purpose |
-|--------|---------|
-| `assets/` | Images, audio files, fonts |
-| `tools/` | CLI scripts for data processing (not for web) |
-| `docs/` | Documentation |
-| `questions/` | JSON question banks |
-
----
-
-## 🆕 Adding New Things - Quick Reference
-
-### New Feature
-1. CSS: `src/css/features/[name].css`
-2. JS: `src/js/features/[name].js`
-3. Link both in HTML
-
-### New Subject
-1. Data: `src/data/[subject]-data.js`
-2. CSS: `src/css/subjects/[subject].css` (copy + change colors)
-3. Config: Add to `SUBJECT_DATA` in `subject.js`
-
-### New Theme
-1. CSS: `src/css/themes/[theme].css`
-2. JS: Update `setTheme()` in `ui.js`
-3. Add theme option in HTML
-
-### New Utility Function
-Add to `src/js/utils/ui.js` or create new utils file
-
-### New Page
-1. Create `[page].html` at root
-2. Link CSS/JS from `src/`
-3. Optional: Create `src/js/pages/[page].js`
-
----
-
-## 📝 Script Load Order
-
+### New Main Page (like index.html)
 ```html
-<!-- Config first -->
-<script src="src/js/config/firebase.js"></script>
-
-<!-- Utils next -->
+<!-- Add to your new page -->
+<nav id="navbar-container" class="navbar main-navbar"></nav>
 <script src="src/js/utils/ui.js"></script>
+```
 
-<!-- Features after -->
-<script src="src/js/features/user-profile.js"></script>
-<script src="src/js/features/ai-chat.js"></script>
-<script src="src/js/features/challenge.js"></script>
+### New Subject Page
+```html
+<!-- Add to your new subject page -->
+<nav id="subject-navbar-container" class="subject-navbar"></nav>
+<script src="src/js/utils/ui.js"></script>
+```
 
-<!-- Page-specific last -->
-<script src="src/js/pages/subject.js"></script>
+---
+
+## Adding New Subjects
+
+1. **Create CSS**: `src/css/subjects/[subject].css` (copy existing subject CSS)
+2. **Add questions**: `src/data/[subject]/questions.json`
+3. **Create page**: Copy `subject.html` → `[subject].html`
+4. **Update index.html**: Add subject card with correct link
+
+---
+
+## Adding New Features
+
+### Pattern to Follow:
+```javascript
+// src/js/features/new-feature.js
+
+// 1. Configuration at top
+const FEATURE_CONFIG = {
+    API_URL: '...',
+    MAX_RETRIES: 3
+};
+
+// 2. Main functions
+async function featureMainFunction() {
+    try {
+        // Use retryAsync for API calls
+        const result = await retryAsync(() => fetch(url), 3, 1000);
+        showSuccess('Success message');
+    } catch (error) {
+        console.error('Feature error:', error);
+        showError('User-friendly error message');
+    }
+}
+
+// 3. Export or attach to window
+window.featureMainFunction = featureMainFunction;
+```
+
+---
+
+## Current Systems Overview
+
+### ✅ Working Well
+- **Dynamic navbars**: Centralized in ui.js
+- **Error handling**: showError/showSuccess utilities
+- **Theme system**: Multiple themes via CSS classes
+- **User profile**: localStorage persistence
+- **Leaderboard**: Firebase Firestore integration
+
+### ⚠️ Needs Work for Future
+
+| System | Current State | For Future Scaling |
+|--------|--------------|---------------------|
+| **Authentication** | Anonymous (name only) | Will need Firebase Auth |
+| **User data** | localStorage | Will need user accounts DB |
+| **Questions** | JSON files | Consider Firebase or API |
+| **Multiple years/colleges** | Not implemented | Create folder structure |
+
+---
+
+## Recommended Folder Structure for Future
+
+```
+src/
+├── js/
+│   ├── config/
+│   │   ├── firebase.js       ← Firebase config
+│   │   └── subjects.js       ← [CREATE] Subject definitions
+│   ├── features/
+│   │   ├── ai-chat.js
+│   │   ├── challenge.js
+│   │   ├── essay.js
+│   │   ├── user-profile.js
+│   │   └── auth.js           ← [FUTURE] Authentication
+│   ├── utils/
+│   │   ├── ui.js             ← Navbars, themes, UI helpers
+│   │   └── error-handler.js  ← Error handling
+│   └── pages/
+│       └── subject.js        ← Subject page logic
+│
+├── data/                      ← [CREATE] for question data
+│   ├── physics/
+│   │   ├── questions.json
+│   │   └── essays.json
+│   ├── chemistry/
+│   └── ...
+│
+└── pages/                     ← [FUTURE] for multi-year structure
+    ├── year1/
+    │   ├── physics.html
+    │   └── chemistry.html
+    └── year2/
+```
+
+---
+
+## What to Create Before Scaling
+
+### 1. Subject Configuration File (Recommended)
+Create `src/js/config/subjects.js`:
+```javascript
+const SUBJECTS = {
+    physics: {
+        id: 'physics',
+        name: 'الفيزياء',
+        nameEn: 'Physics',
+        icon: 'fa-atom',
+        color: '#667eea',
+        year: 1,
+        college: 'pharmacy'
+    },
+    // Add more subjects...
+};
+```
+
+### 2. Year/College Structure (When Needed)
+When adding multiple years:
+- Create folder per year: `pages/year1/`, `pages/year2/`
+- Update navbar to include year selector
+- Update subject config with year property
+
+### 3. User Authentication (When Needed)
+- Add Firebase Authentication
+- Create `src/js/features/auth.js`
+- Update user-profile.js to sync with Firebase user
+
+---
+
+## Best Practices Checklist
+
+### Before Adding Features
+- [ ] Check if similar pattern exists in codebase
+- [ ] Use error-handler.js utilities (showError, showSuccess, retryAsync)
+- [ ] Follow existing naming conventions
+
+### Before Editing Navbar
+- [ ] Edit in ui.js, not in HTML files
+- [ ] Test on both index.html and subject.html
+- [ ] Test mobile menu
+
+### Before Adding New Pages
+- [ ] Use dynamic navbar system
+- [ ] Include all required CSS/JS files
+- [ ] Test theme switching works
+
+---
+
+## Common Mistakes to Avoid
+
+| ❌ Don't | ✅ Do |
+|----------|-------|
+| Copy navbar HTML into new pages | Use navbar placeholder |
+| Use console.log in production | Use console.error for errors only |
+| Hardcode API keys | Use config files |
+| Silent error handling | Show user-friendly messages |
+| Skip mobile testing | Test responsive design |
+
+---
+
+## Quick Commands
+
+```bash
+# Start local server (if Node.js installed)
+npx serve
+
+# Git workflow
+git add -A
+git commit -m "description"
+git push
 ```

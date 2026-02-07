@@ -1,64 +1,9 @@
-// Dynamic Subject Loader
-// This script handles loading the correct subject content based on URL parameter
-
-const SUBJECT_DATA = {
-    'physics2': {
-        title: 'فيزياء 2',
-        subtitle: 'Modern Physics & Electricity',
-        icon: 'fas fa-atom',
-        css: 'src/css/subjects/physics2.css',
-        data: 'src/data/physics2-data.js'
-    },
-    'it': {
-        title: 'IT',
-        subtitle: 'Information Technology',
-        icon: 'fas fa-laptop-code',
-        css: 'src/css/subjects/it.css',
-        data: 'src/data/it-data.js'
-    },
-    'electronics': {
-        title: 'إلكترونيات',
-        subtitle: 'Electronics & Circuits',
-        icon: 'fas fa-microchip',
-        css: 'src/css/subjects/electronics.css',
-        data: 'src/data/electronics-data.js'
-    },
-    'math0': {
-        title: 'رياضيات 0',
-        subtitle: 'Calculus & Algebra',
-        icon: 'fas fa-calculator',
-        css: 'src/css/subjects/math0.css',
-        data: 'src/data/math0-data.js'
-    },
-    'math1': {
-        title: 'رياضيات 1',
-        subtitle: 'Advanced Calculus',
-        icon: 'fas fa-square-root-alt',
-        css: 'src/css/subjects/math1.css',
-        data: 'src/data/math1-data.js'
-    },
-    'history': {
-        title: 'تاريخ الحوسبة',
-        subtitle: 'History of Computing',
-        icon: 'fas fa-history',
-        css: 'src/css/subjects/history.css',
-        data: 'src/data/history-data.js'
-    },
-    'law': {
-        title: 'قوانين الحاسب',
-        subtitle: 'Computer Law & Ethics',
-        icon: 'fas fa-gavel',
-        css: 'src/css/subjects/law.css',
-        data: 'src/data/law-data.js'
-    },
-    'english': {
-        title: 'اللغة الإنجليزية',
-        subtitle: 'English for Computing',
-        icon: 'fas fa-language',
-        css: 'src/css/subjects/english.css',
-        data: 'src/data/english-data.js'
-    }
-};
+/**
+ * Dynamic Subject Loader
+ * This script handles loading the correct subject content based on URL parameter
+ * 
+ * REQUIRES: src/js/config/subjects.js must be loaded BEFORE this file
+ */
 
 // Current subject info (accessible globally)
 let currentSubjectId = '';
@@ -70,15 +15,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const subjectId = urlParams.get('id');
 
-    // 2. Validate ID
-    if (!subjectId || !SUBJECT_DATA[subjectId]) {
+    // 2. Validate ID using centralized config
+    if (!subjectId || !subjectExists(subjectId)) {
         window.location.href = 'index.html';
         return;
     }
 
-    // 3. Store current subject
+    // 3. Get subject from centralized config
     currentSubjectId = subjectId;
-    currentSubjectData = SUBJECT_DATA[subjectId];
+    currentSubjectData = getSubject(subjectId);
 
     // 4. Load CSS first
     loadSubjectCSS(currentSubjectData.css);
@@ -90,6 +35,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSubjectData(subjectId, currentSubjectData);
 });
 
+/**
+ * Load subject-specific CSS
+ * @param {string} cssPath - Path to CSS file
+ */
 function loadSubjectCSS(cssPath) {
     const cssLink = document.getElementById('subject-css');
     if (cssLink && cssPath) {
@@ -97,6 +46,11 @@ function loadSubjectCSS(cssPath) {
     }
 }
 
+/**
+ * Update page content with subject information
+ * @param {string} id - Subject ID
+ * @param {object} data - Subject data object
+ */
 function updatePageContent(id, data) {
     // Page Title
     document.title = `${data.title} - ليالي الامتحان`;
@@ -141,6 +95,11 @@ function updatePageContent(id, data) {
     }
 }
 
+/**
+ * Load subject data file dynamically
+ * @param {string} subjectId - Subject ID
+ * @param {object} subjectInfo - Subject info object
+ */
 function loadSubjectData(subjectId, subjectInfo) {
     // Create script element for the data file
     const script = document.createElement('script');
@@ -175,6 +134,9 @@ function loadSubjectData(subjectId, subjectInfo) {
     document.body.appendChild(script);
 }
 
+/**
+ * Hide the main page loader
+ */
 function hideLoader() {
     const loader = document.getElementById('main-loader');
     if (loader) {

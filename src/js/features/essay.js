@@ -320,7 +320,7 @@ async function gradeEssayWithGemini(base64Image, mimeType, questionText, modelAn
  */
 async function fetchEssayQuestionsFromFirebase(db, subjectId) {
     if (!db) {
-        console.log('⚠️ Firebase not available');
+        // Firebase not available - silent fail
         return [];
     }
 
@@ -329,7 +329,7 @@ async function fetchEssayQuestionsFromFirebase(db, subjectId) {
         const snapshot = await db.collection(collectionName).get();
 
         if (snapshot.empty) {
-            console.log(`ℹ️ No essay questions found in ${collectionName}`);
+            // No essay questions found
             return [];
         }
 
@@ -346,7 +346,7 @@ async function fetchEssayQuestionsFromFirebase(db, subjectId) {
             });
         });
 
-        console.log(`✅ Loaded ${questions.length} essay questions for ${subjectId}`);
+        // Questions loaded successfully
         return questions;
     } catch (error) {
         console.error('❌ Error loading essay questions:', error);
@@ -369,7 +369,7 @@ function initEssayChallenge(subjectId, questions) {
     const hasSession = checkForExistingSession();
 
     if (hasSession) {
-        console.log('📂 Resuming existing essay challenge session');
+        // Resuming existing session
         resumeEssayChallenge();
     } else if (questions && questions.length > 0) {
         essayChallengeState.questions = shuffleEssayArray(questions).slice(0, ESSAY_CHALLENGE_CONFIG.QUESTIONS_COUNT);
@@ -577,7 +577,7 @@ async function handleEssayImageUpload(event, index, input) {
         // Save session
         saveSessionToStorage();
 
-        console.log(`✅ Image uploaded for question ${index + 1}`);
+        // Image uploaded successfully
     } catch (error) {
         console.error('Error uploading image:', error);
         alert('خطأ في رفع الصورة. حاول مرة أخرى.');

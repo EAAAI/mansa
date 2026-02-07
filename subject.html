@@ -5,7 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">ليالي الامتحان</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Preconnect to CDNs for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    
+    <!-- Non-critical CSS (async via media trick) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/pages/home.css">
     <!-- Subject-specific CSS loaded dynamically -->
@@ -33,59 +43,16 @@
 </head>
 
 <body>
+    <!-- Skip to main content link for keyboard accessibility -->
+    <a href="#hero" class="skip-link" tabindex="0">تخطي إلى المحتوى الرئيسي</a>
+
     <!-- Loading Overlay - covers everything until content is ready -->
-    <div id="main-loader">
+    <div id="main-loader" role="status" aria-label="جاري التحميل">
         <div class="spinner"></div>
     </div>
 
-    <nav class="subject-navbar">
-        <div class="nav-container">
-            <a href="index.html" class="nav-brand">
-                <i class="fas fa-arrow-right"></i>
-                <span>العودة للرئيسية</span>
-            </a>
-            <div class="nav-subject-title" id="nav-subject-title">
-                <!-- Icon and Title will be injected here -->
-            </div>
-            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="nav-links">
-                <a href="#hero" class="nav-link active" data-tooltip="الرئيسية">
-                    <i class="fas fa-home"></i>
-                    <span>الرئيسية</span>
-                </a>
-                <a href="#summaries" class="nav-link" data-tooltip="الملخصات">
-                    <i class="fas fa-file-alt"></i>
-                    <span>الملخصات</span>
-                </a>
-                <a href="#bank" class="nav-link" data-tooltip="الأسئلة الاختيارية">
-                    <i class="fas fa-book-open"></i>
-                    <span>الاختياري</span>
-                </a>
-                <a href="#challenge" class="nav-link" data-tooltip="التحدي الاختياري">
-                    <i class="fas fa-bolt"></i>
-                    <span>تحدي الاختياري</span>
-                </a>
-                <a href="#essay-bank" class="nav-link" data-tooltip="الأسئلة المقالية">
-                    <i class="fas fa-pen-fancy"></i>
-                    <span>المقالي</span>
-                </a>
-                <a href="#essay-challenge" class="nav-link" data-tooltip="تحدي المقالي">
-                    <i class="fas fa-brain"></i>
-                    <span>تحدي المقالي</span>
-                </a>
-                <a href="#leaderboard" class="nav-link" data-tooltip="المتصدرين">
-                    <i class="fas fa-trophy"></i>
-                    <span>المتصدرين</span>
-                </a>
-                <a href="#ask-ai" class="nav-link" data-tooltip="اسأل الذكاء">
-                    <i class="fas fa-robot"></i>
-                    <span>اسأل الذكاء</span>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <!-- Dynamic Subject Navbar - injected by ui.js -->
+    <nav id="subject-navbar-container" class="subject-navbar"></nav>
 
     <section id="hero" class="subject-hero-section">
         <div class="hero-background">
@@ -416,6 +383,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <!-- JS Modules (in dependency order) -->
+    <script src="src/js/utils/error-handler.js"></script>
     <script src="src/js/config/firebase.js"></script>
     <script src="src/js/features/user-profile.js"></script>
     <script src="src/js/features/ai-chat.js"></script>
@@ -424,6 +392,9 @@
     
     <!-- Subject Core (shared challenge/bank/leaderboard logic) -->
     <script src="src/js/features/challenge.js"></script>
+    
+    <!-- Subject Configuration (centralized subject definitions) -->
+    <script src="src/js/config/subjects.js"></script>
     
     <!-- Dynamic Subject Loader (loads subject-specific data) -->
     <script src="src/js/pages/subject.js"></script>

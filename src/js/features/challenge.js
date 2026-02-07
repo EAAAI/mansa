@@ -291,7 +291,10 @@ function restartChallenge() {
 // ===================== LEADERBOARD =====================
 
 async function saveToLeaderboard(score, time) {
-    if (typeof dbLeaderboard === 'undefined' || !dbLeaderboard) return;
+    if (typeof dbLeaderboard === 'undefined' || !dbLeaderboard) {
+        console.warn('Leaderboard database not available');
+        return;
+    }
     
     try {
         await dbLeaderboard.collection(`leaderboard_${SUBJECT_ID}`).add({
@@ -301,9 +304,19 @@ async function saveToLeaderboard(score, time) {
             date: new Date().toISOString(),
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
+        
+        // Show success notification
+        if (typeof showSuccess === 'function') {
+            showSuccess('تم حفظ نتيجتك في لوحة المتصدرين! 🎉');
+        }
+        
         loadLeaderboard();
     } catch (error) {
-        // Save failed silently
+        console.error('Error saving to leaderboard:', error);
+        // Show error notification
+        if (typeof showError === 'function') {
+            showError('لم نتمكن من حفظ نتيجتك. تحقق من اتصالك.');
+        }
     }
 }
 
@@ -622,19 +635,31 @@ async function askSubjectAI() {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
     try {
-        const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `أنت مساعد تعليمي متخصص في ${SUBJECT_NAME}. أجب على السؤال التالي بشكل واضح ومفصل:\n\n${question}`
+        // Use retry logic for API calls
+        const makeRequest = async () => {
+            const response = await fetch(`${GEMINI_CONFIG.apiUrl}?key=${GEMINI_CONFIG.apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `أنت مساعد تعليمي متخصص في ${SUBJECT_NAME}. أجب على السؤال التالي بشكل واضح ومفصل:\n\n${question}`
+                        }]
                     }]
-                }]
-            })
-        });
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+            
+            return response.json();
+        };
+        
+        const data = await (typeof retryAsync === 'function' 
+            ? retryAsync(makeRequest, 2, 1000) 
+            : makeRequest());
 
-        const data = await response.json();
         const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'عذراً، لم أتمكن من الإجابة.';
 
         loadingMessage.remove();

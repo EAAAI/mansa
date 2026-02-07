@@ -5,12 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ليالي الامتحان - كلية الحاسبات والمعلومات</title>
+    
+    <!-- Preconnect to CDNs for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    
+    <!-- Critical CSS -->
     <link rel="stylesheet" href="src/css/pages/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Non-critical CSS (async via media trick) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
     <link rel="stylesheet" href="src/css/themes/ramadan.css">
     <link rel="stylesheet" href="src/css/components/shared.css">
 
+    <!-- Firebase SDK (needed early for auth) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
@@ -79,59 +92,17 @@
         <span id="notificationsText"></span>
     </div>
     
-    <div id="topScorerAlert" class="top-scorer-alert" style="display:none;">
+    <!-- Skip to main content link for keyboard accessibility -->
+    <a href="#home" class="skip-link" tabindex="0">تخطي إلى المحتوى الرئيسي</a>
+
+    <div id="topScorerAlert" class="top-scorer-alert" style="display:none;" role="alert">
         <span id="topScorerText"></span>
         <button onclick="document.getElementById('topScorerAlert').style.display='none'" class="close-alert-btn"
-            title="إغلاق الإعلام">&times;</button>
+            title="إغلاق الإعلام" aria-label="إغلاق الإعلام">&times;</button>
     </div>
 
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-moon"></i>
-                <span>ليالي الامتحان</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#home" class="active">الرئيسية</a></li>
-                <li><a href="#subjects">📚المواد</a></li>
-                <li><a href="#challenge">⚡ وضع التحدي</a></li>
-                <li><a href="#ask-ai">🤖 اسأل ذكي</a></li>
-                <li><a href="#leaderboard">🏆 المتصدرين</a></li>
-
-                <li class="nav-icon-item">
-                    <a href="#" onclick="toggleThemeMenu(); return false;" class="nav-icon-link" title="تغيير الثيم">
-                        <i class="fas fa-palette"></i>
-                    </a>
-                    <div class="theme-menu" id="themeMenu">
-                        <div class="theme-menu-title">🎨 اختر الثيم</div>
-                        <button class="theme-option active" onclick="setTheme('default')" data-theme="default">
-                            <i class="fas fa-moon"></i> الوضع الليلي
-                        </button>
-                        <button class="theme-option" onclick="setTheme('space')" data-theme="space">
-                            <i class="fas fa-rocket"></i> الفضائي 🚀
-                        </button>
-                        <button class="theme-option" onclick="setTheme('ocean')" data-theme="ocean">
-                            <i class="fas fa-water"></i> المحيط 🌊
-                        </button>
-                        <button class="theme-option" onclick="setTheme('sunset')" data-theme="sunset">
-                            <i class="fas fa-sun"></i> الغروب 🌅
-                        </button>
-                        <button class="theme-option" onclick="setTheme('pyramids')" data-theme="pyramids">
-                            <i class="fas fa-mountain"></i> الأهرامات 🏛️
-                        </button>
-                        <button class="theme-option" onclick="setTheme('winter')" data-theme="winter">
-                            <i class="fas fa-snowflake"></i> الشتاء ❄️
-                        </button>
-                    </div>
-                </li>
-                <li class="nav-icon-item">
-                    <a href="#" onclick="openUserProfile(); return false;" class="nav-icon-link" title="حسابي">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <!-- Dynamic Navbar - injected by ui.js -->
+    <nav id="navbar-container" class="navbar main-navbar"></nav>
 
 
 
@@ -741,6 +712,7 @@
     </footer>
 
     <!-- JS Modules (in dependency order) -->
+    <script src="src/js/utils/error-handler.js"></script>
     <script src="src/js/config/firebase.js"></script>
     <script src="src/js/features/user-profile.js"></script>
     <script src="src/js/features/ai-chat.js"></script>

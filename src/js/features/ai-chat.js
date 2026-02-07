@@ -156,25 +156,34 @@ ${userName ? `اسم الطالب الذي تتحدث معه: ${userName}` : ''}
         ...chatHistory.slice(-10),
     ];
 
-    const response = await fetch(API_CONFIG.apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${API_CONFIG.apiKey}`
-        },
-        body: JSON.stringify({
-            model: API_CONFIG.model,
-            messages: messages,
-            max_tokens: 1024,
-            temperature: 0.7
-        })
-    });
+    // Use retry logic for API calls
+    const makeRequest = async () => {
+        const response = await fetch(API_CONFIG.apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_CONFIG.apiKey}`
+            },
+            body: JSON.stringify({
+                model: API_CONFIG.model,
+                messages: messages,
+                max_tokens: 1024,
+                temperature: 0.7
+            })
+        });
 
-    if (!response.ok) {
-        throw new Error('API Error');
-    }
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+        }
 
-    const data = await response.json();
+        return response.json();
+    };
+
+    // Retry up to 2 times with exponential backoff
+    const data = await (typeof retryAsync === 'function' 
+        ? retryAsync(makeRequest, 2, 1000) 
+        : makeRequest());
+    
     return data.choices[0]?.message?.content || 'عذراً، مش قادر أرد دلوقتي.';
 }
 

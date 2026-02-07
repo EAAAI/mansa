@@ -139,7 +139,8 @@ async function saveUserProfile() {
                 delete profileToSync.theme;
                 await dbLeaderboard.collection('users').doc(userProfile.id).set(profileToSync, { merge: true });
             } catch (error) {
-                // Sync failed - continue silently
+                console.error('Profile sync error:', error);
+                // Continue - local save already succeeded
             }
         }
 
@@ -205,7 +206,8 @@ async function updateUserStats(score) {
             };
             await dbLeaderboard.collection('users').doc(userProfile.id).set(statsToSync, { merge: true });
         } catch (error) {
-            // Stats sync failed - continue silently
+            console.error('Stats sync error:', error);
+            // Continue - local save already succeeded
         }
     }
 }
