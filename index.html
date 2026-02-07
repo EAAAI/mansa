@@ -959,21 +959,32 @@
         </div>
     </div>
 
+    <!-- Firebase Configuration -->
+    <script src="src/js/config/firebase.js"></script>
+    
+    <!-- Utility Modules -->
+    <script src="src/js/utils/error-handler.js"></script>
+    <script src="src/js/features/user-profile.js"></script>
+    <script src="src/js/features/ai-chat.js"></script>
+    
+    <!-- ES6 Module Entry Point -->
+    <script type="module" src="src/js/main.js"></script>
+
+    <!-- Video Modal -->
+    <div id="statsVideoModal"
+        style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
+        <video controls autoplay style="width:100vw;height:100vh;object-fit:cover;outline:none;">
+            <source src="https://videos.pexels.com/video-files/8561926/8561926-hd_1920_1080_25fps.mp4" type="video/mp4">
+            المتصفح لا يدعم تشغيل الفيديو.
+        </video>
+    </div>
+    <script>
+        document.getElementById('showStatsVideoBtn').onclick = function (e) {
+            e.preventDefault();
+            document.getElementById('statsVideoModal').style.display = 'flex';
+        };
+    </script>
 
 </body>
-</body>
-<div id="statsVideoModal"
-    style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
-    <video controls autoplay style="width:100vw;height:100vh;object-fit:cover;outline:none;">
-        <source src="https://videos.pexels.com/video-files/8561926/8561926-hd_1920_1080_25fps.mp4" type="video/mp4">
-        المتصفح لا يدعم تشغيل الفيديو.
-    </video>
-</div>
-<script>
-    document.getElementById('showStatsVideoBtn').onclick = function (e) {
-        e.preventDefault();
-        document.getElementById('statsVideoModal').style.display = 'flex';
-    };
-</script>
 
 </html>
