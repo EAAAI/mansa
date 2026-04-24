@@ -4,9 +4,7 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { name, email, message, type } = req.body;
-        
-        // جلب البيانات من البيئة
+        const body = req.body;
         const token = process.env.TELEGRAM_BOT_TOKEN;
         const chatId = process.env.TELEGRAM_CHAT_ID;
 
@@ -15,16 +13,52 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Internal configuration error' });
         }
 
-        const text = `🚀 رسالة جديدة من: ${name}\n📧 الإيميل: ${email}\n📂 النوع: ${type || 'غير محدد'}\n📝 الرسالة: ${message}`;
+        // تحديد العنوان حسب نوع الفورم
+        const formType = body.formType || 'رسالة';
+        let header = '📩 رسالة جديدة';
+
+        if (formType === 'بلاغ') header = '🚨 بلاغ عن خطأ جديد';
+        else if (formType === 'اقتراح') header = '💡 اقتراح فكرة جديد';
+        else if (formType === 'انضمام') header = '🚀 طلب انضمام جديد';
+
+        // تسمية المفاتيح بالعربي
+        const labels = {
+            name: '👤 الاسم',
+            email: '📧 الإيميل',
+            phone: '📱 الهاتف',
+            level: '🎓 المستوى',
+            contribution: '💬 المساهمة',
+            suggestType: '🏷️ نوع الاقتراح',
+            text: '📝 التفاصيل',
+            question: '❓ السؤال/الجزء الغلط',
+            error: '❌ وصف الخطأ',
+            message: '📝 الرسالة',
+        };
+
+        // بناء الرسالة من كل البيانات
+        let lines = [`*${header}*`, '─────────────'];
+
+        for (const [key, value] of Object.entries(body)) {
+            if (key === 'formType') continue; // نتخطى الـ formType
+            if (!value) continue; // نتخطى القيم الفارغة
+
+            const label = labels[key] || `📌 ${key}`;
+            lines.push(`${label}: ${value}`);
+        }
+
+        lines.push('─────────────');
+        lines.push(`🕐 ${new Date().toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}`);
+
+        const text = lines.join('\n');
 
         const telegramUrl = `https://api.telegram.org/bot${token}/sendMessage`;
-        
         const response = await fetch(telegramUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 chat_id: chatId,
                 text: text,
+                parse_mode: 'Markdown',
             }),
         });
 
