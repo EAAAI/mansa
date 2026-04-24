@@ -276,6 +276,8 @@
             </div>
             <ul class="nav-links">
                 <li><a href="index.html"><i class="fas fa-home"></i> الرئيسية</a></li>
+                <li><a href="suggest.html"><i class="fas fa-lightbulb"></i> اقتراح</a></li>
+                <li><a href="join-us.html"><i class="fas fa-user-plus"></i> انضم إلينا</a></li>
             </ul>
         </div>
     </nav>
@@ -356,6 +358,88 @@
         </div>
     </section>
 
+    <!-- Unified Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>ليالي الامتحان</span>
+            </div>
+            <div class="footer-links">
+                <a href="index.html"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="suggest.html"><i class="fas fa-lightbulb"></i> اقتراحات</a>
+                <a href="join-us.html"><i class="fas fa-user-plus"></i> انضم إلينا</a>
+            </div>
+            <p class="footer-copy">
+                © 2025 ليالي الامتحان — EAAAI
+                <br>
+                <span>صُنع بـ ❤️ لطلاب كلية الحاسبات والمعلومات</span>
+            </p>
+        </div>
+    </footer>
+    
+    <style>
+    .nav-links a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s;
+        padding: 6px 4px;
+    }
+    .nav-links a:hover { color: #00d9ff; }
+    .nav-links a.active { color: #00d9ff; }
+
+    .site-footer {
+        background: rgba(0,0,0,0.3);
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding: 40px 20px 20px;
+        text-align: center;
+    }
+    .footer-container {
+        max-width: 800px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+    .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #00d9ff;
+        font-family: 'Cairo', sans-serif;
+    }
+    .footer-links {
+        display: flex;
+        gap: 25px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .footer-links a {
+        color: rgba(255,255,255,0.45);
+        text-decoration: none;
+        font-size: 0.88rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.3s;
+        font-family: 'Cairo', sans-serif;
+    }
+    .footer-links a:hover { color: #00d9ff; }
+    .footer-copy {
+        color: rgba(255,255,255,0.25);
+        font-size: 0.78rem;
+        line-height: 1.8;
+        font-family: 'Cairo', sans-serif;
+    }
+    </style>
+
     <script>
         function handleSubmit(event) {
             event.preventDefault();
@@ -376,6 +460,16 @@
             document.getElementById('formSection').style.display = 'none';
             document.getElementById('successMessage').classList.add('show');
         }
+
+        // Mark current page as active in navbar
+        (function() {
+            const current = window.location.pathname.split('/').pop() || 'index.html';
+            document.querySelectorAll('.nav-links a').forEach(a => {
+                if (a.getAttribute('href') === current) {
+                    a.classList.add('active');
+                }
+            });
+        })();
     </script>
 </body>
 

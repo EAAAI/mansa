@@ -1,854 +1,204 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
+<html lang="ar" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ليالي الامتحان - كلية الحاسبات والمعلومات</title>
-    
-    <!-- Preconnect to CDNs for faster loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://www.gstatic.com">
-    
-    <!-- Critical CSS -->
-    <link rel="stylesheet" href="src/css/pages/home.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+    <style type="text/tailwindcss">
+        @custom-variant dark (&:where(.dark, .dark *));
+    </style>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Non-critical CSS (async via media trick) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    
-    <link rel="stylesheet" href="src/css/themes/ramadan.css">
-    <link rel="stylesheet" href="src/css/components/shared.css">
-
-    <!-- Firebase SDK (needed early for auth) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
-    <!-- Ramadan Decorations -->
-    <div class="ramadan-decorations">
-        <!-- Hanging Lantern (Fanous) -->
-        <div class="lantern-container">
-            <div class="lantern-rope"></div>
-            <div class="fanous">
-                <div class="fanous-ring"></div>
-                <div class="fanous-top"></div>
-                <div class="fanous-glob">
-                    <div class="fanous-light"></div>
-                    <i class="fas fa-moon fanous-icon"></i>
-                </div>
-                <div class="fanous-base"></div>
-                <div class="fanous-bottom-ring"></div>
-            </div>
-        </div>
-
-        <!-- Decoration String (Zeina) -->
-        <div class="decoration-string">
-            <div class="ornament star"><i class="fas fa-star"></i></div>
-            <div class="ornament moon"><i class="fas fa-moon"></i></div>
-            <div class="ornament lamp"><i class="fas fa-lightbulb"></i></div>
-            <div class="ornament star"><i class="fas fa-star"></i></div>
-            <div class="ornament moon"><i class="fas fa-moon"></i></div>
-        </div>
-    </div>
-    <!-- Styles moved to css/components.css -->
+    <style>
+        * { font-family: 'Cairo', sans-serif; }
+        html, body { margin: 0; padding: 0; min-height: 100vh; }
+        html.dark body { background: #111827; }
+        html:not(.dark) body { background: #fff; }
+        /* Popup styles */
+        .popup-overlay { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:10000;justify-content:center;align-items:center;backdrop-filter:blur(6px) }
+        .popup-overlay.active { display:flex }
+        .popup-box { background:rgba(26,26,46,0.97);border:1px solid rgba(99,102,241,0.3);border-radius:24px;padding:35px 30px;max-width:520px;width:92%;max-height:88vh;overflow-y:auto;position:relative;box-shadow:0 25px 80px rgba(0,0,0,0.5);animation:popupSlideUp .35s ease }
+        @keyframes popupSlideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .popup-close { position:absolute;top:12px;left:12px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.8rem;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center }
+        .popup-close:hover { color:#ff6b6b }
+        .popup-tabs { display:flex;gap:8px;margin-bottom:25px;background:rgba(0,0,0,0.2);border-radius:12px;padding:5px }
+        .popup-tab { flex:1;padding:10px;border:none;border-radius:8px;background:transparent;color:rgba(255,255,255,0.5);font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px }
+        .popup-tab.active { background:rgba(255,255,255,0.1);color:white }
+        .popup-header { text-align:center;margin-bottom:25px }
+        .popup-icon { width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:1.8rem;color:white }
+        .popup-header h2 { font-size:1.5rem;background:linear-gradient(90deg,#6366f1,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px }
+        .popup-header p { color:rgba(255,255,255,0.55);font-size:.9rem }
+        .popup-form { display:flex;flex-direction:column;gap:16px }
+        .popup-field label { display:flex;align-items:center;gap:6px;margin-bottom:6px;font-weight:600;color:#818cf8;font-size:.88rem }
+        .popup-field input,.popup-field textarea,.popup-field select { width:100%;padding:12px 15px;border:2px solid rgba(99,102,241,0.2);border-radius:10px;background:rgba(0,0,0,0.3);color:#fff;font-family:'Cairo',sans-serif;font-size:.9rem;resize:vertical }
+        .popup-field input:focus,.popup-field textarea:focus,.popup-field select:focus { outline:none;border-color:#6366f1;background:rgba(99,102,241,0.08) }
+        .popup-field select option { background:#1a1a2e }
+        .popup-field input::placeholder,.popup-field textarea::placeholder { color:rgba(255,255,255,0.3) }
+        .popup-submit { width:100%;padding:14px;background:linear-gradient(135deg,#6366f1,#4f46e5);border:none;border-radius:10px;color:white;font-family:'Cairo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px }
+        .popup-submit:hover { transform:translateY(-2px);box-shadow:0 8px 25px rgba(99,102,241,0.3) }
+        .popup-success { display:none;text-align:center;padding:20px 0 }
+        .popup-success.show { display:block }
+        .popup-success-icon { width:60px;height:60px;background:linear-gradient(135deg,#34d399,#059669);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.6rem;color:white }
+        .popup-success h3 { color:#34d399;margin-bottom:8px }
+        .popup-success p { color:rgba(255,255,255,0.55);font-size:.9rem }
+    </style>
 </head>
-
 <body>
-
-    <div class="space-planet planet-1"></div>
-    <div class="space-planet planet-2"></div>
-    <div class="space-planet planet-3"></div>
-
-    <div class="pyramid-3d pyramid-1"></div>
-    <div class="pyramid-3d pyramid-2"></div>
-    <div class="pyramid-3d pyramid-3"></div>
-
-    <button class="scroll-rocket" id="scrollRocket" onclick="toggleScrollDirection()" title="اضغط للتنقل">
-        <i class="fas fa-rocket"></i>
-    </button>
-
-
-
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❄</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❄</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❄</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-    <div class="snowflake">❄</div>
-    <div class="snowflake">❅</div>
-    <div class="snowflake">❆</div>
-
-    <div id="notificationsBar" class="notifications-bar" style="display:none;">
-        <i class="fas fa-bell" style="margin-left: 8px;"></i>
-        <span id="notificationsText"></span>
-    </div>
-    
-    <!-- Skip to main content link for keyboard accessibility -->
-    <a href="#home" class="skip-link" tabindex="0">تخطي إلى المحتوى الرئيسي</a>
-
-    <div id="topScorerAlert" class="top-scorer-alert" style="display:none;" role="alert">
-        <span id="topScorerText"></span>
-        <button onclick="document.getElementById('topScorerAlert').style.display='none'" class="close-alert-btn"
-            title="إغلاق الإعلام" aria-label="إغلاق الإعلام">&times;</button>
-    </div>
-
-    <!-- Dynamic Navbar - injected by ui.js -->
-    <nav id="navbar-container" class="navbar main-navbar"></nav>
-
-
-
-    <div class="user-profile-modal" id="userProfileModal">
-        <div class="profile-content">
-            <div class="profile-header">
-                <div class="profile-avatar">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
-                <h2 id="profileDisplayName">مستخدم جديد</h2>
-                <div class="profile-id">ID: <span id="profileUserId">-</span></div>
+<div class="bg-white dark:bg-gray-900 min-h-screen">
+  <header class="absolute inset-x-0 top-0 z-50">
+    <nav aria-label="Global" class="flex items-center justify-between p-6 lg:px-8">
+      <div class="flex lg:flex-1">
+        <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+          <span class="text-2xl">🌙</span>
+          <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">ليالي الامتحان</span>
+        </a>
+      </div>
+      <div class="flex lg:hidden">
+        <button type="button" command="show-modal" commandfor="mobile-menu" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200">
+          <span class="sr-only">فتح القائمة</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="size-6"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="hidden lg:flex lg:gap-x-12">
+        <a href="index.html" class="text-sm/6 font-semibold text-gray-900 dark:text-white">الرئيسية</a>
+        <a href="#" onclick="openSuggestPopup(); return false;" class="text-sm/6 font-semibold text-gray-900 dark:text-white">اقتراح</a>
+        <a href="#" onclick="openJoinPopup(); return false;" class="text-sm/6 font-semibold text-gray-900 dark:text-white">انضم إلينا</a>
+      </div>
+      <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+        <button id="navThemeBtn" onclick="toggleTheme()" class="text-xl cursor-pointer bg-transparent border-none" title="تبديل الوضع">☀️</button>
+      </div>
+    </nav>
+    <el-dialog>
+      <dialog id="mobile-menu" class="backdrop:bg-transparent lg:hidden">
+        <div tabindex="0" class="fixed inset-0 focus:outline-none">
+          <el-dialog-panel class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
+            <div class="flex items-center justify-between">
+              <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+                <span class="text-2xl">🌙</span>
+                <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">ليالي الامتحان</span>
+              </a>
+              <button type="button" command="close" commandfor="mobile-menu" class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-200">
+                <span class="sr-only">إغلاق القائمة</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" class="size-6"><path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
             </div>
-
-            <div class="profile-form">
-                <input type="text" id="profileNameInput" placeholder="أدخل اسمك هنا..." maxlength="30">
+            <div class="mt-6 flow-root">
+              <div class="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
+                <div class="space-y-2 py-6">
+                  <a href="index.html" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">الرئيسية</a>
+                  <a href="#" onclick="openSuggestPopup(); document.getElementById('mobile-menu').close(); return false;" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">اقتراح</a>
+                  <a href="#" onclick="openJoinPopup(); document.getElementById('mobile-menu').close(); return false;" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">انضم إلينا</a>
+                </div>
+                <div class="py-6">
+                  <button onclick="toggleTheme(); document.getElementById('mobile-menu').close();" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5 w-full text-right bg-transparent border-none cursor-pointer">تبديل الوضع 🌓</button>
+                </div>
+              </div>
             </div>
-
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="statTotalChallenges">0</div>
-                    <div class="stat-label">تحديات</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statBestScore">0</div>
-                    <div class="stat-label">أفضل نتيجة</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statTotalCorrect">0</div>
-                    <div class="stat-label">إجابات صحيحة</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="statVisits">0</div>
-                    <div class="stat-label">زيارات</div>
-                </div>
-            </div>
-
-            <div class="profile-buttons">
-                <button class="profile-btn save-btn" onclick="saveUserProfile()">
-                    <i class="fas fa-save"></i> حفظ ومزامنة
-                </button>
-                <button class="profile-btn restore-btn" onclick="restoreProfile()">
-                    <i class="fas fa-download"></i> استرجاع
-                </button>
-                <button class="profile-btn close-btn" onclick="closeUserProfile()">
-                    <i class="fas fa-times"></i> إغلاق
-                </button>
-            </div>
+          </el-dialog-panel>
         </div>
-    </div>
+      </dialog>
+    </el-dialog>
+  </header>
 
-    <div class="chat-bot-btn" id="chatBotBtn" onclick="toggleChatBot()">
-        <i class="fas fa-robot"></i>
-        <span class="bot-tooltip">ذكي - EAAAI</span>
+  <div class="relative isolate px-6 pt-14 lg:px-8">
+    <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+      <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75"></div>
     </div>
+    <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+      <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+        <div class="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 dark:text-gray-400 dark:ring-white/10 dark:hover:ring-white/20">
+          🚀 قريباً... محتوى ومميزات جديدة <a href="#" onclick="openJoinPopup(); return false;" class="font-semibold text-indigo-600 dark:text-indigo-400"><span aria-hidden="true" class="absolute inset-0"></span>انضم إلينا <span aria-hidden="true">&larr;</span></a>
+        </div>
+      </div>
+      <div class="text-center">
+        <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl dark:text-white">🌙 ليالي الامتحان</h1>
+        <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8 dark:text-gray-400">منصة تعليمية لطلاب كلية الحاسبات والمعلومات</p>
+        <p class="mt-3 text-sm text-gray-400 dark:text-gray-500">Designed & Developed by <a href="ibrahim.html" class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Ibrahim</a> · <a href="ahmed.html" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">Ahmed</a> · <span class="text-pink-600 dark:text-pink-400 font-semibold">Claude</span></p>
+        <div class="mt-10 flex items-center justify-center gap-x-6">
+          <a href="#" onclick="openSuggestPopup(); return false;" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400">اقتراح فكرة</a>
+          <a href="#" onclick="openJoinPopup(); return false;" class="text-sm/6 font-semibold text-gray-900 dark:text-white">انضم إلينا <span aria-hidden="true">←</span></a>
+        </div>
+      </div>
+    </div>
+    <div aria-hidden="true" class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+      <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-[calc(50%+3rem)] aspect-1155/678 w-144.5 -translate-x-1/2 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-288.75"></div>
+    </div>
+  </div>
+</div>
 
-    <div class="chat-bot-container" id="chatBotContainer">
-        <div class="chat-header">
-            <div class="chat-header-info">
-                <div class="bot-avatar">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <div class="bot-info">
-                    <h3>ذكي</h3>
-                    <span class="bot-status"><i class="fas fa-circle"></i> متصل</span>
-                </div>
+<!-- SUGGEST POPUP -->
+<div class="popup-overlay" id="suggestPopup">
+    <div class="popup-box">
+        <button class="popup-close" onclick="closeSuggestPopup()">&times;</button>
+        <div class="popup-tabs">
+            <button class="popup-tab active" onclick="switchPopupTab('suggest',this)">💡 اقتراح فكرة</button>
+            <button class="popup-tab" onclick="switchPopupTab('report',this)">⚠️ بلاغ عن خطأ</button>
+        </div>
+        <div id="popupSuggestTab">
+            <div class="popup-header"><div class="popup-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">💡</div><h2>اقتراح فكرة</h2><p>فكرتك ممكن تفرق لآلاف الطلاب</p></div>
+            <div class="popup-form" id="popupSuggestForm">
+                <div class="popup-field"><label>👤 اسمك (اختياري)</label><input type="text" id="popupSuggestName" placeholder="أدخل اسمك..."></div>
+                <div class="popup-field"><label>🏷️ نوع الاقتراح</label><select id="popupSuggestType"><option value="">اختر...</option><option value="feature">فيتشر جديد</option><option value="content">إضافة محتوى</option><option value="design">تحسين التصميم</option><option value="other">أخرى</option></select></div>
+                <div class="popup-field"><label>💬 التفاصيل</label><textarea id="popupSuggestText" placeholder="اكتب اقتراحك بالتفصيل..." rows="4"></textarea></div>
+                <button class="popup-submit" onclick="submitPopupSuggest()">📤 إرسال</button>
             </div>
-            <button class="close-chat" onclick="toggleChatBot()">
-                <i class="fas fa-times"></i>
-            </button>
+            <div class="popup-success" id="popupSuggestSuccess"><div class="popup-success-icon">✓</div><h3>شكراً!</h3><p>هنراجعه ونحاول نطبقه 💪</p><button class="popup-submit" onclick="resetPopupSuggest()" style="width:auto;padding:10px 30px;margin-top:10px">اقتراح تاني</button></div>
         </div>
-        <div class="chat-messages" id="chatMessages">
-
-        </div>
-        <div class="chat-input-container">
-            <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleChatKeyPress(event)">
-            <button class="send-btn" onclick="sendMessage()">
-                <i class="fas fa-paper-plane"></i>
-            </button>
+        <div id="popupReportTab" style="display:none">
+            <div class="popup-header"><div class="popup-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">⚠️</div><h2>بلاغ عن خطأ</h2><p>ساعدنا نوصل للمعلومة الصح</p></div>
+            <div class="popup-form" id="popupReportForm">
+                <div class="popup-field"><label>❓ الجزء الغلط</label><textarea id="popupReportQuestion" placeholder="اكتب نص السؤال أو الجزء اللي فيه خطأ..." rows="3"></textarea></div>
+                <div class="popup-field"><label>❌ وصف الخطأ</label><textarea id="popupReportError" placeholder="وصف الخطأ والإجابة الصح..." rows="3"></textarea></div>
+                <button class="popup-submit" style="background:linear-gradient(135deg,#ef4444,#dc2626)" onclick="submitPopupReport()">🚩 إرسال</button>
+            </div>
+            <div class="popup-success" id="popupReportSuccess"><div class="popup-success-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">✓</div><h3>استلمنا البلاغ!</h3><p>هنراجعه ونصلحه 🙏</p><button class="popup-submit" onclick="resetPopupReport()" style="width:auto;padding:10px 30px;margin-top:10px">بلاغ تاني</button></div>
         </div>
     </div>
+</div>
 
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <div id="welcomeGreeting" style="font-size: 1.3rem; color: #ffc107; margin-bottom: 10px; opacity: 0.9;">
-            </div>
-            <h1>🌙 ليالي الامتحان</h1>
-            <p>منصة تعليمية لطلاب كلية الحاسبات والمعلومات | تم تطويرها بواسطة <a
-                    style="color: #38ef7d; text-decoration: none;">EAAAI</a></p>
-            <div class="hero-buttons">
-                <a href="#subjects" class="btn btn-primary">
-                    <i class="fas fa-book"></i> المواد الدراسية
-                </a>
-                <a href="#challenge" class="btn btn-secondary">
-                    <i class="fas fa-bolt"></i> وضع التحدي
-                </a>
-                <a href="#leaderboard" class="btn btn-secondary">
-                    <i class="fas fa-trophy"></i> المتصدرين
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <section id="subjects" class="section subjects-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-book"></i>
-                اختر المادة
-            </h2>
-
-            <div class="subjects-grid">
-
-                <a href="subject.html?id=physics2" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #667eea, #764ba2);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                            <i class="fas fa-atom"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>فيزياء 2</h3>
-                            <p>Modern Physics & Electricity</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-medium">
-                            <i class="fas fa-star"></i> متوسط
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> 150+ سؤال
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                        <span class="telegram-link"
-                            onclick="event.preventDefault(); window.open('https://t.me/+uyfoXvivpiY3MTRk', '_blank');">
-                            <i class="fab fa-telegram"></i>
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=english" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #f093fb, #f5576c);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                            <i class="fas fa-language"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>لغة إنجليزية</h3>
-                            <p>English Language</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-medium">
-                            <i class="fas fa-star"></i> متوسط
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> 80+ سؤال
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=it" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #4facfe, #00f2fe);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-                            <i class="fas fa-laptop-code"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>IT</h3>
-                            <p>Information Technology</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-hard">
-                            <i class="fas fa-star"></i> صعب
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> 120+ سؤال
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=electronics" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #fa709a, #fee140);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
-                            <i class="fas fa-microchip"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>إلكترونيات</h3>
-                            <p>Electronics</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-medium">
-                            <i class="fas fa-star"></i> متوسط
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> 90+ سؤال
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=math1" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #a8edea, #fed6e3);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #11998e, #38ef7d);">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>رياضة 1</h3>
-                            <p>Mathematics 1</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-medium">
-                            <i class="fas fa-star"></i> متوسط
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> قريباً
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=math0" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #d299c2, #fef9d7);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #d299c2, #fef9d7);">
-                            <i class="fas fa-square-root-alt"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>رياضة 0</h3>
-                            <p>Mathematics 0</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-easy">
-                            <i class="fas fa-star"></i> سهل
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> قريباً
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=history" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #8B4513, #DAA520);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #8B4513, #DAA520);">
-                            <i class="fas fa-history"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>تاريخ الحوسبة</h3>
-                            <p>Computing History</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-easy">
-                            <i class="fas fa-star"></i> سهل
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> قريباً
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-                <a href="subject.html?id=law" class="subject-card"
-                    style="--card-gradient: linear-gradient(135deg, #4a69bd, #82ccdd);">
-                    <div class="subject-card-header">
-                        <div class="subject-icon" style="background: linear-gradient(135deg, #4a69bd, #82ccdd);">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="subject-card-info">
-                            <h3>قوانين الحاسب</h3>
-                            <p>Computer Law</p>
-                        </div>
-                    </div>
-                    <div class="subject-stats">
-                        <span class="stat-badge difficulty-medium">
-                            <i class="fas fa-star"></i> متوسط
-                        </span>
-                        <span class="stat-badge questions-count">
-                            <i class="fas fa-question-circle"></i> قريباً
-                        </span>
-                    </div>
-                    <div class="subject-card-footer">
-                        <span class="enter-btn">
-                            <i class="fas fa-arrow-left"></i>
-                            ابدأ الآن
-                        </span>
-                    </div>
-                </a>
-
-
-
-            </div>
-        </div>
-    </section>
-
-    <section id="challenge" class="section challenge-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-bolt"></i>
-                وضع التحدي
-            </h2>
-
-            <div class="challenge-intro" id="challengeIntro">
-                <div class="challenge-info">
-                    <div class="challenge-icon">⚡</div>
-                    <h3>تحدي الـ 15 سؤال</h3>
-                    <p>اختبر سرعتك ودقتك! أجب على 15 سؤال عشوائي في 5 دقائق فقط</p>
-                    <div class="challenge-rules">
-                        <div class="rule">
-                            <i class="fas fa-clock"></i>
-                            <span>5 دقائق</span>
-                        </div>
-                        <div class="rule">
-                            <i class="fas fa-question-circle"></i>
-                            <span>15 سؤال</span>
-                        </div>
-                        <div class="rule">
-                            <i class="fas fa-random"></i>
-                            <span>أسئلة عشوائية</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="challenge-name-input">
-                    <label for="challengeSubject">
-                        <i class="fas fa-book"></i>
-                        اختر المادة
-                    </label>
-                    <select id="challengeSubject" class="challenge-select">
-                        <option value="physics2">فيزياء 2</option>
-                        <option value="physics">فيزياء 1</option>
-                        <option value="english">لغة إنجليزية</option>
-                        <option value="math1">رياضة 1</option>
-                        <option value="math0">رياضة 0</option>
-                        <option value="it">IT</option>
-                        <option value="electronics">إلكترونيات</option>
-                    </select>
-
-                    <label for="challengerName" style="margin-top: 15px;">
-                        <i class="fas fa-user"></i>
-                        أدخل اسمك للبدء
-                    </label>
-                    <input type="text" id="challengerName" placeholder="اسمك هنا..." maxlength="30">
-                    <button class="btn btn-primary start-challenge-btn" onclick="startChallenge()">
-                        <i class="fas fa-play"></i>
-                        ابدأ التحدي
-                    </button>
-                </div>
-            </div>
-
-            <div class="challenge-container" id="challengeContainer" style="display: none;">
-                <div class="challenge-header">
-                    <div class="challenge-timer" id="challengeTimer">
-                        <i class="fas fa-clock"></i>
-                        <span id="timerDisplay">05:00</span>
-                    </div>
-                    <div class="challenge-progress">
-                        <span id="challengeProgress">1/15</span>
-                    </div>
-                </div>
-
-                <div class="challenge-question-container">
-                    <div class="challenge-question" id="challengeQuestion"></div>
-                    <div class="challenge-options" id="challengeOptions"></div>
-                </div>
-
-                <div class="challenge-nav">
-                    <button class="btn btn-secondary" id="prevChallengeBtn" onclick="prevChallengeQuestion()" disabled>
-                        <i class="fas fa-arrow-right"></i>
-                        السابق
-                    </button>
-                    <button class="btn btn-primary" id="nextChallengeBtn" onclick="nextChallengeQuestion()">
-                        التالي
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <button class="btn btn-success" id="submitChallengeBtn" onclick="submitChallenge()"
-                        style="display: none;">
-                        <i class="fas fa-check"></i>
-                        إنهاء التحدي
-                    </button>
-                </div>
-            </div>
-
-            <div class="challenge-result" id="challengeResult" style="display: none;">
-                <div class="result-icon" id="resultIcon">🏆</div>
-                <h3 id="resultTitle">أحسنت!</h3>
-                <div class="result-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="finalScore">0</span>
-                        <span class="stat-label">النتيجة</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="finalTime">00:00</span>
-                        <span class="stat-label">الوقت المستغرق</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="correctAnswers">0/15</span>
-                        <span class="stat-label">الإجابات الصحيحة</span>
-                    </div>
-                </div>
-                <div id="challengeMistakesContainer" style="margin-top:24px; display:none;">
-                    <h4 style="color:#ff6b6b; margin-bottom:10px;">أسئلتك الخاطئة:</h4>
-                    <ul id="challengeMistakesList"
-                        style="list-style:decimal; padding-right:20px; color:#333; font-size:1rem;"></ul>
-                </div>
-                <button class="btn btn-primary" onclick="restartChallenge()">
-                    <i class="fas fa-redo"></i>
-                    حاول مرة أخرى
-                </button>
-            </div>
-
-
-        </div>
-    </section>
-
-
-
-    <section id="ask-ai" class="section ai-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-robot"></i>
-                اسأل الذكاء الاصطناعي
-            </h2>
-
-            <div class="ask-ai-section">
-                <p class="ask-ai-desc">عندك سؤال مش لاقي إجابته؟ اسأل ذكي وهيساعدك!</p>
-                <div class="ask-ai-input-container">
-                    <textarea id="askAiQuestion" placeholder="اكتب سؤالك هنا... مثال: اشرح لي قانون مالوس"></textarea>
-                    <button class="btn btn-primary ask-ai-btn" onclick="askAI()">
-                        <i class="fas fa-paper-plane"></i>
-                        اسأل ذكي
-                    </button>
-                </div>
-                <div class="ask-ai-response" id="askAiResponse" style="display: none;">
-                    <div class="response-header">
-                        <i class="fas fa-robot"></i>
-                        <span>إجابة ذكي</span>
-                    </div>
-                    <div class="response-content" id="askAiResponseContent"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
-    <section id="leaderboard" class="section leaderboard-main-section">
-        <div class="container">
-            <h2 class="section-title">
-                <i class="fas fa-trophy"></i>
-                المتصدرين
-            </h2>
-
-            <div class="leaderboard-info">
-                <p>هنا يظهر أفضل المتحدين في جميع المواد. اختر المادة لعرض المتصدرين فيها!</p>
-            </div>
-
-            <!-- Subject Tabs -->
-            <div class="leaderboard-tabs" id="leaderboardTabs">
-                <button class="lb-tab active" data-subject="all" onclick="switchLeaderboardTab('all')">
-                    <i class="fas fa-star"></i> الإجمالي
-                </button>
-                <button class="lb-tab" data-subject="physics2" onclick="switchLeaderboardTab('physics2')">
-                    <i class="fas fa-atom"></i> فيزياء 2
-                </button>
-                <button class="lb-tab" data-subject="english" onclick="switchLeaderboardTab('english')">
-                    <i class="fas fa-language"></i> إنجليزية
-                </button>
-                <button class="lb-tab" data-subject="it" onclick="switchLeaderboardTab('it')">
-                    <i class="fas fa-laptop-code"></i> IT
-                </button>
-                <button class="lb-tab" data-subject="electronics" onclick="switchLeaderboardTab('electronics')">
-                    <i class="fas fa-microchip"></i> إلكترونيات
-                </button>
-                <button class="lb-tab" data-subject="math1" onclick="switchLeaderboardTab('math1')">
-                    <i class="fas fa-calculator"></i> رياضة 1
-                </button>
-                <button class="lb-tab" data-subject="math0" onclick="switchLeaderboardTab('math0')">
-                    <i class="fas fa-square-root-alt"></i> رياضة 0
-                </button>
-                <button class="lb-tab" data-subject="history" onclick="switchLeaderboardTab('history')">
-                    <i class="fas fa-history"></i> تاريخ
-                </button>
-                <button class="lb-tab" data-subject="law" onclick="switchLeaderboardTab('law')">
-                    <i class="fas fa-gavel"></i> قوانين
-                </button>
-            </div>
-
-            <!-- Leaderboard Content -->
-            <div class="main-leaderboard-container">
-                <div class="current-subject-title" id="currentSubjectTitle">
-                    <i class="fas fa-star"></i> الإجمالي - مجموع النقاط من جميع المواد
-                </div>
-                <table class="main-leaderboard-table">
-                    <thead>
-                        <tr>
-                            <th>المركز</th>
-                            <th>الاسم</th>
-                            <th>النتيجة</th>
-                            <th>الوقت</th>
-                            <th>التاريخ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="mainLeaderboardBody">
-
-                    </tbody>
-                </table>
-                <p class="no-records-main" id="noRecordsMain">لا توجد نتائج بعد. <a href="#challenge">ابدأ التحدي
-                        الآن!</a></p>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="footer-logo">
-                        <i class="fas fa-moon"></i>
-                        <span>ليالي الامتحان</span>
-                    </div>
-                    <p class="footer-desc">منصة تعليمية لطلاب كلية الحاسبات والمعلومات</p>
-                </div>
-
-                <div class="footer-powered">
-                    <h4>تم التطوير بواسطة</h4>
-                    <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank" class="eaaai-brand">
-                        <i class="fas fa-robot"></i>
-                        <span>EAAAI</span>
-                    </a>
-                    <p class="eaaai-desc">شركة متخصصة في:</p>
-                    <ul class="eaaai-services">
-                        <li><i class="fas fa-chart-line"></i> تحليل البيانات</li>
-                        <li><i class="fas fa-brain"></i> الذكاء الاصطناعي</li>
-                        <li><i class="fas fa-plug"></i> دمج المواقع بالـ AI</li>
-                        <li><i class="fas fa-robot"></i> بناء Chatbots ذكية</li>
-                    </ul>
-                </div>
-
-                <div class="footer-contact">
-                    <h4>تواصل معنا</h4>
-                    <a href="https://ibrahim88887.github.io/EAAAI/" target="_blank" class="footer-link">
-                        <i class="fas fa-globe"></i> زيارة موقع EAAAI
-                    </a>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025 ليالي الامتحان - جميع الحقوق محفوظة</p>
-                <p class="made-with">صُنع بـ 💗 بواسطة <a href="https://ibrahim88887.github.io/EAAAI/"
-                        target="_blank">EAAAI</a></p>
-                <div style="margin-top: 12px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <a href="#" id="showStatsVideoBtn"
-                        style="color: #555; font-size: 0.8rem; text-decoration: none; opacity: 0.6; transition: opacity 0.3s;"
-                        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
-                        <i class="fas fa-chart-line"></i> لوحة الإحصائيات
-                    </a>
-                    <a href="admin-questions.html"
-                        style="color: #555; font-size: 0.8rem; text-decoration: none; opacity: 0.6; transition: opacity 0.3s;"
-                        onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
-                        <i class="fas fa-plus-circle"></i> إدارة الأسئلة
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div class="challenge-modal" id="subjectChallengeModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalSubjectTitle">
-                    <i class="fas fa-bolt"></i>
-                    تحدي فيزياء 2
-                </h2>
-                <button class="modal-close" onclick="closeSubjectModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-tabs">
-                    <button class="modal-tab active" onclick="switchModalTab('challenge')">
-                        <i class="fas fa-bolt"></i> التحدي
-                    </button>
-                    <button class="modal-tab" onclick="switchModalTab('questions')">
-                        <i class="fas fa-book-open"></i> بنك الأسئلة
-                    </button>
-                    <button class="modal-tab" onclick="switchModalTab('leaderboard')">
-                        <i class="fas fa-trophy"></i> المتصدرين
-                    </button>
-                </div>
-
-                <div class="tab-content" id="questionsTabContent">
-                    <div id="modalQuestionsContainer">
-                        <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
-                            <p style="margin-top: 15px;">جاري التحميل...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content active" id="challengeTabContent">
-                    <div class="modal-challenge-intro" id="modalChallengeIntro">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">⚡</div>
-                        <h3>تحدي الـ 15 سؤال</h3>
-                        <p>اختبر معلوماتك! أجب على 15 سؤال في 5 دقائق</p>
-                        <div class="modal-name-input">
-                            <input type="text" id="modalChallengerName" placeholder="أدخل اسمك هنا..." maxlength="30">
-                            <button class="modal-start-btn" onclick="startModalChallenge()">
-                                <i class="fas fa-play"></i> ابدأ التحدي
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="modalChallengeContainer" style="display: none;">
-                        <div class="challenge-header"
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
-                            <div class="challenge-timer" id="modalChallengeTimer"
-                                style="color: #38ef7d; font-size: 1.5rem; font-weight: bold;">
-                                <i class="fas fa-clock"></i>
-                                <span id="modalTimerDisplay">05:00</span>
-                            </div>
-                            <div style="color: white; font-size: 1.2rem;">
-                                <span id="modalChallengeProgress">1/15</span>
-                            </div>
-                        </div>
-
-                        <div class="challenge-question-container"
-                            style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; margin-bottom: 20px;">
-                            <div class="challenge-question" id="modalChallengeQuestion"
-                                style="color: white; font-size: 1.2rem; margin-bottom: 20px;"></div>
-                            <div class="challenge-options" id="modalChallengeOptions"></div>
-                        </div>
-
-                        <div class="challenge-nav" style="display: flex; gap: 10px; justify-content: center;">
-                            <button class="btn btn-secondary" id="modalPrevBtn" onclick="modalPrevQuestion()" disabled
-                                style="padding: 12px 25px;">
-                                <i class="fas fa-arrow-right"></i> السابق
-                            </button>
-                            <button class="btn btn-primary" id="modalNextBtn" onclick="modalNextQuestion()"
-                                style="padding: 12px 25px;">
-                                التالي <i class="fas fa-arrow-left"></i>
-                            </button>
-                            <button class="btn btn-success" id="modalSubmitBtn" onclick="submitModalChallenge()"
-                                style="display: none; padding: 12px 25px; background: linear-gradient(135deg, #38ef7d, #11998e);">
-                                <i class="fas fa-check"></i> إنهاء التحدي
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="modalChallengeResult" style="display: none; text-align: center; padding: 30px 0;">
-                        <div id="modalResultIcon" style="font-size: 5rem; margin-bottom: 20px;">🏆</div>
-                        <h3 id="modalResultTitle" style="color: white; font-size: 2rem; margin-bottom: 15px;">أحسنت!
-                        </h3>
-                        <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 25px;">
-                            <div style="text-align: center;">
-                                <div style="font-size: 2.5rem; color: #38ef7d; font-weight: bold;" id="modalFinalScore">
-                                    0/15</div>
-                                <div style="color: rgba(255,255,255,0.7);">النتيجة</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 2.5rem; color: #ffc107; font-weight: bold;" id="modalFinalTime">
-                                    00:00</div>
-                                <div style="color: rgba(255,255,255,0.7);">الوقت</div>
-                            </div>
-                        </div>
-                        <button class="modal-start-btn" onclick="restartModalChallenge()"
-                            style="max-width: 300px; margin: 0 auto;">
-                            <i class="fas fa-redo"></i> حاول مرة أخرى
-                        </button>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="leaderboardTabContent">
-                    <h3 style="color: white; margin-bottom: 20px; text-align: center;">
-                        <i class="fas fa-trophy" style="color: #ffc107;"></i> أفضل المتحدين
-                    </h3>
-                    <div class="modal-leaderboard" id="modalLeaderboardList">
-                        <div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.5);">
-                            <i class="fas fa-spinner fa-spin fa-2x"></i>
-                            <p style="margin-top: 15px;">جاري تحميل المتصدرين...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- JOIN POPUP -->
+<div class="popup-overlay" id="joinPopup">
+    <div class="popup-box">
+        <button class="popup-close" onclick="closeJoinPopup()">&times;</button>
+        <div class="popup-header"><div class="popup-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">👥</div><h2>انضم الينا</h2><p>كن جزءاً من مجتمع ليالي الامتحان</p></div>
+        <form class="popup-form" id="popupJoinForm" onsubmit="submitPopupJoin(event)">
+            <div class="popup-field"><label>👤 الاسم</label><input type="text" id="popupJoinName" placeholder="أدخل اسمك..." required></div>
+            <div class="popup-field"><label>📧 الإيميل</label><input type="email" id="popupJoinEmail" placeholder="example@email.com" required></div>
+            <div class="popup-field"><label>📱 الهاتف</label><input type="tel" id="popupJoinPhone" placeholder="رقم هاتفك..." required></div>
+            <div class="popup-field"><label>🎓 المستوى</label><select id="popupJoinLevel" required><option value="">اختر...</option><option value="level1">الأول</option><option value="level2">الثاني</option><option value="level3">الثالث</option><option value="level4">الرابع</option><option value="graduate">خريج</option></select></div>
+            <div class="popup-field"><label>💬 المساهمة</label><textarea id="popupJoinContrib" placeholder="كيف تريد المساهمة؟" rows="3" required></textarea></div>
+            <button type="submit" class="popup-submit">📤 إرسال</button>
+        </form>
+        <div class="popup-success" id="popupJoinSuccess"><div class="popup-success-icon">✓</div><h3>تم الإرسال!</h3><p>سنتواصل معك قريباً.</p><button class="popup-submit" onclick="closeJoinPopup()" style="width:auto;padding:10px 30px;margin-top:10px">إغلاق</button></div>
     </div>
+</div>
 
-    <!-- Firebase Configuration -->
-    <script src="src/js/config/firebase.js"></script>
-    
-    <!-- Utility Modules -->
-    <script src="src/js/utils/error-handler.js"></script>
-    <script src="src/js/features/user-profile.js"></script>
-    <script src="src/js/features/ai-chat.js"></script>
-    
-    <!-- ES6 Module Entry Point -->
-    <script type="module" src="src/js/main.js"></script>
+<script src="src/js/config/firebase.js"></script>
+<script>
+function openSuggestPopup(){document.getElementById('suggestPopup').classList.add('active')}
+function closeSuggestPopup(){document.getElementById('suggestPopup').classList.remove('active')}
+function openJoinPopup(){document.getElementById('joinPopup').classList.add('active')}
+function closeJoinPopup(){document.getElementById('joinPopup').classList.remove('active');var f=document.getElementById('popupJoinForm');if(f){f.style.display='flex';f.reset()}var s=document.getElementById('popupJoinSuccess');if(s)s.classList.remove('show')}
+document.getElementById('suggestPopup').addEventListener('click',function(e){if(e.target===this)closeSuggestPopup()});
+document.getElementById('joinPopup').addEventListener('click',function(e){if(e.target===this)closeJoinPopup()});
+function switchPopupTab(tab,btn){document.querySelectorAll('.popup-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('popupSuggestTab').style.display=tab==='suggest'?'block':'none';document.getElementById('popupReportTab').style.display=tab==='report'?'block':'none'}
+async function submitPopupSuggest(){var type=document.getElementById('popupSuggestType').value;var text=document.getElementById('popupSuggestText').value.trim();if(!type||!text){alert('من فضلك اختر النوع واكتب الاقتراح');return}var data={formType:'suggest',name:document.getElementById('popupSuggestName').value.trim()||'مجهول',type:type,text:text};try{var r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok)throw new Error()}catch(e){console.warn('API failed, saving locally');var all=JSON.parse(localStorage.getItem('suggestions')||'[]');all.push({...data,submittedAt:new Date().toISOString()});localStorage.setItem('suggestions',JSON.stringify(all))}document.getElementById('popupSuggestForm').style.display='none';document.getElementById('popupSuggestSuccess').classList.add('show')}
+function resetPopupSuggest(){document.getElementById('popupSuggestForm').style.display='flex';document.getElementById('popupSuggestSuccess').classList.remove('show');document.getElementById('popupSuggestType').value='';document.getElementById('popupSuggestText').value=''}
+async function submitPopupReport(){var q=document.getElementById('popupReportQuestion').value.trim();var err=document.getElementById('popupReportError').value.trim();if(!q||!err){alert('من فضلك املأ كل الحقول');return}var data={formType:'report',question:q,error:err};try{var r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok)throw new Error()}catch(e){console.warn('API failed, saving locally');var all=JSON.parse(localStorage.getItem('reports')||'[]');all.push({...data,submittedAt:new Date().toISOString()});localStorage.setItem('reports',JSON.stringify(all))}document.getElementById('popupReportForm').style.display='none';document.getElementById('popupReportSuccess').classList.add('show')}
+function resetPopupReport(){document.getElementById('popupReportForm').style.display='flex';document.getElementById('popupReportSuccess').classList.remove('show');document.getElementById('popupReportQuestion').value='';document.getElementById('popupReportError').value=''}
+async function submitPopupJoin(e){e.preventDefault();var data={formType:'join',name:document.getElementById('popupJoinName').value,email:document.getElementById('popupJoinEmail').value,phone:document.getElementById('popupJoinPhone').value,level:document.getElementById('popupJoinLevel').value,contribution:document.getElementById('popupJoinContrib').value};try{var r=await fetch('/api/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok)throw new Error()}catch(e){console.warn('API failed, saving locally');var subs=JSON.parse(localStorage.getItem('joinSubmissions')||'[]');subs.push({...data,submittedAt:new Date().toISOString()});localStorage.setItem('joinSubmissions',JSON.stringify(subs))}document.getElementById('popupJoinForm').style.display='none';document.getElementById('popupJoinSuccess').classList.add('show')}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeSuggestPopup();closeJoinPopup()}});
 
-    <!-- Video Modal -->
-    <div id="statsVideoModal"
-        style="display:none;position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
-        <video controls autoplay style="width:100vw;height:100vh;object-fit:cover;outline:none;">
-            <source src="https://videos.pexels.com/video-files/8561926/8561926-hd_1920_1080_25fps.mp4" type="video/mp4">
-            المتصفح لا يدعم تشغيل الفيديو.
-        </video>
-    </div>
-
+// Dark/Light toggle
+function toggleTheme(){
+  var h=document.documentElement,b=document.getElementById('navThemeBtn');
+  if(h.classList.contains('dark')){h.classList.remove('dark');localStorage.setItem('theme','light');if(b)b.textContent='🌙'}
+  else{h.classList.add('dark');localStorage.setItem('theme','dark');if(b)b.textContent='☀️'}
+}
+(function(){var s=localStorage.getItem('theme');if(s==='light'){document.documentElement.classList.remove('dark');var b=document.getElementById('navThemeBtn');if(b)b.textContent='🌙'}})();
+</script>
 </body>
-
 </html>

@@ -54,3 +54,59 @@ function initFirebase() {
 
 // Initialize Firebase on load
 initFirebase();
+
+// ============================================
+// AUTH CONFIG
+// ============================================
+
+const AUTH_CONFIG = {
+    // ضع هنا الـ emails المسموح ليها بدخول الـ admin
+    allowedAdmins: [
+        'YOUR_EMAIL@gmail.com'  // ← غيّر ده بالـ email بتاعك
+    ]
+};
+
+// Google Auth Provider
+let googleProvider;
+let firebaseAuth;
+
+function initAuth() {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebaseAuth = firebase.auth();
+        googleProvider = new firebase.auth.GoogleAuthProvider();
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
+    }
+}
+
+async function signInWithGoogle() {
+    if (!firebaseAuth) initAuth();
+    try {
+        const result = await firebaseAuth.signInWithPopup(googleProvider);
+        const email = result.user.email;
+        if (!AUTH_CONFIG.allowedAdmins.includes(email)) {
+            await firebaseAuth.signOut();
+            return { success: false, error: 'هذا الحساب غير مصرح له بالدخول' };
+        }
+        return { success: true, user: result.user };
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+async function signOut() {
+    if (!firebaseAuth) initAuth();
+    await firebaseAuth.signOut();
+}
+
+function onAuthStateChanged(callback) {
+    if (!firebaseAuth) initAuth();
+    firebaseAuth.onAuthStateChanged(callback);
+}
+
+if (typeof window !== 'undefined') {
+    window.AUTH_CONFIG = AUTH_CONFIG;
+    window.initAuth = initAuth;
+    window.signInWithGoogle = signInWithGoogle;
+    window.adminSignOut = signOut;
+    window.onAuthStateChanged = onAuthStateChanged;
+}

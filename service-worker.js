@@ -3,7 +3,7 @@
  * Handles caching for offline access and faster loading
  */
 
-const CACHE_NAME = 'mansa-cache-v4'; // Increment version to invalidate old cache
+const CACHE_NAME = 'mansa-cache-v5'; // Increment version to invalidate old cache
 
 const urlsToCache = [
     // HTML Pages
@@ -11,6 +11,10 @@ const urlsToCache = [
     '/index.html',
     '/subject.html',
     '/admin-dashboard.html',
+    '/suggest.html',
+    
+    // Data Files
+    '/src/data/questions-schema.js',
     
     // Core CSS
     '/src/css/pages/home.css',
@@ -53,6 +57,25 @@ self.addEventListener('install', event => {
 
 // Fetch - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
+    const url = new URL(event.request.url);
+    
+    // HTML pages: network first, fallback to cache
+    if (event.request.destination === 'document') {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseClone);
+                    });
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
+    
+    // Everything else: cache first, fallback to network
     event.respondWith(
         caches.match(event.request)
             .then(response => response || fetch(event.request))

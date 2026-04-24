@@ -6,7 +6,6 @@
 // Import modules
 import { injectMainNavbar } from './utils/navbar.js';
 import { loadSavedTheme, initThemeMenuHandler } from './utils/themes.js';
-import { switchLeaderboardTab } from './utils/leaderboard.js';
 import { 
     initScrollRocket, 
     initSmoothScroll, 
@@ -14,9 +13,6 @@ import {
     initFileUploadHandler,
     injectNotificationStyles 
 } from './utils/scroll.js';
-
-// Home page specific functionality
-import './pages/home.js';
 
 // ============================================
 // INITIALIZATION
@@ -42,12 +38,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inject notification styles
     injectNotificationStyles();
-    
-    // Load default leaderboard tab if element exists
-    if (document.getElementById('mainLeaderboardBody')) {
-        switchLeaderboardTab('all');
-    }
 });
 
-// Export for global access if needed
-window.switchLeaderboardTab = switchLeaderboardTab;
+// ============================================
+// GLOBAL ERROR BOUNDARY
+// ============================================
+window.addEventListener('error', (e) => {
+    console.warn('ليالي الامتحان — caught error:', e.message);
+    // منع الصفحة من الـ crash
+    e.preventDefault();
+});
+
+window.addEventListener('unhandledrejection', (e) => {
+    console.warn('ليالي الامتحان — unhandled promise:', e.reason);
+    e.preventDefault();
+});

@@ -1,11 +1,45 @@
-// English - Subject Data Only
-// All logic is in subject-core.js
+/**
+ * english - Question Data
+ * 
+ * HOW TO ADD QUESTIONS:
+ * 1. اتبع الـ format الموجود في src/data/questions-schema.js
+ * 2. كل سؤال لازم يكون فيه: id, questionAr, optionsAr, correct
+ * 3. الـ id يكون: english_001, english_002, ...
+ * 
+ * SOURCE VALUES: 'exam' | 'textbook' | 'ai' | 'unknown'
+ * DIFFICULTY: 'easy' | 'medium' | 'hard'
+ */
 
-// MCQ Questions (empty - add via Firebase or manually)
-const SUBJECT_MCQ_QUESTIONS = [];
+const SUBJECT_MCQ_QUESTIONS = [
+    // أضف الأسئلة هنا
+    // مثال:
+    // {
+    //     id: 'english_001',
+    //     questionAr: 'نص السؤال بالعربي',
+    //     questionEn: 'Question text in English',
+    //     optionsAr: ['الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د'],
+    //     optionsEn: ['Option A', 'Option B', 'Option C', 'Option D'],
+    //     correct: 0,
+    //     explanation: 'شرح الإجابة',
+    //     year: '2024',
+    //     source: 'exam',
+    //     difficulty: 'medium'
+    // }
+];
 
-// Essay Questions (empty - add via Firebase or manually)
-const SUBJECT_ESSAY_QUESTIONS = [];
+const SUBJECT_ESSAY_QUESTIONS = [
+    // أضف الأسئلة المقالية هنا
+    // مثال:
+    // {
+    //     id: 'english_essay_001',
+    //     questionAr: 'نص السؤال المقالي',
+    //     questionEn: 'Essay question text',
+    //     modelAnswer: 'الإجابة النموذجية',
+    //     keyPoints: ['نقطة 1', 'نقطة 2', 'نقطة 3'],
+    //     year: '2024',
+    //     source: 'exam',
+    //     difficulty: 'medium'
+    // }
+];
 
-// Summaries (optional)
 const SUBJECT_SUMMARIES = [];
