@@ -1,0 +1,28 @@
+name = "resume-builder"
+main = ".output/server/index.mjs"
+compatibility_date = "2025-07-15"
+
+[assets]
+directory = ".output/public"
+binding = "ASSETS"
+
+[build]
+command = "npm run build"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "resume-builder-db"
+database_id = "18a06c90-6adb-4400-bbf5-85313c47df0a"
+
+[[send_email]]
+name = "SEND_EMAIL"
+
+[vars]
+ENVIRONMENT = "production"
+NUXT_PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAABwL8wn1D3oP3pku"
+NUXT_PUBLIC_TURNSTILE_INVISIBLE_SITE_KEY = "0x4AAAAAADAHK5VMXcL-4tqa"
+
+[observability.logs]
+enabled = true
+
+invocation_logs = false

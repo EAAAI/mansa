@@ -19,7 +19,8 @@ export function getMainNavbarHTML() {
             <span>ليالي الامتحان</span>
         </div>
         <ul class="nav-links">
-            <li><a href="#home" class="nav-link-main" data-section="home">الرئيسية</a></li>
+            <li><a href="index.html" class="nav-link-main" data-section="home">الرئيسية</a></li>
+            <li><a href="/cv/" class="nav-link-main">صانع الـ CV <span class="badge-new">جديد</span></a></li>
             <li><a href="#subjects" class="nav-link-main" data-section="subjects">📚المواد</a></li>
             <li><a href="#challenge" class="nav-link-main" data-section="challenge">⚡ وضع التحدي</a></li>
             <li><a href="#ask-ai" class="nav-link-main" data-section="ask-ai">🤖 اسأل ذكي</a></li>

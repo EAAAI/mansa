@@ -44,3 +44,8 @@ coverage/
 # Backup files
 *.bak
 *.backup
+
+# Nuxt / Resume Builder
+resumeforfree-main/.nuxt/
+resumeforfree-main/.output/
+resumeforfree-main/node_modules/
