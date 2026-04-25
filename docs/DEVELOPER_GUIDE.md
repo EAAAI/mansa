@@ -1,358 +1,161 @@
-# ليالي الامتحان - Developer Guide
+# MANSA Developer Guide
 
-> Complete guide for developers to understand, maintain, and extend the codebase.
+Architecture-first guide for maintaining and extending the current codebase.
 
 ---
 
-## 📁 Project Structure
+## 1. Current Architecture
 
-```
+The project now follows a page-module runtime pattern:
+- Each HTML page loads exactly one local module entrypoint.
+- Inline JavaScript in HTML pages is removed.
+- Page behavior is owned by `src/js/pages/*`.
+
+### Runtime Entrypoints
+
+| HTML Page | Entrypoint Module |
+|---|---|
+| `index.html` | `src/js/pages/index-page.js` |
+| `admin-dashboard.html` | `src/js/pages/admin-dashboard-page.js` |
+| `suggest.html` | `src/js/pages/suggest-page.js` |
+| `join-us.html` | `src/js/pages/join-us-page.js` |
+| `maintenance.html` | `src/js/pages/maintenance-page.js` |
+| `ahmed.html` | `src/js/pages/ahmed-page.js` |
+| `ibrahim.html` | `src/js/pages/ibrahim-page.js` |
+
+Use `docs/RUNTIME_ENTRYPOINT_MAP.md` as the source of truth.
+
+---
+
+## 2. Project Structure
+
+```text
 mansa/
-├── index.html              # Main homepage
-├── subject.html            # Subject page template (dynamic)
-├── admin-dashboard.html    # Admin panel
-├── join-us.html            # Join team page
-├── maintenance.html        # Maintenance mode page
-├── service-worker.js       # PWA caching
-│
+├── index.html
+├── admin-dashboard.html
+├── suggest.html
+├── join-us.html
+├── maintenance.html
+├── ahmed.html
+├── ibrahim.html
+├── service-worker.js
+├── api/
+│   └── contact.js
 ├── src/
-│   ├── js/                 # JavaScript modules
-│   │   ├── main.js         # Entry point (index.html)
-│   │   ├── subject-main.js # Entry point (subject.html)
-│   │   ├── config/         # Configuration files
-│   │   ├── features/       # Feature modules
-│   │   ├── utils/          # Utility modules
-│   │   └── pages/          # Page-specific logic
-│   │
-│   ├── css/                # Stylesheets
-│   │   ├── components/     # Shared component styles
-│   │   ├── pages/          # Page-specific styles
-│   │   ├── subjects/       # Subject-specific colors
-│   │   ├── themes/         # Theme variants
-│   │   └── features/       # Feature-specific styles
-│   │
-│   └── data/               # Subject data files
-│
-├── questions/              # Exam PDFs and images
-├── assets/                 # Images, icons
-└── docs/                   # Documentation
+│   ├── js/
+│   │   ├── config/
+│   │   │   └── firebase.js
+│   │   ├── features/
+│   │   │   ├── essay.js
+│   │   │   └── user-profile.js
+│   │   ├── pages/
+│   │   │   ├── index-page.js
+│   │   │   ├── admin-dashboard-page.js
+│   │   │   ├── suggest-page.js
+│   │   │   ├── join-us-page.js
+│   │   │   ├── maintenance-page.js
+│   │   │   ├── ahmed-page.js
+│   │   │   ├── ibrahim-page.js
+│   │   │   └── home.js
+│   │   ├── utils/
+│   │   │   ├── error-handler.js
+│   │   │   ├── navbar.js
+│   │   │   ├── scroll.js
+│   │   │   └── themes.js
+│   │   └── main.js
+│   ├── css/
+│   │   ├── components/
+│   │   │   └── shared.css
+│   │   ├── features/
+│   │   │   ├── essay.css
+│   │   │   └── katex.css
+│   │   ├── pages/
+│   │   │   ├── home.css
+│   │   │   ├── index.css
+│   │   │   ├── admin-dashboard.css
+│   │   │   ├── suggest.css
+│   │   │   ├── join-us.css
+│   │   │   ├── maintenance.css
+│   │   │   ├── ahmed.css
+│   │   │   └── ibrahim.css
+│   │   └── themes/
+│   │       └── ramadan.css
+│   └── data/
+│       ├── questions-schema.js
+│       └── *-data.js
+└── docs/
+    ├── ARCHITECTURE_AUDIT.md
+    ├── ARCHITECTURE_REFACTOR_PLAN.md
+    ├── ARCHITECTURE_CONVENTIONS.md
+    └── RUNTIME_ENTRYPOINT_MAP.md
 ```
 
 ---
 
-## 📜 JavaScript File Map
+## 3. Layer Ownership
 
-### Entry Points (ES6 Modules)
-| File | Purpose |
-|------|---------|
-| `main.js` | Initializes index.html - imports navbar, themes, leaderboard, scroll |
-| `subject-main.js` | Initializes subject.html - imports navbar, themes, scroll |
-
-### Config (`src/js/config/`)
-| File | Purpose |
-|------|---------|
-| `subjects.js` | **Single source of truth** for all subjects - names, icons, colors, paths |
-| `firebase.js` | Firebase configuration for database connections |
-
-### Features (`src/js/features/`)
-| File | Purpose |
-|------|---------|
-| `challenge.js` | MCQ challenge mode - timer, scoring, leaderboard save |
-| `essay.js` | Essay challenge mode - AI grading, image upload |
-| `ai-chat.js` | AI chat assistant - Groq/Gemini API integration |
-| `user-profile.js` | User profile management and local storage |
-
-### Utils (`src/js/utils/`)
-| File | Purpose |
-|------|---------|
-| `navbar.js` | Dynamic navbar injection (main + subject) |
-| `themes.js` | Theme switching and persistence |
-| `leaderboard.js` | Main page leaderboard tabs and data loading |
-| `scroll.js` | Scroll behaviors, smooth scrolling, notifications |
-| `error-handler.js` | Global error handling and retry logic |
-
-### Pages (`src/js/pages/`)
-| File | Purpose |
-|------|---------|
-| `subject.js` | Dynamic subject loader - reads URL param, loads subject data |
+- `src/js/pages/*`: page bootstrap and orchestration.
+- `src/js/features/*`: feature/domain behavior shared across pages.
+- `src/js/utils/*`: generic cross-feature helpers.
+- `src/css/pages/*`: page-specific styling.
+- `src/css/components/*`: shared styles and design tokens.
+- `src/css/features/*`: feature-specific styling.
+- `src/data/*`: static content contracts and datasets.
 
 ---
 
-## 🎨 CSS File Map
+## 4. Architecture Rules
 
-### Components (`src/css/components/`)
-| File | Purpose |
-|------|---------|
-| `shared.css` | Shared styles - cards, modals, buttons, forms |
+- Keep one page entrypoint module per HTML page.
+- Do not add new large inline `<script>` blocks.
+- Do not duplicate runtime logic between HTML and JS modules.
+- Keep docs and cache manifest aligned with existing files.
 
-### Pages (`src/css/pages/`)
-| File | Purpose |
-|------|---------|
-| `home.css` | Index.html specific styles |
-
-### Subjects (`src/css/subjects/`)
-| File | Purpose |
-|------|---------|
-| `physics2.css` | Physics 2 color scheme |
-| `math0.css` | Math 0 color scheme |
-| `math1.css` | Math 1 color scheme |
-| `english.css` | English color scheme |
-| `it.css` | IT color scheme |
-| `electronics.css` | Electronics color scheme |
-| `history.css` | History color scheme |
-| `law.css` | Law color scheme |
-
-### Themes (`src/css/themes/`)
-| File | Purpose |
-|------|---------|
-| `ramadan.css` | Ramadan decorations theme |
+Detailed rules are in `docs/ARCHITECTURE_CONVENTIONS.md`.
 
 ---
 
-## ➕ How to Add a New Subject
+## 5. Service Worker Notes
 
-### Step 1: Add to `subjects.js`
-```javascript
-// src/js/config/subjects.js
-export const SUBJECTS = {
-    // ... existing subjects
-    
-    newsubject: {
-        id: 'newsubject',
-        title: 'اسم المادة',
-        subtitle: 'Subject Name',
-        icon: 'fa-icon-name',
-        color: '#HEX_COLOR',
-        gradient: 'linear-gradient(135deg, #color1 0%, #color2 100%)',
-        css: 'src/css/subjects/newsubject.css',
-        data: 'src/data/newsubject-data.js',
-        year: 1,  // 0, 1, 2, 3, 4
-        college: 'cs'  // 'cs', 'is', 'ai', 'ds'
-    }
-};
-```
+`service-worker.js` now pre-caches only files that currently exist.
 
-### Step 2: Create CSS File
-```css
-/* src/css/subjects/newsubject.css */
-:root {
-    --subject-primary: #HEX_COLOR;
-    --subject-secondary: #HEX_COLOR2;
-    --subject-gradient: linear-gradient(135deg, #color1 0%, #color2 100%);
-}
-```
-
-### Step 3: Create Data File
-```javascript
-// src/data/newsubject-data.js
-const SUBJECT_MCQ_QUESTIONS = [];
-const SUBJECT_ESSAY_QUESTIONS = [];
-const SUBJECT_SUMMARIES = [];
-```
-
-### Step 4: Add to Service Worker Cache (Optional)
-```javascript
-// service-worker.js - add to urlsToCache
-'/src/css/subjects/newsubject.css',
-'/src/data/newsubject-data.js',
-```
-
-### Step 5: Test
-Visit: `subject.html?id=newsubject`
+When adding/removing runtime-critical files:
+1. Update `urlsToCache`.
+2. Increment `CACHE_NAME` version.
+3. Validate offline behavior.
 
 ---
 
-## 📅 How to Add a New Year
+## 6. How To Add A New Page (Architecture-Safe)
 
-### Step 1: Update `subjects.js`
-Add `year` property to each subject:
-```javascript
-physics2: {
-    // ...existing config
-    year: 2,  // Second year
-}
-```
+1. Create `new-page.html`.
+2. Create `src/js/pages/new-page.js` and initialize from `DOMContentLoaded`.
+3. Import it from HTML with:
 
-### Step 2: Filter by Year
-```javascript
-import { getSubjectsByYear } from './config/subjects.js';
-
-// Get all second year subjects
-const year2Subjects = getSubjectsByYear(2);
-```
-
-### Step 3: Update UI (index.html)
-Add year tabs/filters in the subjects section to filter by year.
-
----
-
-## 🏛️ How to Add a New College
-
-### Step 1: Update `subjects.js`
-Add `college` property:
-```javascript
-physics2: {
-    // ...existing config
-    college: 'cs',  // Computer Science
-}
-```
-
-### Step 2: Filter by College
-```javascript
-import { getSubjectsByCollege } from './config/subjects.js';
-
-// Get all CS subjects
-const csSubjects = getSubjectsByCollege('cs');
-```
-
----
-
-## ✨ How to Add a New Feature
-
-### Step 1: Create Feature Module
-```javascript
-// src/js/features/new-feature.js
-
-/**
- * New Feature Module
- * Description of what it does
- */
-
-export function initNewFeature() {
-    // Implementation
-}
-
-export function doSomething() {
-    // Implementation
-}
-
-// Make available globally if needed for onclick
-window.doSomething = doSomething;
-```
-
-### Step 2: Import in Entry Point
-```javascript
-// src/js/main.js or subject-main.js
-import { initNewFeature } from './features/new-feature.js';
-
-document.addEventListener('DOMContentLoaded', () => {
-    initNewFeature();
-});
-```
-
-### Step 3: Add HTML Section
-Add the feature section to `index.html` or `subject.html`.
-
-### Step 4: Add CSS (if needed)
-```css
-/* src/css/features/new-feature.css */
-.new-feature {
-    /* styles */
-}
-```
-
----
-
-## 🎨 How to Add a New Theme
-
-### Step 1: Add Theme Class in `themes.js`
-```javascript
-// src/js/utils/themes.js
-const THEMES = ['default', 'space', 'ocean', 'sunset', 'pyramids', 'winter', 'newtheme'];
-```
-
-### Step 2: Add CSS Variables
-```css
-/* src/css/components/shared.css */
-body.newtheme-theme {
-    --bg-primary: #color;
-    --bg-secondary: #color;
-    --text-primary: #color;
-    /* ... other variables */
-}
-```
-
-### Step 3: Add to Theme Menu (navbar.js)
 ```html
-<button class="theme-option" onclick="setTheme('newtheme')" data-theme="newtheme">
-    <i class="fas fa-icon"></i> اسم الثيم
-</button>
+<script type="module" src="src/js/pages/new-page.js"></script>
 ```
 
----
-
-## 🗺️ Future Roadmap
-
-### Phase 1: User System
-- [ ] Firebase Authentication integration
-- [ ] User profiles with progress tracking
-- [ ] Saved scores across devices
-
-### Phase 2: Content Management
-- [ ] Admin panel for adding questions
-- [ ] Firebase Firestore for questions database
-- [ ] Rich text editor for essays
-
-### Phase 3: Analytics
-- [ ] Firebase Analytics integration
-- [ ] Usage tracking dashboard
-- [ ] Popular questions insights
-
-### Phase 4: Advanced Features
-- [ ] Offline mode (PWA enhancements)
-- [ ] Push notifications for new content
-- [ ] Social sharing of scores
-
-### Phase 5: Mobile App
-- [ ] React Native or Flutter wrapper
-- [ ] Native push notifications
-- [ ] App store deployment
+4. Add the page and entrypoint to `docs/RUNTIME_ENTRYPOINT_MAP.md`.
+5. If needed for offline behavior, add both paths to `service-worker.js` and bump cache version.
 
 ---
 
-## 🔧 Development Commands
+## 7. Development Commands
 
 ```bash
-# Start local server (Python)
+# Python static server
 python -m http.server 8000
 
-# Start local server (Node)
+# Node static server
 npx serve .
-
-# Git workflow
-git add -A
-git commit -m "Description"
-git push origin main
 ```
 
 ---
 
-## 📝 Code Style Guidelines
+## 8. Status Snapshot
 
-1. **Variables**: Use `const` and `let`, never `var`
-2. **Functions**: Use descriptive names, add JSDoc comments
-3. **Modules**: One responsibility per file
-4. **Comments**: Use `// ====` section headers
-5. **Arabic**: Keep UI text in Arabic, code in English
-
----
-
-## 🐛 Debugging Tips
-
-1. **Console errors**: Check browser DevTools console
-2. **Module loading**: Ensure `type="module"` in script tags
-3. **Firebase**: Check Firebase console for database rules
-4. **Caching**: Clear service worker cache if changes don't appear
-
-```javascript
-// Clear service worker cache
-caches.keys().then(names => names.forEach(name => caches.delete(name)));
-```
-
----
-
-## 📞 Need Help?
-
-- Check existing code patterns in similar files
-- Review `subjects.js` for configuration structure
-- Test changes locally before pushing
+- JavaScript refactor phases (0-2): complete.
+- CSS decomposition (phase 3): complete.
+- Runtime and cache manifest drift repairs (phase 4): complete.
+- Documentation alignment (phase 5): complete.

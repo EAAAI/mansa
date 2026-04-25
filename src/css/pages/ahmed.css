@@ -1,0 +1,11 @@
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+html.dark body {
+    background: #111827;
+}
+
+html:not(.dark) body {
+    background: #fff;
+}

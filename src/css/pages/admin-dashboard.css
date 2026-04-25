@@ -1,0 +1,301 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    font-family: 'Cairo', sans-serif;
+    color: white;
+}
+
+.katex-display {
+    background: rgba(255, 255, 255, 0.03) !important;
+    padding: 15px !important;
+    border-radius: 8px !important;
+    margin: 10px 0 !important;
+    border-left: 3px solid #38ef7d !important;
+}
+
+.katex {
+    font-size: 1.2em !important;
+    color: #fff !important;
+}
+
+.preview-hint {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    margin-top: 5px;
+}
+
+.admin-login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.admin-login-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,217,255,0.2);
+    border-radius: 30px;
+    padding: 50px 40px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+}
+
+.admin-login-icon {
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(135deg, #00d9ff, #0099cc);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 2.2rem;
+    color: white;
+    box-shadow: 0 15px 40px rgba(0,217,255,0.4);
+}
+
+.admin-login-card h1 {
+    font-size: 2rem;
+    background: linear-gradient(90deg, #00d9ff, #667eea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.admin-login-card > p {
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 30px;
+}
+
+.admin-login-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    margin-bottom: 30px;
+}
+
+.google-login-btn {
+    width: 100%;
+    padding: 16px;
+    background: white;
+    border: none;
+    border-radius: 14px;
+    color: #333;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.google-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.admin-login-note {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.82rem;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.login-error {
+    margin-top: 15px;
+    padding: 12px;
+    background: rgba(255,107,107,0.15);
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 10px;
+    color: #ff6b6b;
+    font-size: 0.9rem;
+}
+
+.admin-navbar {
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,217,255,0.15);
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.admin-nav-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #00d9ff;
+    flex: 1;
+}
+
+.admin-user-info {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+}
+
+.admin-signout-btn {
+    padding: 8px 20px;
+    background: rgba(255,107,107,0.15);
+    border: 1px solid rgba(255,107,107,0.3);
+    border-radius: 10px;
+    color: #ff6b6b;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-signout-btn:hover {
+    background: rgba(255,107,107,0.25);
+}
+
+.admin-dashboard {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.admin-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.admin-stat-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,217,255,0.15);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.admin-stat-card i {
+    font-size: 2rem;
+    color: #00d9ff;
+}
+
+.admin-stat-card span {
+    font-size: 2rem;
+    font-weight: 700;
+    display: block;
+}
+
+.admin-stat-card p {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-tab {
+    padding: 10px 22px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,217,255,0.2);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.6);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-tab.active {
+    background: linear-gradient(135deg, #00d9ff, #0099cc);
+    color: white;
+    border-color: transparent;
+}
+
+.admin-tab-content {
+    min-height: 300px;
+}
+
+.admin-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px 25px;
+    margin-bottom: 15px;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.admin-card-type {
+    background: rgba(0,217,255,0.1);
+    color: #00d9ff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.admin-card-date {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.8rem;
+}
+
+.admin-card-text {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+
+.admin-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255,255,255,0.3);
+    font-size: 1.1rem;
+}
+
+.admin-empty i {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 15px;
+}
