@@ -183,7 +183,7 @@ const isActive = (path: string) => route.path === localePath(path) || route.path
                 <!-- Bottom row -->
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-2 pt-5 border-t border-rule text-[12.5px] text-ink-4">
                     <div>
-                        <span>{{ t('footer.copyright_simple', '© 2026 NewCv') }}</span>
+                        <span>{{ t('footer.copyright_simple', '© 2026 ليالي الامتحان') }}</span>
                     </div>
                     <div>{{ t('footer.noTracking') }}</div>
                 </div>

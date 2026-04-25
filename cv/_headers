@@ -5,17 +5,17 @@
 /cv/__sitemap__/en-US.xml
   Content-Type: text/xml; charset=UTF-8
   Cache-Control: public, max-age=600, must-revalidate
-  X-Sitemap-Prerendered: 2026-04-25T16:01:45.797Z
+  X-Sitemap-Prerendered: 2026-04-25T16:13:19.352Z
 /cv/__sitemap__/ar-SA.xml
   Content-Type: text/xml; charset=UTF-8
   Cache-Control: public, max-age=600, must-revalidate
-  X-Sitemap-Prerendered: 2026-04-25T16:01:45.797Z
+  X-Sitemap-Prerendered: 2026-04-25T16:13:19.352Z
 /cv/_nuxt/builds/*
   cache-control: public, max-age=1, immutable
 /cv/sitemap_index.xml
   Content-Type: text/xml; charset=UTF-8
   Cache-Control: public, max-age=600, must-revalidate
-  X-Sitemap-Prerendered: 2026-04-25T16:01:45.797Z
+  X-Sitemap-Prerendered: 2026-04-25T16:13:19.352Z
 /cv/_nuxt
   X-Robots-Tag: noindex
 /cv/_nuxt/*
