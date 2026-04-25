@@ -1,5 +1,5 @@
-const SITE_URL = '/';
-const SITE_NAME = 'ليالي الامتحان';
+const SITE_URL = 'https://newcv.com';
+const SITE_NAME = 'NewCv';
 const LOGO_URL = `${SITE_URL}/icon.svg`;
 
 export const createOrganizationStructuredData = () => ({

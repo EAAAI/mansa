@@ -18,8 +18,8 @@ withDefaults(defineProps<Props>(), {
             v-if="showIcon"
             :size="iconSize"
         />
-        <span class="text-[17px] font-bold tracking-tight text-ink">
-            ليالي <span class="text-primary">الامتحان</span>
+        <span class="text-[15px] font-bold tracking-tight text-ink">
+            New<span class="text-green-700">Cv</span>
         </span>
     </div>
 </template>

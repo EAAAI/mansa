@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ArrowRight, Github, Menu, X, Home } from 'lucide-vue-next';
+import { ArrowRight, Github, Menu, X } from 'lucide-vue-next';
 import LanguageSelector from '~/components/elements/LanguageSelector.vue';
 import Wordmark from '~/components/elements/Wordmark.vue';
 import { Toaster } from '@/components/ui/sonner';
@@ -45,13 +45,6 @@ const isActive = (path: string) => route.path === localePath(path) || route.path
                             >
                                 {{ link.label }}
                             </NuxtLink>
-                            <a
-                                href="/index.html"
-                                class="px-2.5 py-1.5 rounded-md text-[13.5px] font-medium transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 flex items-center gap-1.5"
-                            >
-                                <Home class="w-3.5 h-3.5" />
-                                {{ t('navigation.backToPlatform', 'العودة للمنصة') }}
-                            </a>
                         </nav>
                     </div>
 
@@ -109,14 +102,6 @@ const isActive = (path: string) => route.path === localePath(path) || route.path
                     >
                         {{ link.label }}
                     </NuxtLink>
-                    <a
-                        href="/index.html"
-                        class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 gap-2"
-                        @click="closeMobileMenu"
-                    >
-                        <Home class="w-4 h-4" />
-                        {{ t('navigation.backToPlatform', 'العودة للمنصة') }}
-                    </a>
 
 
 
@@ -183,7 +168,7 @@ const isActive = (path: string) => route.path === localePath(path) || route.path
                 <!-- Bottom row -->
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-2 pt-5 border-t border-rule text-[12.5px] text-ink-4">
                     <div>
-                        <span>{{ t('footer.copyright_simple', '© 2026 ليالي الامتحان') }}</span>
+                        <span>{{ t('footer.copyright_simple', '© 2026 NewCv') }}</span>
                     </div>
                     <div>{{ t('footer.noTracking') }}</div>
                 </div>

@@ -62,7 +62,7 @@ useHead({
         },
         {
             property: 'og:site_name',
-            content: 'ليالي الامتحان',
+            content: 'NewCv',
         },
         {
             property: 'og:title',
@@ -74,11 +74,11 @@ useHead({
         },
         {
             property: 'og:url',
-            content: '/',
+            content: 'https://newcv.com',
         },
         {
             property: 'og:image',
-            content: '/og-image.png',
+            content: 'https://newcv.com/og-image.png',
         },
         {
             property: 'og:image:width',
@@ -108,7 +108,7 @@ useHead({
     link: [
         {
             rel: 'canonical',
-            href: '/',
+            href: 'https://newcv.com',
         },
     ],
     script: [
