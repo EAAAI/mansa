@@ -22,7 +22,10 @@ export default defineNuxtConfig({
         'vue': 'vue/dist/vue.esm-bundler.js',
     },
     build: {
-        transpile: ['vue-sonner'],
+        transpile: ['vue', 'vue-sonner'],
+    },
+    experimental: {
+        externalVue: false,
     },
 
     app: {
