@@ -18,6 +18,12 @@ export default defineNuxtConfig({
         dirs: ['stores'],
     },
     devtools: { enabled: false },
+    alias: {
+        'vue': 'vue/dist/vue.esm-bundler.js',
+    },
+    build: {
+        transpile: ['vue-sonner'],
+    },
 
     app: {
         baseURL: '/',
@@ -110,8 +116,8 @@ export default defineNuxtConfig({
     pwa: {
         registerType: 'prompt',
         manifest: {
-            name: 'NewCv',
-            short_name: 'NewCv',
+            name: 'Layli CV',
+            short_name: 'Layli CV',
             description: 'Build professional resumes for free',
             theme_color: '#3b82f6',
             background_color: '#ffffff',
@@ -144,7 +150,7 @@ export default defineNuxtConfig({
     },
 
     seo: {
-        redirectToCanonicalSiteUrl: true,
+        redirectToCanonicalSiteUrl: false,
     },
 
     shadcn: {
