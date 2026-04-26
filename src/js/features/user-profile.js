@@ -102,48 +102,16 @@ function closeUserProfile() {
     document.getElementById('userProfileModal').classList.remove('active');
 }
 
-async function generateNickname(name) {
-    try {
-        const response = await fetch('/api/ai-nickname', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name
-            })
-        });
-
-        if (!response.ok) {
-            return null;
-        }
-
-        const data = await response.json();
-        if (data.success && data.nickname) {
-            return String(data.nickname).trim();
-        }
-
-        return null;
-    } catch (error) {
-        return null;
-    }
-}
-
 async function saveUserProfile() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
     const newName = document.getElementById('profileNameInput').value.trim();
 
     if (newName) {
-        const saveBtn = document.querySelector('.profile-btn.save-btn');
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> حفظ ومزامنة...';
-        saveBtn.disabled = true;
-
-        const nickname = await generateNickname(newName);
-
         userProfile.name = newName;
-        userProfile.nickname = nickname || '';
+        userProfile.nickname = '';
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
+
+        renderProfileDisplayName(newName, '');
 
         if (typeof dbLeaderboard !== 'undefined' && dbLeaderboard) {
             try {
@@ -152,20 +120,10 @@ async function saveUserProfile() {
                 await dbLeaderboard.collection('users').doc(userProfile.id).set(profileToSync, { merge: true });
             } catch (error) {
                 console.error('Profile sync error:', error);
-                // Continue - local save already succeeded
             }
         }
 
-        if (nickname) {
-            renderProfileDisplayName(newName, nickname);
-            alert(`✅ تم حفظ البيانات ومزامنتها!\n\n🏷️ لقبك: ${nickname}\n🆔 المعرف الخاص بك: ${userProfile.id}\n(احتفظ بهذا الكود لاسترجاع حسابك)`);
-        } else {
-            renderProfileDisplayName(newName, '');
-            alert(`✅ تم حفظ البيانات بنجاح!\n🆔 المعرف الخاص بك: ${userProfile.id}`);
-        }
-
-        saveBtn.innerHTML = originalText;
-        saveBtn.disabled = false;
+        alert(`✅ تم حفظ البيانات بنجاح!\n🆔 المعرف الخاص بك: ${userProfile.id}`);
     } else {
         alert('⚠️ من فضلك أدخل اسمك');
     }

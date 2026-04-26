@@ -360,3 +360,86 @@ body {
     display: block;
     margin-bottom: 15px;
 }
+
+/* ============================================
+   SUBJECTS MANAGEMENT
+   ============================================ */
+
+.subject-add-form {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0,217,255,0.18);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.subject-add-form h3 {
+    font-size: 1rem;
+    color: #c9f4ff;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.subject-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px;
+}
+
+.subject-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.subject-form-field label {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+    font-weight: 600;
+}
+
+.subject-form-field label small {
+    color: #ff6b6b;
+}
+
+.subject-form-field input,
+.subject-form-field select,
+.subject-form-field textarea {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+}
+
+.subject-form-field input:focus,
+.subject-form-field select:focus,
+.subject-form-field textarea:focus {
+    border-color: rgba(0,217,255,0.5);
+}
+
+.subject-form-field select option {
+    background: #1a1a2e;
+}
+
+.subject-form-field input[type="color"] {
+    padding: 4px;
+    height: 36px;
+    width: 50px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.color-picker-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+

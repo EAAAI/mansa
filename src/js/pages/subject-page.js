@@ -95,17 +95,9 @@ function renderResources(resources) {
 function buildFallbackModules(subject) {
     return [
         {
-            title: 'بنك أسئلة اختيار من متعدد',
-            description: `متاح حالياً ${subject.questionCount || 0} سؤال تدريبي للمراجعة السريعة.`,
-        },
-        {
-            title: 'تدريب مقالي موجه',
-            description: `متاح حالياً ${subject.essayCount || 0} سؤال مقالي مع تصحيح ذكي.`,
-        },
-        {
-            title: 'خطة مراجعة قبل الامتحان',
-            description: 'قسم المادة إلى جلسات قصيرة مع اختبارات ذاتية بعد كل جلسة.',
-        },
+            title: 'الوحدات التعليمية',
+            description: 'سيتم إضافة الوحدات قريباً.',
+        }
     ];
 }
 
@@ -171,8 +163,6 @@ async function initSubjectPageEntry() {
     setText('subjectSubtitle', finalData.headline || finalData.nameEn || 'Subject Overview');
     setText('subjectDescription', finalData.description || subject.description);
 
-    setText('subjectStatQuestions', String(finalData.questionCount || 0));
-    setText('subjectStatEssay', String(finalData.essayCount || 0));
     setText('subjectStatDifficulty', finalData.difficulty || 'متوسط');
 
     renderModules(finalData.modules && finalData.modules.length ? finalData.modules : buildFallbackModules(finalData));

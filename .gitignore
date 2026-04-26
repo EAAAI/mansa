@@ -29,6 +29,10 @@ build/
 .env.local
 .env.*.local
 
+# Firebase Service Account (NEVER commit this)
+serviceAccountKey.json
+scripts/serviceAccountKey.json
+
 # Temporary files
 tmp/
 temp/

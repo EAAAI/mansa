@@ -91,25 +91,22 @@
                     <p>طلب انضمام</p>
                 </div>
             </div>
+            <div class="admin-stat-card">
+                <i class="fas fa-book" style="color:#f7b731"></i>
+                <div>
+                    <span id="subjectCount">0</span>
+                    <p>مادة</p>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-tools-panel">
-            <div class="admin-tools-header">
-                <h2><i class="fas fa-database"></i> أدوات البيانات</h2>
-                <p>إدارة بيانات المواد الديناميكية عبر Firebase.</p>
-            </div>
-            <div class="admin-tools-actions">
-                <button id="seedSubjectsBtn" class="admin-tool-btn" onclick="handleSeedSubjectData()">
-                    <i class="fas fa-upload"></i>
-                    Seed Subjects Data
-                </button>
-                <span id="seedSubjectsStatus" class="admin-tool-status" aria-live="polite"></span>
-            </div>
-        </div>
 
         <!-- Tabs -->
         <div class="admin-tabs">
-            <button class="admin-tab active" onclick="showAdminTab('suggestions')">
+            <button class="admin-tab active" onclick="showAdminTab('subjects')">
+                <i class="fas fa-book"></i> المواد
+            </button>
+            <button class="admin-tab" onclick="showAdminTab('suggestions')">
                 <i class="fas fa-lightbulb"></i> الاقتراحات
             </button>
             <button class="admin-tab" onclick="showAdminTab('reports')">
@@ -126,8 +123,9 @@
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script src="src/js/config/firebase.js"></script>
 <script type="module" src="src/js/pages/admin-dashboard-page.js"></script>
 
