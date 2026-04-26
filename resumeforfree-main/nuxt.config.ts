@@ -58,9 +58,6 @@ export default defineNuxtConfig({
                 : 'http://localhost:8010',
         },
     },
-    future: {
-        compatibilityVersion: 4,
-    },
     compatibilityDate: '2025-07-15',
     nitro: {
         preset: 'vercel',

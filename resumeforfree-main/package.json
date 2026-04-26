@@ -22,7 +22,6 @@
     "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@cloudflare/workers-types": "^4.20250906.0",
     "@myriaddreamin/typst-ts-renderer": "^0.6.0",
     "@myriaddreamin/typst-ts-web-compiler": "^0.6.0",
     "@myriaddreamin/typst.ts": "^0.6.0",
@@ -57,6 +56,7 @@
     "@nuxt/eslint": "^1.6.0",
     "@nuxt/test-utils": "^3.20.1",
     "@playwright/test": "^1.57.0",
+    "@cloudflare/workers-types": "^4.20250906.0",
     "drizzle-kit": "^0.31.6",
     "eslint": "^9.0.0",
     "happy-dom": "^20.0.11",
