@@ -4,12 +4,13 @@
  */
 
 const PAGE_ID = 'admin-dashboard';
-const TAB_ORDER = ['suggestions', 'reports', 'joins'];
+const TAB_ORDER = ['subjects', 'suggestions', 'reports', 'joins'];
 
 let adminDataCache = {
     suggestions: [],
     reports: [],
     joins: [],
+    subjects: [],
 };
 
 const GOOGLE_BUTTON_HTML = `<svg width="20" height="20" viewBox="0 0 24 24">
@@ -70,20 +71,17 @@ function loadStats() {
     const suggestions = adminDataCache.suggestions || [];
     const reports = adminDataCache.reports || [];
     const joins = adminDataCache.joins || [];
+    const subjects = adminDataCache.subjects || [];
 
     const suggestCount = document.getElementById('suggestCount');
     const reportCount = document.getElementById('reportCount');
     const joinCount = document.getElementById('joinCount');
+    const subjectCount = document.getElementById('subjectCount');
 
-    if (suggestCount) {
-        suggestCount.textContent = String(suggestions.length);
-    }
-    if (reportCount) {
-        reportCount.textContent = String(reports.length);
-    }
-    if (joinCount) {
-        joinCount.textContent = String(joins.length);
-    }
+    if (suggestCount) suggestCount.textContent = String(suggestions.length);
+    if (reportCount) reportCount.textContent = String(reports.length);
+    if (joinCount) joinCount.textContent = String(joins.length);
+    if (subjectCount) subjectCount.textContent = String(subjects.length);
 }
 
 function getLocalAdminData() {
@@ -161,15 +159,231 @@ async function refreshAdminDataCache() {
     try {
         const remoteData = await loadAdminDataFromFirestore();
         if (remoteData) {
-            adminDataCache = remoteData;
-            return;
+            adminDataCache = { ...adminDataCache, ...remoteData };
+        } else {
+            const localData = getLocalAdminData();
+            adminDataCache = { ...adminDataCache, ...localData };
         }
     } catch {
-        // Firestore unavailable or query failed, local fallback remains active.
+        const localData = getLocalAdminData();
+        adminDataCache = { ...adminDataCache, ...localData };
     }
 
-    adminDataCache = getLocalAdminData();
+    // Always load subjects fresh from Firestore
+    adminDataCache.subjects = await loadSubjectsFromFirestore();
 }
+
+// ============================================
+// SUBJECTS MANAGEMENT
+// ============================================
+
+async function loadSubjectsFromFirestore() {
+    if (typeof db === 'undefined' || !db) return [];
+    try {
+        const snapshot = await db.collection('subjects').orderBy('order').get();
+        const subjects = [];
+        snapshot.forEach((doc) => subjects.push({ id: doc.id, ...doc.data() }));
+        return subjects;
+    } catch {
+        try {
+            const snapshot = await db.collection('subjects').get();
+            const subjects = [];
+            snapshot.forEach((doc) => subjects.push({ id: doc.id, ...doc.data() }));
+            return subjects;
+        } catch {
+            return [];
+        }
+    }
+}
+
+async function handleAddSubject(event) {
+    event.preventDefault();
+    const btn = document.getElementById('addSubjectBtn');
+    const statusEl = document.getElementById('addSubjectStatus');
+
+    const id = document.getElementById('newSubjectId').value.trim().toLowerCase().replace(/\s+/g, '_');
+    const nameAr = document.getElementById('newSubjectNameAr').value.trim();
+    const nameEn = document.getElementById('newSubjectNameEn').value.trim();
+    const icon = document.getElementById('newSubjectIcon').value.trim() || '📚';
+    const accentColor = document.getElementById('newSubjectColor').value || '#6366f1';
+    const description = document.getElementById('newSubjectDesc').value.trim();
+    const difficulty = document.getElementById('newSubjectDifficulty').value;
+    const order = parseInt(document.getElementById('newSubjectOrder').value) || (adminDataCache.subjects.length + 1);
+
+    if (!id || !nameAr) {
+        statusEl.textContent = '⚠️ المعرف والاسم بالعربي مطلوبان';
+        statusEl.style.color = '#ff8f8f';
+        return;
+    }
+
+    if (typeof db === 'undefined' || !db) {
+        statusEl.textContent = '❌ Firebase غير متصل';
+        statusEl.style.color = '#ff8f8f';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+    statusEl.textContent = '';
+
+    try {
+        await db.collection('subjects').doc(id).set({
+            nameAr,
+            nameEn,
+            icon,
+            accentColor,
+            description,
+            difficulty,
+            order,
+            isActive: true,
+        });
+
+        statusEl.textContent = `✅ تمت إضافة "${nameAr}" بنجاح!`;
+        statusEl.style.color = '#8effbf';
+
+        document.getElementById('addSubjectForm').reset();
+        document.getElementById('newSubjectColor').value = '#6366f1';
+        document.getElementById('colorPreview').style.background = '#6366f1';
+
+        adminDataCache.subjects = await loadSubjectsFromFirestore();
+        loadStats();
+        showAdminTab('subjects');
+    } catch (error) {
+        statusEl.textContent = `❌ خطأ: ${error.message}`;
+        statusEl.style.color = '#ff8f8f';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-plus"></i> إضافة المادة';
+    }
+}
+
+async function handleDeleteSubject(subjectId, subjectName) {
+    if (!confirm(`هل أنت متأكد من حذف "${subjectName}"؟ هذه العملية لا يمكن التراجع عنها.`)) return;
+
+    try {
+        await db.collection('subjects').doc(subjectId).delete();
+        adminDataCache.subjects = await loadSubjectsFromFirestore();
+        loadStats();
+        showAdminTab('subjects');
+    } catch (error) {
+        alert(`خطأ في الحذف: ${error.message}`);
+    }
+}
+
+async function handleToggleSubject(subjectId, currentIsActive) {
+    try {
+        await db.collection('subjects').doc(subjectId).update({ isActive: !currentIsActive });
+        adminDataCache.subjects = await loadSubjectsFromFirestore();
+        showAdminTab('subjects');
+    } catch (error) {
+        alert(`خطأ: ${error.message}`);
+    }
+}
+
+function renderSubjectsTab() {
+    const subjects = adminDataCache.subjects || [];
+
+    const addFormHtml = `
+        <div class="subject-add-form">
+            <h3><i class="fas fa-plus-circle"></i> إضافة مادة جديدة</h3>
+            <form id="addSubjectForm" onsubmit="handleAddSubject(event)">
+                <div class="subject-form-grid">
+                    <div class="subject-form-field">
+                        <label>المعرف (ID) <small>*</small></label>
+                        <input id="newSubjectId" type="text" placeholder="physics2" required
+                               pattern="[a-z0-9_-]+" title="حروف إنجليزية صغيرة وأرقام فقط">
+                    </div>
+                    <div class="subject-form-field">
+                        <label>الاسم بالعربي <small>*</small></label>
+                        <input id="newSubjectNameAr" type="text" placeholder="فيزياء 2" required>
+                    </div>
+                    <div class="subject-form-field">
+                        <label>الاسم بالإنجليزي</label>
+                        <input id="newSubjectNameEn" type="text" placeholder="Physics II">
+                    </div>
+                    <div class="subject-form-field">
+                        <label>الأيقونة (Emoji)</label>
+                        <input id="newSubjectIcon" type="text" placeholder="⚡" maxlength="4">
+                    </div>
+                    <div class="subject-form-field">
+                        <label>لون المادة</label>
+                        <div class="color-picker-row">
+                            <input id="newSubjectColor" type="color" value="#6366f1"
+                                   oninput="document.getElementById('colorPreview').style.background=this.value">
+                            <div id="colorPreview" style="width:36px;height:36px;border-radius:8px;background:#6366f1;border:1px solid rgba(255,255,255,0.2)"></div>
+                        </div>
+                    </div>
+                    <div class="subject-form-field">
+                        <label>مستوى الصعوبة</label>
+                        <select id="newSubjectDifficulty">
+                            <option value="سهل">سهل</option>
+                            <option value="متوسط" selected>متوسط</option>
+                            <option value="صعب">صعب</option>
+                        </select>
+                    </div>
+                    <div class="subject-form-field">
+                        <label>الترتيب</label>
+                        <input id="newSubjectOrder" type="number" min="1" placeholder="1">
+                    </div>
+                </div>
+                <div class="subject-form-field" style="margin-top:12px">
+                    <label>الوصف</label>
+                    <textarea id="newSubjectDesc" placeholder="وصف قصير للمادة..." rows="2"></textarea>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+                    <button type="submit" id="addSubjectBtn" class="admin-tool-btn"
+                            style="background:linear-gradient(135deg,rgba(56,239,125,0.3),rgba(17,153,142,0.4));border-color:rgba(56,239,125,0.4)">
+                        <i class="fas fa-plus"></i> إضافة المادة
+                    </button>
+                    <span id="addSubjectStatus" style="font-size:0.88rem"></span>
+                </div>
+            </form>
+        </div>
+    `;
+
+    if (!subjects.length) {
+        return addFormHtml + '<div class="admin-empty"><i class="fas fa-book"></i> لا توجد مواد حتى الآن</div>';
+    }
+
+    const listHtml = subjects.map((subject) => {
+        const isActive = subject.isActive !== false;
+        const accentColor = subject.accentColor || '#6366f1';
+        return `
+            <div class="admin-card" style="border-color:${accentColor}44">
+                <div class="admin-card-header">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="font-size:1.8rem">${escapeHtml(subject.icon || '📚')}</span>
+                        <div>
+                            <strong style="color:${accentColor}">${escapeHtml(subject.nameAr || subject.id)}</strong>
+                            ${subject.nameEn ? `<span style="color:rgba(255,255,255,0.4);font-size:0.82rem;margin-right:6px">${escapeHtml(subject.nameEn)}</span>` : ''}
+                            <br>
+                            <code style="font-size:0.78rem;color:rgba(255,255,255,0.4)">${escapeHtml(subject.id)}</code>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                        <span class="admin-card-type" style="background:${isActive ? 'rgba(56,239,125,0.12)' : 'rgba(255,107,107,0.12)'};color:${isActive ? '#38ef7d' : '#ff6b6b'}">
+                            ${isActive ? 'نشط' : 'مخفي'}
+                        </span>
+                        <span class="admin-card-type">${escapeHtml(subject.difficulty || 'متوسط')}</span>
+                        <button class="admin-tool-btn" style="padding:5px 10px;font-size:0.8rem"
+                                onclick="handleToggleSubject('${escapeHtml(subject.id)}', ${isActive})">
+                            <i class="fas fa-${isActive ? 'eye-slash' : 'eye'}"></i> ${isActive ? 'إخفاء' : 'تفعيل'}
+                        </button>
+                        <button class="admin-tool-btn"
+                                style="padding:5px 10px;font-size:0.8rem;background:rgba(255,107,107,0.2);border-color:rgba(255,107,107,0.4)"
+                                onclick="handleDeleteSubject('${escapeHtml(subject.id)}', '${escapeHtml(subject.nameAr || subject.id)}')">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                </div>
+                ${subject.description ? `<p class="admin-card-text" style="font-size:0.88rem;opacity:0.7">${escapeHtml(subject.description)}</p>` : ''}
+            </div>
+        `;
+    }).join('');
+
+    return addFormHtml + listHtml;
+}
+
 
 function renderSuggestionsTab() {
     const data = [...(adminDataCache.suggestions || [])].reverse();
@@ -246,7 +460,10 @@ function showAdminTab(tab) {
     setActiveAdminTab(tab);
 
     const content = document.getElementById('adminTabContent');
-    if (!content) {
+    if (!content) return;
+
+    if (tab === 'subjects') {
+        content.innerHTML = renderSubjectsTab();
         return;
     }
 
@@ -282,99 +499,7 @@ async function showDashboard(user) {
 
     await refreshAdminDataCache();
     loadStats();
-    showAdminTab('suggestions');
-}
-
-function setSeedStatus(message, level = 'info') {
-    const status = document.getElementById('seedSubjectsStatus');
-    if (!status) {
-        return;
-    }
-
-    status.textContent = message;
-
-    if (level === 'error') {
-        status.style.color = '#ff8f8f';
-        return;
-    }
-
-    if (level === 'success') {
-        status.style.color = '#8effbf';
-        return;
-    }
-
-    status.style.color = 'rgba(255,255,255,0.75)';
-}
-
-function setSeedButtonLoading(isLoading) {
-    const button = document.getElementById('seedSubjectsBtn');
-    if (!button) {
-        return;
-    }
-
-    button.disabled = isLoading;
-    button.innerHTML = isLoading
-        ? '<i class="fas fa-spinner fa-spin"></i> Seeding...'
-        : '<i class="fas fa-upload"></i> Seed Subjects Data';
-}
-
-async function fetchSeedJson(path) {
-    const response = await fetch(path, { cache: 'no-store' });
-    if (!response.ok) {
-        throw new Error(`Failed to load ${path}`);
-    }
-
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-        throw new Error(`Invalid JSON structure in ${path}`);
-    }
-
-    return data;
-}
-
-async function upsertCollectionRows(collectionName, rows) {
-    if (typeof db === 'undefined' || !db) {
-        throw new Error('Firestore is not initialized.');
-    }
-
-    for (const row of rows) {
-        if (!row || typeof row !== 'object') {
-            continue;
-        }
-
-        const { id, ...docData } = row;
-        if (!id) {
-            continue;
-        }
-
-        await db.collection(collectionName).doc(id).set(docData, { merge: true });
-    }
-}
-
-async function handleSeedSubjectData() {
-    try {
-        setSeedButtonLoading(true);
-        setSeedStatus('Loading local seed files...');
-
-        const [catalogRows, pageRows] = await Promise.all([
-            fetchSeedJson('src/data/firebase-seed/subjects.catalog.json'),
-            fetchSeedJson('src/data/firebase-seed/subject-pages.json'),
-        ]);
-
-        setSeedStatus('Writing documents to Firebase...');
-
-        await upsertCollectionRows('subjects', catalogRows);
-        await upsertCollectionRows('subject_pages', pageRows);
-
-        setSeedStatus(
-            `Seed complete: ${catalogRows.length} subjects and ${pageRows.length} subject pages.`,
-            'success',
-        );
-    } catch (error) {
-        setSeedStatus(`Seed failed: ${error.message}`, 'error');
-    } finally {
-        setSeedButtonLoading(false);
-    }
+    showAdminTab('subjects');
 }
 
 async function handleGoogleLogin() {
@@ -418,7 +543,9 @@ function exposeGlobalHandlers() {
     window.handleGoogleLogin = handleGoogleLogin;
     window.handleSignOut = handleSignOut;
     window.showAdminTab = showAdminTab;
-    window.handleSeedSubjectData = handleSeedSubjectData;
+    window.handleAddSubject = handleAddSubject;
+    window.handleDeleteSubject = handleDeleteSubject;
+    window.handleToggleSubject = handleToggleSubject;
 }
 
 function initAdminDashboardPageEntry() {

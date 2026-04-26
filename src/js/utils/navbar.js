@@ -134,33 +134,9 @@ export function getSubjectNavbarHTML() {
                 <i class="fas fa-home"></i>
                 <span>الرئيسية</span>
             </a>
-            <a href="#summaries" class="nav-link" data-tooltip="الملخصات">
-                <i class="fas fa-file-alt"></i>
-                <span>الملخصات</span>
-            </a>
-            <a href="#bank" class="nav-link" data-tooltip="الأسئلة الاختيارية">
-                <i class="fas fa-book-open"></i>
-                <span>الاختياري</span>
-            </a>
-            <a href="#challenge" class="nav-link" data-tooltip="التحدي الاختياري">
-                <i class="fas fa-bolt"></i>
-                <span>تحدي الاختياري</span>
-            </a>
-            <a href="#essay-bank" class="nav-link" data-tooltip="الأسئلة المقالية">
-                <i class="fas fa-pen-fancy"></i>
-                <span>المقالي</span>
-            </a>
-            <a href="#essay-challenge" class="nav-link" data-tooltip="تحدي المقالي">
-                <i class="fas fa-brain"></i>
-                <span>تحدي المقالي</span>
-            </a>
             <a href="#leaderboard" class="nav-link" data-tooltip="المتصدرين">
                 <i class="fas fa-trophy"></i>
                 <span>المتصدرين</span>
-            </a>
-            <a href="#ask-ai" class="nav-link" data-tooltip="اسأل الذكاء">
-                <i class="fas fa-robot"></i>
-                <span>اسأل الذكاء</span>
             </a>
         </div>
     </div>`;

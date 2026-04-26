@@ -66,13 +66,9 @@ function renderSubjectsCatalog(subjects) {
         const meta = document.createElement('div');
         meta.className = 'subject-catalog-meta';
 
-        const questions = document.createElement('span');
-        questions.textContent = `${subject.questionCount || 0} سؤال`;
-
         const difficulty = document.createElement('span');
         difficulty.textContent = subject.difficulty || 'متوسط';
 
-        meta.appendChild(questions);
         meta.appendChild(difficulty);
 
         card.appendChild(head);

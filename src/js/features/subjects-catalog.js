@@ -42,8 +42,6 @@ function normalizeSubject(rawSubject, defaultSubject, index) {
         ),
         icon: toText(rawSubject?.icon, base.icon || '📚'),
         accentColor: sanitizeColor(rawSubject?.accentColor, base.accentColor || '#6366f1'),
-        questionCount: toNumber(rawSubject?.questionCount, base.questionCount || 0),
-        essayCount: toNumber(rawSubject?.essayCount, base.essayCount || 0),
         difficulty: toText(rawSubject?.difficulty, base.difficulty || 'متوسط'),
         order: toNumber(rawSubject?.order, base.order || index + 1),
         isActive: rawSubject?.isActive !== false,
@@ -213,8 +211,6 @@ async function loadSubjectPageData(subjectId) {
             resources,
             accentColor: sanitizeColor(data.accentColor, ''),
             difficulty: toText(data.difficulty),
-            questionCount: toNumber(data.questionCount, 0),
-            essayCount: toNumber(data.essayCount, 0),
         };
     } catch {
         return null;
