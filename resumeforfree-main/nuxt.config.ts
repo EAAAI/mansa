@@ -10,8 +10,6 @@ export default defineNuxtConfig({
         '@nuxt/eslint',
         '@vite-pwa/nuxt',
         '@nuxtjs/i18n',
-        'nitro-cloudflare-dev',
-        '@nuxtjs/turnstile',
         '@nuxtjs/sitemap',
         '@nuxtjs/robots',
     ],
@@ -22,17 +20,17 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
 
     app: {
-        baseURL: '/cv/',
+        baseURL: '/',
         head: {
             link: [
-                { rel: 'icon', type: 'image/svg+xml', href: '/cv/favicon.svg' },
+                { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
             ],
             meta: [
                 { charset: 'utf-8' },
                 { name: 'viewport', content: 'width=device-width, initial-scale=1' },
                 { name: 'format-detection', content: 'telephone=no' },
                 { name: 'robots', content: 'index, follow' },
-                { name: 'author', content: 'NewCv' },
+                { name: 'author', content: 'Layli CV' },
                 { name: 'theme-color', content: '#3b82f6' },
             ],
         },
@@ -41,8 +39,8 @@ export default defineNuxtConfig({
     css: ['~/assets/css/tailwind.css', '~/assets/css/app.css'],
 
     site: {
-        url: 'https://newcv.com',
-        name: 'NewCv',
+        url: 'https://cv.layli.page',
+        name: 'Layli CV',
         description: 'Build professional resumes for free. No servers, no registration, no payments. Unlimited downloads and resumes with complete privacy.',
         defaultLocale: 'en',
     },
@@ -50,16 +48,8 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             pocketbaseUrl: process.env.NODE_ENV === 'production'
-                ? 'https://api.newcv.com'
+                ? 'https://api.layli.page'
                 : 'http://localhost:8010',
-            turnstile: {
-                siteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA',
-                invisibleSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_INVISIBLE_SITE_KEY || '1x00000000000000000000BB',
-            },
-        },
-        turnstile: {
-            secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || '1x0000000000000000000000000000000AA',
-            invisibleSecretKey: process.env.NUXT_TURNSTILE_INVISIBLE_SECRET_KEY || '1x0000000000000000000000000000000BB',
         },
     },
     future: {
@@ -67,7 +57,7 @@ export default defineNuxtConfig({
     },
     compatibilityDate: '2025-07-15',
     nitro: {
-        preset: 'cloudflare-module',
+        preset: 'vercel',
     },
 
     vite: {
@@ -105,7 +95,7 @@ export default defineNuxtConfig({
         lazy: true,
         langDir: 'locales',
         strategy: 'prefix_except_default',
-        baseUrl: 'https://newcv.com',
+        baseUrl: 'https://cv.layli.page',
         detectBrowserLanguage: {
             useCookie: true,
             cookieKey: 'i18n_redirected',
