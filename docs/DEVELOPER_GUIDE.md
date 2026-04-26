@@ -16,6 +16,7 @@ The project now follows a page-module runtime pattern:
 | HTML Page | Entrypoint Module |
 |---|---|
 | `index.html` | `src/js/pages/index-page.js` |
+| `subject.html` | `src/js/pages/subject-page.js` |
 | `admin-dashboard.html` | `src/js/pages/admin-dashboard-page.js` |
 | `suggest.html` | `src/js/pages/suggest-page.js` |
 | `join-us.html` | `src/js/pages/join-us-page.js` |
@@ -32,6 +33,7 @@ Use `docs/RUNTIME_ENTRYPOINT_MAP.md` as the source of truth.
 ```text
 mansa/
 ├── index.html
+├── subject.html
 ├── admin-dashboard.html
 ├── suggest.html
 ├── join-us.html
@@ -45,11 +47,14 @@ mansa/
 │   ├── js/
 │   │   ├── config/
 │   │   │   └── firebase.js
+│   │   │   └── subjects-config.js
 │   │   ├── features/
 │   │   │   ├── essay.js
+│   │   │   ├── subjects-catalog.js
 │   │   │   └── user-profile.js
 │   │   ├── pages/
 │   │   │   ├── index-page.js
+│   │   │   ├── subject-page.js
 │   │   │   ├── admin-dashboard-page.js
 │   │   │   ├── suggest-page.js
 │   │   │   ├── join-us-page.js
@@ -72,6 +77,7 @@ mansa/
 │   │   ├── pages/
 │   │   │   ├── home.css
 │   │   │   ├── index.css
+│   │   │   ├── subject.css
 │   │   │   ├── admin-dashboard.css
 │   │   │   ├── suggest.css
 │   │   │   ├── join-us.css
@@ -149,11 +155,47 @@ python -m http.server 8000
 
 # Node static server
 npx serve .
+
+# Integrity checks (security + dynamic subjects)
+npm run verify
+
+# Runtime/data smoke checks
+npm run verify:smoke
+
+# Secret scan and full CI-equivalent checks
+npm run verify:secrets
+npm run verify:ci
 ```
 
 ---
 
-## 8. Status Snapshot
+## 8. Dynamic Subject Operations
+
+### Seed from Admin Dashboard
+
+1. Login to `admin-dashboard.html` with an allowed admin account.
+2. Use the **Seed Subjects Data** button in the data tools panel.
+3. The action reads:
+    - `src/data/firebase-seed/subjects.catalog.json`
+    - `src/data/firebase-seed/subject-pages.json`
+4. It upserts documents into:
+    - `subjects`
+    - `subject_pages`
+
+### Related Ops Docs
+
+- `docs/FIREBASE_SUBJECTS_SETUP.md`
+- `docs/FIRESTORE_RULES_TEMPLATE.md`
+- `docs/PREDEPLOY_CHECKLIST.md`
+
+### CI Quality Gate
+
+- Workflow: `.github/workflows/quality-gates.yml`
+- Local equivalent command: `npm run verify:ci`
+
+---
+
+## 9. Status Snapshot
 
 - JavaScript refactor phases (0-2): complete.
 - CSS decomposition (phase 3): complete.

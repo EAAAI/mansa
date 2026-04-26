@@ -11,6 +11,7 @@ Each page must load exactly one local page module entrypoint.
 | Page | Entrypoint Module | Notes |
 |------|-------------------|-------|
 | index.html | src/js/pages/index-page.js | Inline JS extracted |
+| subject.html | src/js/pages/subject-page.js | Dynamic subject details by query param |
 | admin-dashboard.html | src/js/pages/admin-dashboard-page.js | Inline JS extracted |
 | suggest.html | src/js/pages/suggest-page.js | Inline JS extracted |
 | join-us.html | src/js/pages/join-us-page.js | Inline JS extracted |

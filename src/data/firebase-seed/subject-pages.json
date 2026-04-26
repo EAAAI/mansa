@@ -1,0 +1,172 @@
+[
+  {
+    "id": "physics2",
+    "headline": "مراجعة فيزياء 2 قبل الاختبار النهائي",
+    "description": "ابدأ بالأسئلة المفاهيمية ثم انتقل إلى مسائل التطبيق بخطوات مرتبة.",
+    "announcement": "سيتم نشر مراجعة ليلة الامتحان يوم الخميس الساعة 8 مساءً.",
+    "accentColor": "#06b6d4",
+    "difficulty": "متوسط",
+    "questionCount": 120,
+    "essayCount": 18,
+    "modules": [
+      {
+        "title": "المجالات الكهربائية",
+        "description": "أسئلة التعريفات، القوانين، وحسابات المجال الناتج."
+      },
+      {
+        "title": "التيار والمقاومة",
+        "description": "تدريبات على قانون أوم وتبسيط الدوائر."
+      },
+      {
+        "title": "البصريات العملية",
+        "description": "مراجعة العدسات، المرايا، ومسائل الصورة النهائية."
+      }
+    ],
+    "resources": [
+      {
+        "title": "ملخص القوانين الأساسية",
+        "href": "#"
+      },
+      {
+        "title": "فيديو شرح المجال الكهربائي",
+        "href": "#"
+      }
+    ]
+  },
+  {
+    "id": "math0",
+    "headline": "تفاضل وتكامل بطريقة منظمة",
+    "description": "ركز على أنماط الأسئلة المتكررة وحلولها المختصرة.",
+    "announcement": "تم رفع نموذج امتحان تدريبي جديد.",
+    "accentColor": "#22c55e",
+    "difficulty": "متوسط",
+    "questionCount": 110,
+    "essayCount": 12,
+    "modules": [
+      {
+        "title": "النهايات والاستمرارية",
+        "description": "تدريب على حساب النهايات مع التبسيط الجبري."
+      },
+      {
+        "title": "الاشتقاق وتطبيقاته",
+        "description": "مسائل المماس، المعدلات، والقيم العظمى والصغرى."
+      }
+    ],
+    "resources": [
+      {
+        "title": "ورقة قوانين سريعة",
+        "href": "#"
+      }
+    ]
+  },
+  {
+    "id": "math1",
+    "headline": "الجبر الخطي بخطة مراجعة أسبوعية",
+    "description": "قسم المذاكرة بين المفاهيم الأساسية والتطبيقات الحسابية.",
+    "announcement": "جلسة أسئلة مباشرة يوم الأحد.",
+    "accentColor": "#f59e0b",
+    "difficulty": "متوسط",
+    "questionCount": 95,
+    "essayCount": 10,
+    "modules": [
+      {
+        "title": "المصفوفات",
+        "description": "عمليات المصفوفات، المحددات، والعكس."
+      },
+      {
+        "title": "أنظمة المعادلات",
+        "description": "طرق جاوس وجاوس-جوردان لحل الأنظمة."
+      }
+    ],
+    "resources": []
+  },
+  {
+    "id": "it",
+    "headline": "مفاهيم IT للمراجعة السريعة",
+    "description": "محتوى مبسط مع أمثلة عملية من الواقع.",
+    "announcement": "إضافة بنك أسئلة الشبكات قريباً.",
+    "accentColor": "#6366f1",
+    "difficulty": "سهل",
+    "questionCount": 85,
+    "essayCount": 8,
+    "modules": [
+      {
+        "title": "مكونات الحاسب",
+        "description": "وحدات الإدخال والإخراج والذاكرة والمعالج."
+      },
+      {
+        "title": "أساسيات الشبكات",
+        "description": "أنواع الشبكات والبروتوكولات الأكثر شيوعاً."
+      }
+    ],
+    "resources": []
+  },
+  {
+    "id": "electronics",
+    "headline": "إلكترونيات: من النظرية للتطبيق",
+    "description": "مراجعة الدوائر والتناظرية مع أسئلة تطبيقية.",
+    "announcement": "تم تحديث قسم الترانزستور.",
+    "accentColor": "#ec4899",
+    "difficulty": "متوسط",
+    "questionCount": 90,
+    "essayCount": 14,
+    "modules": [
+      {
+        "title": "الدايود والترانزستور",
+        "description": "الفهم النظري مع مسائل الدوائر الشائعة."
+      }
+    ],
+    "resources": []
+  },
+  {
+    "id": "english",
+    "headline": "مراجعة اللغة الإنجليزية الأكاديمية",
+    "description": "ركز على المفردات والقواعد الأكثر وروداً بالامتحان.",
+    "announcement": "سيتم إضافة بنك مصطلحات خلال هذا الأسبوع.",
+    "accentColor": "#0ea5e9",
+    "difficulty": "سهل",
+    "questionCount": 70,
+    "essayCount": 6,
+    "modules": [
+      {
+        "title": "Grammar Focus",
+        "description": "Tenses, conditionals, and sentence structure drills."
+      }
+    ],
+    "resources": []
+  },
+  {
+    "id": "history",
+    "headline": "محاور التاريخ في نقاط",
+    "description": "تلخيص الدروس الزمنية مع أسئلة متوقعة ومباشرة.",
+    "announcement": "تم نشر دليل مراجعة الفصل الثاني.",
+    "accentColor": "#a855f7",
+    "difficulty": "سهل",
+    "questionCount": 60,
+    "essayCount": 7,
+    "modules": [
+      {
+        "title": "التسلسل الزمني",
+        "description": "تنظيم الأحداث الرئيسية وربطها بالأسباب والنتائج."
+      }
+    ],
+    "resources": []
+  },
+  {
+    "id": "law",
+    "headline": "أساسيات القانون لطلاب الحاسبات",
+    "description": "محتوى مبسط يساعدك على فهم المبادئ القانونية بسرعة.",
+    "announcement": "إضافة ملخص المصطلحات القانونية قريباً.",
+    "accentColor": "#ef4444",
+    "difficulty": "متوسط",
+    "questionCount": 65,
+    "essayCount": 9,
+    "modules": [
+      {
+        "title": "المفاهيم القانونية الأساسية",
+        "description": "تعريفات ومبادئ مع أمثلة مبسطة."
+      }
+    ],
+    "resources": []
+  }
+]

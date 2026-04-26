@@ -7,20 +7,12 @@
  * - Improved timer logic with resume capability
  * - Enhanced error handling
  * 
- * Uses Google Gemini 1.5 Flash for grading handwritten answers
+ * Uses secure backend AI proxy for grading handwritten answers
  */
 
 // ============================================
 // CONFIGURATION
 // ============================================
-
-const GEMINI_ESSAY_CONFIG = {
-    apiKey: 'AIzaSyD-YBIQ4IODnWv9Yl7evcqy1aFr5fzxBlM',
-    model: 'gemini-2.0-flash',
-    get apiUrl() {
-        return `https://generativelanguage.googleapis.com/v1beta/models/${this.model}:generateContent?key=${this.apiKey}`;
-    }
-};
 
 const ESSAY_CHALLENGE_CONFIG = {
     TIMER: 15 * 60, // 15 minutes in seconds
@@ -185,120 +177,36 @@ function shuffleEssayArray(array) {
 // ============================================
 
 /**
- * Grade a single essay answer using Gemini 1.5 Flash
- * with lenient, encouraging teacher persona
+ * Grade a single essay answer via the backend AI proxy endpoint
  */
 async function gradeEssayWithGemini(base64Image, mimeType, questionText, modelAnswer) {
-    const promptText = `أنت معلم متساهل ومشجع. مهمتك هي تصحيح إجابة الطالب المكتوبة بخط اليد.
-
-🟢 *شخصيتك كمعلم:*
-- أنت معلم لطيف يركز على الفهم وليس الكلمات المحفوظة
-- تشجع الطالب دائماً حتى لو أخطأ
-- تغفر الأخطاء الإملائية البسيطة
-- تقدّر أي محاولة صحيحة
-
-📋 *السؤال:*
-"${questionText}"
-
-✅ *الإجابة النموذجية:*
-"${modelAnswer}"
-
-📝 *قواعد التصحيح:*
-1. ركّز على المعنى والمفهوم وليس التطابق الحرفي
-2. إذا فهم الطالب الفكرة الأساسية، أعطه درجة كاملة أو شبه كاملة
-3. تجاهل الأخطاء الإملائية البسيطة تماماً
-4. إذا أضاف الطالب معلومات صحيحة إضافية، اعتبرها إيجابية
-5. الكتابة بأسلوب عامي مقبولة إذا كان المعنى صحيحاً
-
-⭐ *مقياس الدرجات:*
-- 5: إجابة ممتازة - الطالب فاهم تماماً
-- 4: إجابة جيدة جداً - فهم معظم النقاط
-- 3: إجابة جيدة - فهم جزئي مقبول
-- 2: إجابة ضعيفة - لكن يوجد محاولة
-- 1: محاولة بسيطة
-- 0: لا إجابة أو غير مقروءة
-
-🔴 *مهم جداً:*
-أرجع إجابتك كـ JSON فقط بدون أي تنسيق markdown:
-
-{
-  "score": رقم من 0 إلى 5,
-  "feedback": "تعليق مشجع قصير بالعربية",
-  "correction_details": {
-    "what_was_wrong": "ما كان خاطئاً (أو 'لا شيء' إذا صحيح)",
-    "ideal_answer": "ملخص مختصر للإجابة المثالية",
-    "encouragement": "نصيحة مشجعة للطالب"
-  }
-}`;
-
-    const requestBody = {
-        contents: [{
-            parts: [
-                { text: promptText },
-                {
-                    inlineData: {
-                        mimeType: mimeType,
-                        data: base64Image
-                    }
-                }
-            ]
-        }],
-        generationConfig: {
-            temperature: 0.4,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024
-        }
-    };
-
     try {
-        const response = await fetch(GEMINI_ESSAY_CONFIG.apiUrl, {
+        const response = await fetch('/api/ai-essay-grade', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({
+                base64Image,
+                mimeType,
+                questionText,
+                modelAnswer
+            })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || 'فشل في الاتصال بـ Gemini API');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'فشل في الاتصال بخدمة التصحيح');
         }
 
         const data = await response.json();
-        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!textResponse) {
-            throw new Error('لم يتم استلام رد من الذكاء الاصطناعي');
+        if (!data.success || !data.result) {
+            throw new Error(data.error || 'لم يتم استلام نتيجة التصحيح');
         }
 
-        // Parse JSON from response (handle potential markdown code blocks)
-        let jsonString = textResponse.trim();
-        if (jsonString.startsWith('```json')) {
-            jsonString = jsonString.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-        } else if (jsonString.startsWith('```')) {
-            jsonString = jsonString.replace(/^```\s*/, '').replace(/\s*```$/, '');
-        }
-
-        const result = JSON.parse(jsonString);
-
-        // Build comprehensive feedback
-        let fullFeedback = result.feedback || 'تم التصحيح';
-
-        if (result.correction_details) {
-            const details = result.correction_details;
-            if (details.what_was_wrong && details.what_was_wrong !== 'لا شيء') {
-                fullFeedback += `\n\n⚠️ ${details.what_was_wrong}`;
-            }
-            if (details.ideal_answer) {
-                fullFeedback += `\n\n📖 الإجابة المثالية: ${details.ideal_answer}`;
-            }
-            if (details.encouragement) {
-                fullFeedback += `\n\n💪 ${details.encouragement}`;
-            }
-        }
+        const result = data.result;
 
         return {
-            score: Math.min(5, Math.max(0, result.score)),
-            feedback: fullFeedback,
+            score: Math.min(5, Math.max(0, Number(result.score) || 0)),
+            feedback: result.feedback || 'تم التصحيح',
             correction_details: result.correction_details || null
         };
     } catch (error) {
@@ -309,6 +217,15 @@ async function gradeEssayWithGemini(base64Image, mimeType, questionText, modelAn
             correction_details: null
         };
     }
+}
+
+function escapeHtml(text) {
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 // ============================================
@@ -736,6 +653,11 @@ async function submitEssayChallenge(event) {
                 result.score >= 3 ? 'good' :
                     result.score >= 2 ? 'partial' : 'needs-work';
 
+            const feedbackHtml = result.feedback
+                .split('\n')
+                .map((line) => `<p>${escapeHtml(line)}</p>`)
+                .join('');
+
             feedbackArea.innerHTML = `
                 <div class="essay-result-badge ${scoreClass}">
                     <div class="score-circle">
@@ -745,7 +667,7 @@ async function submitEssayChallenge(event) {
                     <div class="score-label">${getScoreLabel(result.score)}</div>
                 </div>
                 <div class="essay-feedback-content">
-                    ${result.feedback.split('\n').map(line => `<p>${line}</p>`).join('')}
+                    ${feedbackHtml}
                 </div>
             `;
         }

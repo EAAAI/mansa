@@ -16,24 +16,14 @@ CREATE TABLE IF NOT EXISTS resumes (
 CREATE INDEX idx_resumes_user_id ON resumes(user_id);
 CREATE INDEX idx_resumes_user_active ON resumes(user_id, is_active);
 
+-- Enforce at most one active resume per user at the database level.
+CREATE UNIQUE INDEX idx_resumes_one_active_per_user
+ON resumes(user_id)
+WHERE is_active = 1;
+
 -- Create trigger to auto-update updated_at
 CREATE TRIGGER update_resumes_updated_at
 AFTER UPDATE ON resumes
 BEGIN
     UPDATE resumes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-END;
-
--- Ensure only one active resume per user
-CREATE TRIGGER ensure_single_active_resume
-BEFORE UPDATE ON resumes
-WHEN NEW.is_active = 1 AND OLD.is_active = 0
-BEGIN
-    UPDATE resumes SET is_active = 0 WHERE user_id = NEW.user_id AND id != NEW.id;
-END;
-
-CREATE TRIGGER ensure_single_active_resume_insert
-BEFORE INSERT ON resumes
-WHEN NEW.is_active = 1
-BEGIN
-    UPDATE resumes SET is_active = 0 WHERE user_id = NEW.user_id;
 END;

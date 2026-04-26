@@ -56,7 +56,20 @@ export function showTopScorerAlert(name, score) {
     const textSpan = document.getElementById('topScorerText');
     
     if (alertDiv && textSpan && name && score) {
-        textSpan.innerHTML = `🏆 <b>${name}</b> هو الأعلى في الإجمالي برصيد <b>${score}</b> نقطة!`;
+        textSpan.textContent = '';
+        textSpan.appendChild(document.createTextNode('🏆 '));
+
+        const nameBold = document.createElement('b');
+        nameBold.textContent = String(name);
+        textSpan.appendChild(nameBold);
+
+        textSpan.appendChild(document.createTextNode(' هو الأعلى في الإجمالي برصيد '));
+
+        const scoreBold = document.createElement('b');
+        scoreBold.textContent = String(score);
+        textSpan.appendChild(scoreBold);
+
+        textSpan.appendChild(document.createTextNode(' نقطة!'));
         alertDiv.style.display = 'block';
     }
 }
@@ -133,9 +146,32 @@ export function showChallengeMistakes(mistakes) {
     
     if (mistakes && mistakes.length > 0) {
         list.innerHTML = '';
-        mistakes.forEach((item, idx) => {
+        mistakes.forEach((item) => {
             const li = document.createElement('li');
-            li.innerHTML = `<b>السؤال:</b> ${item.question}<br><span style="color:#ff6b6b"><b>إجابتك:</b> ${item.userAnswer || 'بدون إجابة'}</span><br><span style="color:#38ef7d"><b>الإجابة الصحيحة:</b> ${item.correctAnswer}</span>`;
+
+            const questionLabel = document.createElement('b');
+            questionLabel.textContent = 'السؤال:';
+            li.appendChild(questionLabel);
+            li.appendChild(document.createTextNode(` ${item.question || ''}`));
+            li.appendChild(document.createElement('br'));
+
+            const userAnswerSpan = document.createElement('span');
+            userAnswerSpan.style.color = '#ff6b6b';
+            const userAnswerLabel = document.createElement('b');
+            userAnswerLabel.textContent = 'إجابتك:';
+            userAnswerSpan.appendChild(userAnswerLabel);
+            userAnswerSpan.appendChild(document.createTextNode(` ${item.userAnswer || 'بدون إجابة'}`));
+            li.appendChild(userAnswerSpan);
+            li.appendChild(document.createElement('br'));
+
+            const correctAnswerSpan = document.createElement('span');
+            correctAnswerSpan.style.color = '#38ef7d';
+            const correctAnswerLabel = document.createElement('b');
+            correctAnswerLabel.textContent = 'الإجابة الصحيحة:';
+            correctAnswerSpan.appendChild(correctAnswerLabel);
+            correctAnswerSpan.appendChild(document.createTextNode(` ${item.correctAnswer || ''}`));
+            li.appendChild(correctAnswerSpan);
+
             li.style.marginBottom = '12px';
             list.appendChild(li);
         });

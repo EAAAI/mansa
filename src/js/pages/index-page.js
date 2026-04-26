@@ -3,7 +3,98 @@
  * Owns index page runtime behavior extracted from inline scripts.
  */
 
+import { createSubjectUrl } from '../config/subjects-config.js';
+import { loadSubjectsCatalog } from '../features/subjects-catalog.js';
+
 const PAGE_ID = 'index';
+
+async function persistAdminSubmission(recordType, payload) {
+    if (typeof dbAnalytics === 'undefined' || !dbAnalytics) {
+        return false;
+    }
+
+    await dbAnalytics.collection('admin_submissions').add({
+        recordType,
+        ...payload,
+        submittedAt: new Date().toISOString(),
+    });
+
+    return true;
+}
+
+function renderSubjectsCatalog(subjects) {
+    const grid = document.getElementById('subjectsGrid');
+    const status = document.getElementById('subjectsStatus');
+
+    if (!grid || !status) {
+        return;
+    }
+
+    grid.innerHTML = '';
+
+    if (!subjects.length) {
+        status.textContent = 'لا توجد مواد متاحة حالياً.';
+        return;
+    }
+
+    status.textContent = `تم تحميل ${subjects.length} مادة.`;
+
+    subjects.forEach((subject) => {
+        const card = document.createElement('a');
+        card.className = 'subject-catalog-card';
+        card.href = createSubjectUrl(subject.id);
+        card.style.setProperty('--subject-accent', subject.accentColor || '#6366f1');
+
+        const head = document.createElement('div');
+        head.className = 'subject-catalog-card-head';
+
+        const title = document.createElement('h3');
+        title.className = 'subject-catalog-title';
+        title.textContent = subject.nameAr;
+
+        const icon = document.createElement('span');
+        icon.className = 'subject-catalog-icon';
+        icon.textContent = subject.icon || '📚';
+
+        head.appendChild(title);
+        head.appendChild(icon);
+
+        const description = document.createElement('p');
+        description.className = 'subject-catalog-description';
+        description.textContent = subject.description;
+
+        const meta = document.createElement('div');
+        meta.className = 'subject-catalog-meta';
+
+        const questions = document.createElement('span');
+        questions.textContent = `${subject.questionCount || 0} سؤال`;
+
+        const difficulty = document.createElement('span');
+        difficulty.textContent = subject.difficulty || 'متوسط';
+
+        meta.appendChild(questions);
+        meta.appendChild(difficulty);
+
+        card.appendChild(head);
+        card.appendChild(description);
+        card.appendChild(meta);
+        grid.appendChild(card);
+    });
+}
+
+async function initSubjectsCatalog() {
+    const status = document.getElementById('subjectsStatus');
+    if (!status) {
+        return;
+    }
+
+    try {
+        const subjects = await loadSubjectsCatalog();
+        renderSubjectsCatalog(subjects);
+    } catch {
+        status.textContent = 'تعذر تحميل المواد الآن. سيتم استخدام الإعدادات الافتراضية لاحقاً.';
+    }
+}
 
 function openSuggestPopup() {
     document.getElementById('suggestPopup')?.classList.add('active');
@@ -62,6 +153,8 @@ async function submitPopupSuggest() {
         text,
     };
 
+    let savedToRemote = false;
+
     try {
         const response = await fetch('/api/contact', {
             method: 'POST',
@@ -72,9 +165,28 @@ async function submitPopupSuggest() {
         if (!response.ok) {
             throw new Error('API failed');
         }
+
+        try {
+            savedToRemote = await persistAdminSubmission('suggestion', {
+                type,
+                name: data.name,
+                text,
+            });
+        } catch {
+            savedToRemote = false;
+        }
     } catch (error) {
+        savedToRemote = false;
+    }
+
+    if (!savedToRemote) {
         const all = JSON.parse(localStorage.getItem('suggestions') || '[]');
-        all.push({ ...data, submittedAt: new Date().toISOString() });
+        all.push({
+            type,
+            name: data.name,
+            text,
+            submittedAt: new Date().toISOString(),
+        });
         localStorage.setItem('suggestions', JSON.stringify(all));
     }
 
@@ -122,6 +234,8 @@ async function submitPopupReport() {
         error: errorText,
     };
 
+    let savedToRemote = false;
+
     try {
         const response = await fetch('/api/contact', {
             method: 'POST',
@@ -132,9 +246,28 @@ async function submitPopupReport() {
         if (!response.ok) {
             throw new Error('API failed');
         }
+
+        try {
+            savedToRemote = await persistAdminSubmission('report', {
+                subject: 'بلاغ',
+                question,
+                error: errorText,
+            });
+        } catch {
+            savedToRemote = false;
+        }
     } catch (error) {
+        savedToRemote = false;
+    }
+
+    if (!savedToRemote) {
         const all = JSON.parse(localStorage.getItem('reports') || '[]');
-        all.push({ ...data, submittedAt: new Date().toISOString() });
+        all.push({
+            subject: 'بلاغ',
+            question,
+            error: errorText,
+            submittedAt: new Date().toISOString(),
+        });
         localStorage.setItem('reports', JSON.stringify(all));
     }
 
@@ -179,6 +312,8 @@ async function submitPopupJoin(event) {
         contribution: document.getElementById('popupJoinContrib')?.value,
     };
 
+    let savedToRemote = false;
+
     try {
         const response = await fetch('/api/contact', {
             method: 'POST',
@@ -189,9 +324,32 @@ async function submitPopupJoin(event) {
         if (!response.ok) {
             throw new Error('API failed');
         }
+
+        try {
+            savedToRemote = await persistAdminSubmission('join', {
+                name: data.name || '',
+                email: data.email || '',
+                phone: data.phone || '',
+                level: data.level || '',
+                contribution: data.contribution || '',
+            });
+        } catch {
+            savedToRemote = false;
+        }
     } catch (error) {
+        savedToRemote = false;
+    }
+
+    if (!savedToRemote) {
         const submissions = JSON.parse(localStorage.getItem('joinSubmissions') || '[]');
-        submissions.push({ ...data, submittedAt: new Date().toISOString() });
+        submissions.push({
+            name: data.name || '',
+            email: data.email || '',
+            phone: data.phone || '',
+            level: data.level || '',
+            contribution: data.contribution || '',
+            submittedAt: new Date().toISOString(),
+        });
         localStorage.setItem('joinSubmissions', JSON.stringify(submissions));
     }
 
@@ -284,6 +442,7 @@ function initIndexPageEntry() {
     initOverlayCloseHandlers();
     initEscapeShortcut();
     applySavedTheme();
+    initSubjectsCatalog();
 }
 
 if (document.readyState === 'loading') {

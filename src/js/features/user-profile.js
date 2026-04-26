@@ -59,14 +59,34 @@ function displayWelcomeGreeting(userProfile) {
     }
 }
 
+function renderProfileDisplayName(name, nickname) {
+    const profileDisplayName = document.getElementById('profileDisplayName');
+    if (!profileDisplayName) {
+        return;
+    }
+
+    profileDisplayName.textContent = '';
+
+    if (!name) {
+        profileDisplayName.textContent = 'مستخدم جديد';
+        return;
+    }
+
+    profileDisplayName.appendChild(document.createTextNode(name));
+
+    if (nickname) {
+        const nicknameSpan = document.createElement('span');
+        nicknameSpan.style.color = '#ffc107';
+        nicknameSpan.style.fontSize = '0.9rem';
+        nicknameSpan.textContent = ` (${nickname})`;
+        profileDisplayName.appendChild(nicknameSpan);
+    }
+}
+
 function openUserProfile() {
     const userProfile = JSON.parse(localStorage.getItem('userProfile')) || initUserProfile();
 
-    if (userProfile.name && userProfile.nickname) {
-        document.getElementById('profileDisplayName').innerHTML = `${userProfile.name} <span style="color: #ffc107; font-size: 0.9rem;">(${userProfile.nickname})</span>`;
-    } else {
-        document.getElementById('profileDisplayName').textContent = userProfile.name || 'مستخدم جديد';
-    }
+    renderProfileDisplayName(userProfile.name, userProfile.nickname);
 
     document.getElementById('profileUserId').textContent = userProfile.id;
     document.getElementById('profileNameInput').value = userProfile.name || '';
@@ -84,33 +104,25 @@ function closeUserProfile() {
 
 async function generateNickname(name) {
     try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const response = await fetch('/api/ai-nickname', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer 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'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'أنت مساعد ودود. مهمتك توليد لقب أو دلع واحد فقط لطيف وودود باللغة العربية للاسم المعطى. الرد يجب أن يكون اللقب فقط بدون أي كلام إضافي. مثال: إذا الاسم "محمد" يمكن أن يكون اللقب "حمودة 🌟" أو "ميدو ⭐"'
-                    },
-                    {
-                        role: 'user',
-                        content: `ولد لقب أو دلع لطيف للاسم: ${name}`
-                    }
-                ],
-                max_tokens: 50,
-                temperature: 0.9
+                name
             })
         });
 
-        const data = await response.json();
-        if (data.choices && data.choices[0]) {
-            return data.choices[0].message.content.trim();
+        if (!response.ok) {
+            return null;
         }
+
+        const data = await response.json();
+        if (data.success && data.nickname) {
+            return String(data.nickname).trim();
+        }
+
         return null;
     } catch (error) {
         return null;
@@ -145,10 +157,10 @@ async function saveUserProfile() {
         }
 
         if (nickname) {
-            document.getElementById('profileDisplayName').innerHTML = `${newName} <span style="color: #ffc107; font-size: 0.9rem;">(${nickname})</span>`;
+            renderProfileDisplayName(newName, nickname);
             alert(`✅ تم حفظ البيانات ومزامنتها!\n\n🏷️ لقبك: ${nickname}\n🆔 المعرف الخاص بك: ${userProfile.id}\n(احتفظ بهذا الكود لاسترجاع حسابك)`);
         } else {
-            document.getElementById('profileDisplayName').textContent = newName;
+            renderProfileDisplayName(newName, '');
             alert(`✅ تم حفظ البيانات بنجاح!\n🆔 المعرف الخاص بك: ${userProfile.id}`);
         }
 

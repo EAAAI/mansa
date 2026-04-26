@@ -1,6 +1,6 @@
 # Project Master Plan - MANSA
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 ## Why this plan exists
 This is the single execution plan for architecture, security, quality, and delivery.
@@ -10,10 +10,12 @@ Planning method used:
 - Pass 2: Structure-first planning (how to improve maintainability without regressions)
 
 ## Current checkpoint
-Architecture checkpoint status:
-- Page-entry architecture: complete after restoring suggest page wiring
-- Runtime/docs/cache alignment: complete
-- Allowed next phase: security hardening
+Execution status:
+- Phase 0 Baseline Freeze: completed
+- Phase 1 Security Hotfixes: completed for core scope
+- Dynamic subjects architecture + Firebase catalog/pages: completed
+- Quality gates automation (integrity + smoke + secret scan + CI): completed
+- Remaining priority: server-enforced admin authorization boundary
 
 Rule for progression:
 - Do not move to the next phase until the current phase gate is marked complete.
@@ -57,6 +59,9 @@ Gate:
 - Basic abuse protection active.
 - Security smoke test checklist passes.
 
+Status:
+- Completed
+
 ---
 
 ## Phase 2 - Architecture Hardening
@@ -77,6 +82,9 @@ Gate:
 - CI guardrails catch architecture regressions.
 - Docs match live structure.
 - No orphan runtime paths in production pages.
+
+Status:
+- In progress (CI guardrails added for integrity/smoke/secret checks)
 
 ---
 
@@ -134,10 +142,12 @@ Gate:
 
 ## Risk register (active)
 Critical risks:
-- Secret keys exposed in frontend code.
-- User-controlled content rendered with innerHTML in multiple files.
 - Frontend-only admin authorization model.
-- Contact endpoint has no anti-abuse controls.
+
+Resolved critical risks:
+- Frontend secret key exposure removed from AI client flows.
+- Major user-controlled HTML rendering paths hardened.
+- Contact endpoint now has validation + origin check + rate limiting.
 
 High risks:
 - LocalStorage as operational data source for admin workflows.
@@ -147,9 +157,9 @@ High risks:
 ---
 
 ## Recommended immediate sequence
-1. Execute Phase 1 Security Hotfixes first.
-2. Re-run architecture and security validations.
-3. Enter Phase 2 hardening only after Phase 1 gate is complete.
+1. Complete server-enforced admin trust model.
+2. Move admin operations data flow from localStorage to backend source-of-truth.
+3. Expand automated tests from smoke checks to integration-level flow tests.
 
 ## Owner checkpoint format
 For each phase completion, record:

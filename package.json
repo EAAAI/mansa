@@ -1,4 +1,12 @@
 {
+  "scripts": {
+    "start": "npx serve .",
+    "start:py": "python -m http.server 8000",
+    "verify": "node scripts/verify-integrity.mjs",
+    "verify:smoke": "node scripts/verify-smoke.mjs",
+    "verify:secrets": "node scripts/scan-secrets.mjs",
+    "verify:ci": "npm run verify && npm run verify:smoke && npm run verify:secrets"
+  },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "framer-motion": "^12.38.0",

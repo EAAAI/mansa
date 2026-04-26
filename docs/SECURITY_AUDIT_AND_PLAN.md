@@ -1,6 +1,6 @@
 # Security Audit and Action Plan - MANSA
 
-Last updated: 2026-04-25
+Last updated: 2026-04-26
 
 ## Scope
 Reviewed runtime and core project files including:
@@ -11,13 +11,13 @@ Reviewed runtime and core project files including:
 - Tooling scripts and docs
 
 ## Summary
-Current risk posture: High
+Current risk posture: Medium
 
 Reason:
-- Secrets are exposed in frontend code.
-- Several rendering paths use unsafe HTML injection with user-controlled values.
-- Admin trust model is primarily client-side.
-- Contact endpoint can be abused without rate limiting/validation hardening.
+- Frontend AI secrets were removed and AI calls now route through server endpoints.
+- Contact endpoint now has origin checks, input validation, and rate limiting.
+- Multiple user-controlled rendering paths were hardened against HTML/script injection.
+- Remaining primary risk is frontend-only admin trust model pending server-enforced policy.
 
 ---
 
@@ -38,6 +38,9 @@ Action:
 2. Remove secrets from client code.
 3. Proxy AI requests through backend endpoints using environment variables.
 
+Status:
+- Implemented (frontend AI secrets removed, `/api/ai-nickname` and `/api/ai-essay-grade` live).
+
 ---
 
 ### Critical 2 - User-controlled HTML rendered with innerHTML
@@ -52,6 +55,9 @@ Impact:
 Action:
 1. Replace innerHTML for user data paths with textContent and DOM node creation.
 2. Where formatted output is needed, apply strict escaping/sanitization.
+
+Status:
+- Implemented for major runtime paths (`user-profile`, `home`, `admin-dashboard`, essay feedback escaping).
 
 ---
 
@@ -83,6 +89,10 @@ Action:
 2. Add payload size constraints.
 3. Add IP/user-agent rate limiting.
 4. Add origin allow-list and optional captcha verification.
+
+Status:
+- Implemented for validation, rate limiting, and origin allow-list.
+- Captcha remains optional and not yet integrated.
 
 ---
 
@@ -125,6 +135,9 @@ Action:
 Exit criteria:
 - Secret scan finds no live API secrets in repository.
 
+Status:
+- Completed
+
 ### Phase S2 - 3 day hardening
 - Replace unsafe innerHTML paths for user-controlled content.
 - Add input validation and abuse controls to api/contact.js.
@@ -132,12 +145,18 @@ Exit criteria:
 Exit criteria:
 - Security test cases for XSS and malformed payloads pass.
 
+Status:
+- Completed for implemented scopes; automated checks now run via `npm run verify:ci`.
+
 ### Phase S3 - 1 week trust model fix
 - Move admin trust to backend-enforced roles/rules.
 - Move operational submissions to trusted storage.
 
 Exit criteria:
 - Admin-only data paths enforced server-side.
+
+Status:
+- In progress (deployable Firestore rules added; client gate now uses custom claims, and production claim provisioning/deployment still pending).
 
 ---
 

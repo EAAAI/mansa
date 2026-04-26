@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function hasKeys(keys) {
+      return request.resource.data.keys().hasOnly(keys);
+    }
+
+    function isShortString(value, maxLength) {
+      return value is string && value.size() > 0 && value.size() <= maxLength;
+    }
+
+    function isSubmissionTimestamp() {
+      return request.resource.data.submittedAt is string && request.resource.data.submittedAt.size() <= 64;
+    }
+
+    function isSuggestionSubmission() {
+      return hasKeys(['recordType', 'name', 'text', 'submittedAt']) &&
+        request.resource.data.recordType == 'suggestion' &&
+        isShortString(request.resource.data.name, 120) &&
+        isShortString(request.resource.data.text, 4000) &&
+        isSubmissionTimestamp();
+    }
+
+    function isReportSubmission() {
+      return hasKeys(['recordType', 'subject', 'question', 'error', 'submittedAt']) &&
+        request.resource.data.recordType == 'report' &&
+        isShortString(request.resource.data.subject, 120) &&
+        isShortString(request.resource.data.question, 4000) &&
+        isShortString(request.resource.data.error, 4000) &&
+        isSubmissionTimestamp();
+    }
+
+    function isJoinSubmission() {
+      return hasKeys(['recordType', 'name', 'email', 'phone', 'level', 'contribution', 'submittedAt']) &&
+        request.resource.data.recordType == 'join' &&
+        isShortString(request.resource.data.name, 120) &&
+        isShortString(request.resource.data.email, 160) &&
+        isShortString(request.resource.data.phone, 80) &&
+        isShortString(request.resource.data.level, 80) &&
+        isShortString(request.resource.data.contribution, 4000) &&
+        isSubmissionTimestamp();
+    }
+
+    function isValidAdminSubmissionCreate() {
+      return isSuggestionSubmission() || isReportSubmission() || isJoinSubmission();
+    }
+
+    match /subjects/{subjectId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /subject_pages/{subjectId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /admin_submissions/{submissionId} {
+      allow create: if isValidAdminSubmissionCreate();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

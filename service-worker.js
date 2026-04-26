@@ -3,7 +3,7 @@
  * Handles caching for offline access and faster loading
  */
 
-const CACHE_NAME = 'mansa-cache-v6'; // Increment version to invalidate old cache
+const CACHE_NAME = 'mansa-cache-v7'; // Increment version to invalidate old cache
 
 const urlsToCache = [
     // HTML Pages
@@ -15,12 +15,15 @@ const urlsToCache = [
     '/suggest.html',
     '/ahmed.html',
     '/ibrahim.html',
+    '/subject.html',
     
     // Data Files
     '/src/data/questions-schema.js',
     
     // Core CSS
     '/src/css/pages/home.css',
+    '/src/css/pages/index.css',
+    '/src/css/pages/subject.css',
     '/src/css/components/shared.css',
     '/src/css/themes/ramadan.css',
     
@@ -32,6 +35,7 @@ const urlsToCache = [
     '/src/js/pages/maintenance-page.js',
     '/src/js/pages/ahmed-page.js',
     '/src/js/pages/ibrahim-page.js',
+    '/src/js/pages/subject-page.js',
     
     // ES6 Modules - Utils
     '/src/js/utils/navbar.js',
@@ -41,10 +45,12 @@ const urlsToCache = [
     
     // Config
     '/src/js/config/firebase.js',
+    '/src/js/config/subjects-config.js',
     
     // Features
     '/src/js/features/user-profile.js',
     '/src/js/features/essay.js',
+    '/src/js/features/subjects-catalog.js',
     
     // Pages
     '/src/js/pages/home.js',

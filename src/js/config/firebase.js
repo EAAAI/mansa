@@ -1,16 +1,5 @@
-// Firebase & API Configuration
-// This module handles all Firebase initialization and API keys
-
-const API_CONFIG = {
-    apiKey: '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',
-    apiUrl: 'https://api.groq.com/openai/v1/chat/completions',
-    model: 'llama-3.3-70b-versatile'
-};
-
-const GEMINI_CONFIG = {
-    apiKey: 'AIzaSyAErOl-9MrM_A-HLRxvxFqx5b6WJWwi2Zs',
-    apiUrl: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
-};
+// Firebase Configuration
+// This module handles Firebase initialization and auth helpers
 
 const firebaseConfig1 = {
     apiKey: "AIzaSyCFhUdOI9IqFCjBkg8zytanD5O1_67vCr4",
@@ -55,17 +44,6 @@ function initFirebase() {
 // Initialize Firebase on load
 initFirebase();
 
-// ============================================
-// AUTH CONFIG
-// ============================================
-
-const AUTH_CONFIG = {
-    // ضع هنا الـ emails المسموح ليها بدخول الـ admin
-    allowedAdmins: [
-        'YOUR_EMAIL@gmail.com'  // ← غيّر ده بالـ email بتاعك
-    ]
-};
-
 // Google Auth Provider
 let googleProvider;
 let firebaseAuth;
@@ -82,14 +60,30 @@ async function signInWithGoogle() {
     if (!firebaseAuth) initAuth();
     try {
         const result = await firebaseAuth.signInWithPopup(googleProvider);
-        const email = result.user.email;
-        if (!AUTH_CONFIG.allowedAdmins.includes(email)) {
+        const tokenResult = await result.user.getIdTokenResult(true);
+        if (!tokenResult?.claims?.admin) {
             await firebaseAuth.signOut();
-            return { success: false, error: 'هذا الحساب غير مصرح له بالدخول' };
+            return {
+                success: false,
+                error: 'هذا الحساب غير مصرح له بالدخول كمسؤول. اطلب منح custom claim admin.',
+            };
         }
         return { success: true, user: result.user };
     } catch (error) {
         return { success: false, error: error.message };
+    }
+}
+
+async function hasAdminClaim(user) {
+    if (!user) {
+        return false;
+    }
+
+    try {
+        const tokenResult = await user.getIdTokenResult(true);
+        return Boolean(tokenResult?.claims?.admin);
+    } catch {
+        return false;
     }
 }
 
@@ -104,9 +98,9 @@ function onAuthStateChanged(callback) {
 }
 
 if (typeof window !== 'undefined') {
-    window.AUTH_CONFIG = AUTH_CONFIG;
     window.initAuth = initAuth;
     window.signInWithGoogle = signInWithGoogle;
+    window.hasAdminClaim = hasAdminClaim;
     window.adminSignOut = signOut;
     window.onAuthStateChanged = onAuthStateChanged;
 }
