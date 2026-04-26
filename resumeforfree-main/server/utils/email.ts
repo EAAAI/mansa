@@ -9,10 +9,10 @@ interface SendEmailBinding {
 }
 
 const BASE_URL = process.env.NODE_ENV === 'production'
-    ? 'https://newcv.com'
+    ? 'https://cv.layli.page'
     : 'http://localhost:3000';
 
-const FROM_ADDRESS = 'NewCv <noreply@contact.newcv.com>';
+const FROM_ADDRESS = 'Layli CV <noreply@contact.layli.page>';
 
 export async function sendPasswordResetEmail(
     sender: SendEmailBinding,
@@ -70,7 +70,7 @@ export async function sendPasswordResetEmail(
         await sender.send({
             from: FROM_ADDRESS,
             to: email,
-            subject: 'Reset Your Password - NewCv',
+            subject: 'Reset Your Password - Layli CV',
             html: htmlContent,
             text: textContent,
         });

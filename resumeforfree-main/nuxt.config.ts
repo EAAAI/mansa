@@ -139,7 +139,6 @@ export default defineNuxtConfig({
     },
 
     robots: {
-        robotsTxt: false,
         allow: '/',
         disallow: ['/api/', '/_nuxt/'],
     },

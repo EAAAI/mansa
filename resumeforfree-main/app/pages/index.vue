@@ -62,7 +62,7 @@ useHead({
         },
         {
             property: 'og:site_name',
-            content: 'NewCv',
+            content: 'Layli CV',
         },
         {
             property: 'og:title',
@@ -74,11 +74,11 @@ useHead({
         },
         {
             property: 'og:url',
-            content: 'https://newcv.com',
+            content: 'https://cv.layli.page',
         },
         {
             property: 'og:image',
-            content: 'https://newcv.com/og-image.png',
+            content: 'https://cv.layli.page/og-image.png',
         },
         {
             property: 'og:image:width',
@@ -102,13 +102,13 @@ useHead({
         },
         {
             name: 'twitter:image',
-            content: 'https://newcv.com/og-image.png',
+            content: 'https://cv.layli.page/og-image.png',
         },
     ],
     link: [
         {
             rel: 'canonical',
-            href: 'https://newcv.com',
+            href: 'https://cv.layli.page',
         },
     ],
     script: [

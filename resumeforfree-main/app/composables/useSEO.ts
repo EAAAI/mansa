@@ -1,5 +1,5 @@
-const SITE_URL = 'https://newcv.com';
-const SITE_NAME = 'NewCv';
+const SITE_URL = 'https://cv.layli.page';
+const SITE_NAME = 'Layli CV';
 const LOGO_URL = `${SITE_URL}/icon.svg`;
 
 export const createOrganizationStructuredData = () => ({
