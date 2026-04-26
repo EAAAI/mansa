@@ -12,15 +12,6 @@ An interactive Arabic educational platform featuring:
 - 📱 **Mobile Friendly** - Responsive design
 - 📚 **Dynamic Subjects** - Firebase-driven subjects catalog and detail pages
 
-## Subjects
-
-- Physics
-- Mathematics (Calculus)
-- IT Fundamentals
-- Electronics
-- English
-- Law
-- History
 
 ## Project Structure
 
