@@ -3,60 +3,22 @@
  * Handles caching for offline access and faster loading
  */
 
-const CACHE_NAME = 'mansa-cache-v7'; // Increment version to invalidate old cache
+const CACHE_NAME = 'mansa-cache-v8'; // Increment version to invalidate old cache
 
 const urlsToCache = [
-    // HTML Pages
     '/',
     '/index.html',
     '/admin-dashboard.html',
-    '/join-us.html',
-    '/maintenance.html',
-    '/suggest.html',
-    '/ahmed.html',
-    '/ibrahim.html',
     '/subject.html',
-    
-    // Data Files
-    '/src/data/questions-schema.js',
-    
-    // Core CSS
-    '/src/css/pages/home.css',
     '/src/css/pages/index.css',
+    '/src/css/pages/admin-dashboard.css',
     '/src/css/pages/subject.css',
-    '/src/css/components/shared.css',
-    '/src/css/themes/ramadan.css',
-    
-    // Module Entry Points
     '/src/js/pages/index-page.js',
     '/src/js/pages/admin-dashboard-page.js',
-    '/src/js/pages/suggest-page.js',
-    '/src/js/pages/join-us-page.js',
-    '/src/js/pages/maintenance-page.js',
-    '/src/js/pages/ahmed-page.js',
-    '/src/js/pages/ibrahim-page.js',
     '/src/js/pages/subject-page.js',
-    
-    // ES6 Modules - Utils
-    '/src/js/utils/navbar.js',
-    '/src/js/utils/themes.js',
-    '/src/js/utils/scroll.js',
-    '/src/js/utils/error-handler.js',
-    
-    // Config
     '/src/js/config/firebase.js',
     '/src/js/config/subjects-config.js',
-    
-    // Features
-    '/src/js/features/user-profile.js',
-    '/src/js/features/essay.js',
     '/src/js/features/subjects-catalog.js',
-    
-    // Pages
-    '/src/js/pages/home.js',
-
-    // Optional legacy entry still present in repository
-    '/src/js/main.js'
 ];
 
 // Install - cache all resources

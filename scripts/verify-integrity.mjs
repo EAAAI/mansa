@@ -32,48 +32,35 @@ const failures = [];
 
 const requiredFiles = [
     'api/_lib/security.js',
-    'api/ai-nickname.js',
-    'api/ai-essay-grade.js',
     'api/contact.js',
-    'src/js/features/user-profile.js',
-    'src/js/features/essay.js',
     'src/js/pages/index-page.js',
+    'src/js/pages/admin-dashboard-page.js',
     'src/js/pages/subject-page.js',
     'src/js/features/subjects-catalog.js',
     'src/js/config/subjects-config.js',
+    'src/js/config/firebase.js',
+    'index.html',
+    'admin-dashboard.html',
     'subject.html',
+    'src/css/pages/index.css',
+    'src/css/pages/admin-dashboard.css',
     'src/css/pages/subject.css',
     'docs/FIREBASE_SUBJECTS_SETUP.md',
     'docs/FIRESTORE_RULES_TEMPLATE.md',
     'docs/PREDEPLOY_CHECKLIST.md',
-    'src/data/firebase-seed/subjects.catalog.json',
-    'src/data/firebase-seed/subject-pages.json',
+    'service-worker.js',
 ];
 
 requiredFiles.forEach((relativePath) => {
     assert(exists(relativePath), `Missing required file: ${relativePath}`, failures);
 });
 
-fileContains('src/js/features/user-profile.js', '/api/ai-nickname', failures, 'Security routing');
-fileContains('src/js/features/essay.js', '/api/ai-essay-grade', failures, 'Security routing');
 fileContains('src/js/pages/index-page.js', 'loadSubjectsCatalog', failures, 'Dynamic subjects');
 fileContains('src/js/pages/index-page.js', 'createSubjectUrl', failures, 'Dynamic subjects');
 fileContains('service-worker.js', "'/subject.html'", failures, 'Offline cache');
 fileContains('service-worker.js', "'/src/js/pages/subject-page.js'", failures, 'Offline cache');
 fileContains('service-worker.js', "'/src/css/pages/subject.css'", failures, 'Offline cache');
 
-fileNotContains(
-    'src/js/features/user-profile.js',
-    /Authorization\s*:\s*['"]Bearer\s+[A-Za-z0-9._-]+/,
-    failures,
-    'Secret exposure',
-);
-fileNotContains(
-    'src/js/features/essay.js',
-    /AIzaSy[A-Za-z0-9_-]{20,}/,
-    failures,
-    'Secret exposure',
-);
 fileNotContains(
     'src/js/config/firebase.js',
     /gsk_[A-Za-z0-9]{20,}/,

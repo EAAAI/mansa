@@ -3,13 +3,11 @@
  * Owns admin dashboard runtime behavior extracted from inline scripts.
  */
 
+import { db, initAuth, signInWithGoogle, hasAdminClaim, adminSignOut, onAuthStateChanged } from '../config/firebase.js';
+
 const PAGE_ID = 'admin-dashboard';
-const TAB_ORDER = ['subjects', 'suggestions', 'reports', 'joins'];
 
 let adminDataCache = {
-    suggestions: [],
-    reports: [],
-    joins: [],
     subjects: [],
 };
 
@@ -29,25 +27,6 @@ function escapeHtml(value) {
         .replace(/'/g, '&#039;');
 }
 
-function formatDate(dateValue) {
-    const parsed = new Date(dateValue);
-    if (Number.isNaN(parsed.getTime())) {
-        return 'غير متاح';
-    }
-
-    return parsed.toLocaleDateString('ar-EG');
-}
-
-function setActiveAdminTab(tab) {
-    const tabs = document.querySelectorAll('.admin-tab');
-    tabs.forEach((button) => button.classList.remove('active'));
-
-    const tabIndex = TAB_ORDER.indexOf(tab);
-    if (tabIndex >= 0 && tabs[tabIndex]) {
-        tabs[tabIndex].classList.add('active');
-    }
-}
-
 function showLogin() {
     const login = document.getElementById('loginScreen');
     const dashboard = document.getElementById('dashboardScreen');
@@ -60,7 +39,7 @@ function showLogin() {
 }
 
 async function isAdminUser(user) {
-    if (!user || typeof hasAdminClaim !== 'function') {
+    if (!user) {
         return false;
     }
 
@@ -68,108 +47,12 @@ async function isAdminUser(user) {
 }
 
 function loadStats() {
-    const suggestions = adminDataCache.suggestions || [];
-    const reports = adminDataCache.reports || [];
-    const joins = adminDataCache.joins || [];
     const subjects = adminDataCache.subjects || [];
-
-    const suggestCount = document.getElementById('suggestCount');
-    const reportCount = document.getElementById('reportCount');
-    const joinCount = document.getElementById('joinCount');
     const subjectCount = document.getElementById('subjectCount');
-
-    if (suggestCount) suggestCount.textContent = String(suggestions.length);
-    if (reportCount) reportCount.textContent = String(reports.length);
-    if (joinCount) joinCount.textContent = String(joins.length);
     if (subjectCount) subjectCount.textContent = String(subjects.length);
 }
 
-function getLocalAdminData() {
-    return {
-        suggestions: JSON.parse(localStorage.getItem('suggestions') || '[]'),
-        reports: JSON.parse(localStorage.getItem('reports') || '[]'),
-        joins: JSON.parse(localStorage.getItem('joinSubmissions') || '[]'),
-    };
-}
-
-function normalizeRemoteItem(item = {}) {
-    return {
-        type: item.type || '',
-        name: item.name || '',
-        text: item.text || '',
-        subject: item.subject || '',
-        question: item.question || '',
-        error: item.error || '',
-        level: item.level || '',
-        email: item.email || '',
-        phone: item.phone || '',
-        contribution: item.contribution || '',
-        submittedAt: item.submittedAt || new Date().toISOString(),
-    };
-}
-
-async function loadAdminDataFromFirestore() {
-    if (typeof dbAnalytics === 'undefined' || !dbAnalytics) {
-        return null;
-    }
-
-    const snapshot = await dbAnalytics
-        .collection('admin_submissions')
-        .orderBy('submittedAt', 'desc')
-        .limit(500)
-        .get();
-
-    if (!snapshot || snapshot.empty) {
-        return {
-            suggestions: [],
-            reports: [],
-            joins: [],
-        };
-    }
-
-    const data = {
-        suggestions: [],
-        reports: [],
-        joins: [],
-    };
-
-    snapshot.forEach((doc) => {
-        const record = doc.data() || {};
-        const normalized = normalizeRemoteItem(record);
-
-        if (record.recordType === 'suggestion') {
-            data.suggestions.push(normalized);
-            return;
-        }
-
-        if (record.recordType === 'report') {
-            data.reports.push(normalized);
-            return;
-        }
-
-        if (record.recordType === 'join') {
-            data.joins.push(normalized);
-        }
-    });
-
-    return data;
-}
-
-async function refreshAdminDataCache() {
-    try {
-        const remoteData = await loadAdminDataFromFirestore();
-        if (remoteData) {
-            adminDataCache = { ...adminDataCache, ...remoteData };
-        } else {
-            const localData = getLocalAdminData();
-            adminDataCache = { ...adminDataCache, ...localData };
-        }
-    } catch {
-        const localData = getLocalAdminData();
-        adminDataCache = { ...adminDataCache, ...localData };
-    }
-
-    // Always load subjects fresh from Firestore
+async function refreshSubjectsData() {
     adminDataCache.subjects = await loadSubjectsFromFirestore();
 }
 
@@ -178,7 +61,7 @@ async function refreshAdminDataCache() {
 // ============================================
 
 async function loadSubjectsFromFirestore() {
-    if (typeof db === 'undefined' || !db) return [];
+    if (!db) return [];
     try {
         const snapshot = await db.collection('subjects').orderBy('order').get();
         const subjects = [];
@@ -216,7 +99,7 @@ async function handleAddSubject(event) {
         return;
     }
 
-    if (typeof db === 'undefined' || !db) {
+    if (!db) {
         statusEl.textContent = '❌ Firebase غير متصل';
         statusEl.style.color = '#ff8f8f';
         return;
@@ -247,7 +130,7 @@ async function handleAddSubject(event) {
 
         adminDataCache.subjects = await loadSubjectsFromFirestore();
         loadStats();
-        showAdminTab('subjects');
+        renderSubjectsView();
     } catch (error) {
         statusEl.textContent = `❌ خطأ: ${error.message}`;
         statusEl.style.color = '#ff8f8f';
@@ -264,7 +147,7 @@ async function handleDeleteSubject(subjectId, subjectName) {
         await db.collection('subjects').doc(subjectId).delete();
         adminDataCache.subjects = await loadSubjectsFromFirestore();
         loadStats();
-        showAdminTab('subjects');
+        renderSubjectsView();
     } catch (error) {
         alert(`خطأ في الحذف: ${error.message}`);
     }
@@ -274,7 +157,7 @@ async function handleToggleSubject(subjectId, currentIsActive) {
     try {
         await db.collection('subjects').doc(subjectId).update({ isActive: !currentIsActive });
         adminDataCache.subjects = await loadSubjectsFromFirestore();
-        showAdminTab('subjects');
+        renderSubjectsView();
     } catch (error) {
         alert(`خطأ: ${error.message}`);
     }
@@ -385,101 +268,10 @@ function renderSubjectsTab() {
 }
 
 
-function renderSuggestionsTab() {
-    const data = [...(adminDataCache.suggestions || [])].reverse();
-    if (!data.length) {
-        return '<div class="admin-empty"><i class="fas fa-lightbulb"></i> لا يوجد اقتراحات بعد</div>';
-    }
-
-    let html = '';
-    data.forEach((item) => {
-        html += `<div class="admin-card">
-                        <div class="admin-card-header">
-                            <div>
-                                <span class="admin-card-type">${escapeHtml(item.type || 'اقتراح')}</span>
-                                <span style="color:rgba(255,255,255,0.5); font-size:0.85rem; margin-right:10px">
-                                    ${escapeHtml(item.name || 'مجهول')}
-                                </span>
-                            </div>
-                            <span class="admin-card-date">${formatDate(item.submittedAt)}</span>
-                        </div>
-                        <p class="admin-card-text">${escapeHtml(item.text)}</p>
-                    </div>`;
-    });
-
-    return html;
-}
-
-function renderReportsTab() {
-    const data = [...(adminDataCache.reports || [])].reverse();
-    if (!data.length) {
-        return '<div class="admin-empty"><i class="fas fa-flag"></i> لا يوجد بلاغات بعد</div>';
-    }
-
-    let html = '';
-    data.forEach((item) => {
-        html += `<div class="admin-card">
-                        <div class="admin-card-header">
-                            <span class="admin-card-type" style="background:rgba(255,107,107,0.1);color:#ff6b6b">
-                                ${escapeHtml(item.subject || 'غير محدد')}
-                            </span>
-                            <span class="admin-card-date">${formatDate(item.submittedAt)}</span>
-                        </div>
-                        <p class="admin-card-text"><strong>السؤال:</strong> ${escapeHtml(item.question)}</p>
-                        <p class="admin-card-text" style="margin-top:8px"><strong>الخطأ:</strong> ${escapeHtml(item.error)}</p>
-                    </div>`;
-    });
-
-    return html;
-}
-
-function renderJoinsTab() {
-    const data = [...(adminDataCache.joins || [])].reverse();
-    if (!data.length) {
-        return '<div class="admin-empty"><i class="fas fa-users"></i> لا يوجد طلبات بعد</div>';
-    }
-
-    let html = '';
-    data.forEach((item) => {
-        html += `<div class="admin-card">
-                        <div class="admin-card-header">
-                            <span class="admin-card-type" style="background:rgba(56,239,125,0.1);color:#38ef7d">
-                                ${escapeHtml(item.level || 'غير محدد')}
-                            </span>
-                            <span class="admin-card-date">${formatDate(item.submittedAt)}</span>
-                        </div>
-                        <p class="admin-card-text"><strong>${escapeHtml(item.name)}</strong> — ${escapeHtml(item.email)} — ${escapeHtml(item.phone)}</p>
-                        <p class="admin-card-text" style="margin-top:8px">${escapeHtml(item.contribution)}</p>
-                    </div>`;
-    });
-
-    return html;
-}
-
-function showAdminTab(tab) {
-    setActiveAdminTab(tab);
-
+function renderSubjectsView() {
     const content = document.getElementById('adminTabContent');
     if (!content) return;
-
-    if (tab === 'subjects') {
-        content.innerHTML = renderSubjectsTab();
-        return;
-    }
-
-    if (tab === 'suggestions') {
-        content.innerHTML = renderSuggestionsTab();
-        return;
-    }
-
-    if (tab === 'reports') {
-        content.innerHTML = renderReportsTab();
-        return;
-    }
-
-    if (tab === 'joins') {
-        content.innerHTML = renderJoinsTab();
-    }
+    content.innerHTML = renderSubjectsTab();
 }
 
 async function showDashboard(user) {
@@ -497,9 +289,9 @@ async function showDashboard(user) {
         userInfo.textContent = user.email;
     }
 
-    await refreshAdminDataCache();
+    await refreshSubjectsData();
     loadStats();
-    showAdminTab('subjects');
+    renderSubjectsView();
 }
 
 async function handleGoogleLogin() {
@@ -542,7 +334,6 @@ function initAuthFlow() {
 function exposeGlobalHandlers() {
     window.handleGoogleLogin = handleGoogleLogin;
     window.handleSignOut = handleSignOut;
-    window.showAdminTab = showAdminTab;
     window.handleAddSubject = handleAddSubject;
     window.handleDeleteSubject = handleDeleteSubject;
     window.handleToggleSubject = handleToggleSubject;
@@ -564,5 +355,5 @@ export {
     initAdminDashboardPageEntry,
     handleGoogleLogin,
     handleSignOut,
-    showAdminTab,
+    renderSubjectsView,
 };

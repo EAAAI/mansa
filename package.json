@@ -8,9 +8,6 @@
     "verify:ci": "npm run verify && npm run verify:smoke && npm run verify:secrets"
   },
   "dependencies": {
-    "@vercel/analytics": "^2.0.1",
-    "firebase-admin": "^13.8.0",
-    "framer-motion": "^12.38.0",
-    "lucide-react": "^1.11.0"
+    "firebase-admin": "^13.8.0"
   }
 }

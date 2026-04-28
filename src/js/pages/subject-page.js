@@ -1,8 +1,4 @@
-import {
-    getSubjectById,
-    loadSubjectPageData,
-    loadSubjectsCatalog,
-} from '../features/subjects-catalog.js';
+import { loadSingleSubject, loadSubjectPageData } from '../features/subjects-catalog.js';
 
 const PAGE_ID = 'subject';
 
@@ -138,8 +134,7 @@ async function initSubjectPageEntry() {
         return;
     }
 
-    const catalog = await loadSubjectsCatalog();
-    const subject = getSubjectById(catalog, subjectId);
+    const subject = await loadSingleSubject(subjectId);
 
     if (!subject) {
         renderNotFound();

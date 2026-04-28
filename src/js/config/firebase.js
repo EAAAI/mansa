@@ -1,6 +1,3 @@
-// Firebase Configuration
-// Unified Firebase initialization and auth helpers
-
 const firebaseConfig = {
   apiKey: "AIzaSyBWw7k85mM9HpIW0tbMm4bCmP3Bs8mYNWk",
   authDomain: "lyali-project.firebaseapp.com",
@@ -12,32 +9,19 @@ const firebaseConfig = {
 };
 
 let db;
-let dbLeaderboard;
-let dbAnalytics;
 
-function initFirebase() {
-  try {
-    const app = firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore(app);
-
-    // توجيه المتغيرات القديمة لنفس قاعدة البيانات الجديدة
-    dbLeaderboard = db;
-    dbAnalytics = db;
-
-    console.log("🔥 Firebase initialized successfully with lyali-project");
-  } catch (error) {
-    console.error("Firebase initialization error:", error);
-  }
+try {
+  const app = firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore(app);
+} catch (error) {
+  console.error("Firebase initialization error:", error);
 }
 
-// Initialize Firebase on load
-initFirebase();
-
-// Google Auth Provider
-let googleProvider;
 let firebaseAuth;
+let googleProvider;
 
 function initAuth() {
+  if (firebaseAuth) return;
   if (typeof firebase !== "undefined" && firebase.auth) {
     firebaseAuth = firebase.auth();
     googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -55,8 +39,7 @@ async function signInWithGoogle() {
       await firebaseAuth.signOut();
       return {
         success: false,
-        error:
-          "هذا الحساب غير مصرح له بالدخول كمسؤول. يرجى التواصل مع الإدارة.",
+        error: "هذا الحساب غير مصرح له بالدخول كمسؤول. يرجى التواصل مع الإدارة.",
       };
     }
     return { success: true, user: result.user };
@@ -75,7 +58,7 @@ async function hasAdminClaim(user) {
   }
 }
 
-async function signOut() {
+async function adminSignOut() {
   if (!firebaseAuth) initAuth();
   await firebaseAuth.signOut();
 }
@@ -85,10 +68,4 @@ function onAuthStateChanged(callback) {
   firebaseAuth.onAuthStateChanged(callback);
 }
 
-if (typeof window !== "undefined") {
-  window.initAuth = initAuth;
-  window.signInWithGoogle = signInWithGoogle;
-  window.hasAdminClaim = hasAdminClaim;
-  window.adminSignOut = signOut;
-  window.onAuthStateChanged = onAuthStateChanged;
-}
+export { db, initAuth, signInWithGoogle, hasAdminClaim, adminSignOut, onAuthStateChanged };

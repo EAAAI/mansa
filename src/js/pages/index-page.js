@@ -8,20 +8,6 @@ import { loadSubjectsCatalog } from '../features/subjects-catalog.js';
 
 const PAGE_ID = 'index';
 
-async function persistAdminSubmission(recordType, payload) {
-    if (typeof dbAnalytics === 'undefined' || !dbAnalytics) {
-        return false;
-    }
-
-    await dbAnalytics.collection('admin_submissions').add({
-        recordType,
-        ...payload,
-        submittedAt: new Date().toISOString(),
-    });
-
-    return true;
-}
-
 function renderSubjectsCatalog(subjects) {
     const grid = document.getElementById('subjectsGrid');
     const status = document.getElementById('subjectsStatus');
@@ -161,16 +147,7 @@ async function submitPopupSuggest() {
         if (!response.ok) {
             throw new Error('API failed');
         }
-
-        try {
-            savedToRemote = await persistAdminSubmission('suggestion', {
-                type,
-                name: data.name,
-                text,
-            });
-        } catch {
-            savedToRemote = false;
-        }
+        savedToRemote = true;
     } catch (error) {
         savedToRemote = false;
     }
@@ -242,16 +219,7 @@ async function submitPopupReport() {
         if (!response.ok) {
             throw new Error('API failed');
         }
-
-        try {
-            savedToRemote = await persistAdminSubmission('report', {
-                subject: 'بلاغ',
-                question,
-                error: errorText,
-            });
-        } catch {
-            savedToRemote = false;
-        }
+        savedToRemote = true;
     } catch (error) {
         savedToRemote = false;
     }
@@ -320,18 +288,7 @@ async function submitPopupJoin(event) {
         if (!response.ok) {
             throw new Error('API failed');
         }
-
-        try {
-            savedToRemote = await persistAdminSubmission('join', {
-                name: data.name || '',
-                email: data.email || '',
-                phone: data.phone || '',
-                level: data.level || '',
-                contribution: data.contribution || '',
-            });
-        } catch {
-            savedToRemote = false;
-        }
+        savedToRemote = true;
     } catch (error) {
         savedToRemote = false;
     }

@@ -1,4 +1,5 @@
 import { DEFAULT_SUBJECTS, SUBJECTS_COLLECTION_CONFIG } from '../config/subjects-config.js';
+import { db } from '../config/firebase.js';
 
 const SUBJECTS_CACHE_KEY = 'mansa_subjects_catalog_v1';
 
@@ -115,7 +116,7 @@ function readCachedSubjects() {
 }
 
 async function fetchSubjectsFromFirebase() {
-    if (typeof db === 'undefined' || !db) {
+    if (!db) {
         return null;
     }
 
@@ -171,7 +172,7 @@ async function loadSubjectsCatalog() {
 }
 
 async function loadSubjectPageData(subjectId) {
-    if (!subjectId || typeof db === 'undefined' || !db) {
+    if (!subjectId || !db) {
         return null;
     }
 
@@ -217,12 +218,40 @@ async function loadSubjectPageData(subjectId) {
     }
 }
 
+async function loadSingleSubject(subjectId) {
+    if (!subjectId) {
+        return null;
+    }
+
+    const defaults = getDefaultSubjects();
+    const fallback = defaults.find((subject) => subject.id === subjectId) || null;
+
+    if (!db) {
+        return fallback;
+    }
+
+    const { catalogCollection } = SUBJECTS_COLLECTION_CONFIG;
+
+    try {
+        const doc = await db.collection(catalogCollection).doc(subjectId).get();
+        if (!doc.exists) {
+            return fallback;
+        }
+
+        const data = doc.data() || {};
+        return normalizeSubject({ id: doc.id, ...data }, fallback, 0);
+    } catch {
+        return fallback;
+    }
+}
+
 function getSubjectById(subjects, subjectId) {
     return subjects.find((subject) => subject.id === subjectId) || null;
 }
 
 export {
     loadSubjectsCatalog,
+    loadSingleSubject,
     loadSubjectPageData,
     getSubjectById,
 };

@@ -8,17 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/css/pages/admin-dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- KaTeX for Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
-        integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
-        integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8"
-        crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
-        integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
-        crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -71,50 +60,12 @@
         <!-- Stats Row -->
         <div class="admin-stats-row">
             <div class="admin-stat-card">
-                <i class="fas fa-lightbulb"></i>
-                <div>
-                    <span id="suggestCount">0</span>
-                    <p>اقتراح</p>
-                </div>
-            </div>
-            <div class="admin-stat-card">
-                <i class="fas fa-flag" style="color:#ff6b6b"></i>
-                <div>
-                    <span id="reportCount">0</span>
-                    <p>بلاغ خطأ</p>
-                </div>
-            </div>
-            <div class="admin-stat-card">
-                <i class="fas fa-users" style="color:#38ef7d"></i>
-                <div>
-                    <span id="joinCount">0</span>
-                    <p>طلب انضمام</p>
-                </div>
-            </div>
-            <div class="admin-stat-card">
                 <i class="fas fa-book" style="color:#f7b731"></i>
                 <div>
                     <span id="subjectCount">0</span>
-                    <p>مادة</p>
+                    <p>المواد</p>
                 </div>
             </div>
-        </div>
-
-
-        <!-- Tabs -->
-        <div class="admin-tabs">
-            <button class="admin-tab active" onclick="showAdminTab('subjects')">
-                <i class="fas fa-book"></i> المواد
-            </button>
-            <button class="admin-tab" onclick="showAdminTab('suggestions')">
-                <i class="fas fa-lightbulb"></i> الاقتراحات
-            </button>
-            <button class="admin-tab" onclick="showAdminTab('reports')">
-                <i class="fas fa-flag"></i> البلاغات
-            </button>
-            <button class="admin-tab" onclick="showAdminTab('joins')">
-                <i class="fas fa-users"></i> طلبات الانضمام
-            </button>
         </div>
 
         <!-- Content -->
@@ -126,7 +77,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="src/js/config/firebase.js"></script>
 <script type="module" src="src/js/pages/admin-dashboard-page.js"></script>
 
 </body>
