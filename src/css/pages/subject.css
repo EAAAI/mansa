@@ -317,7 +317,9 @@ body {
 
 .roadmap-embed--pdf iframe {
     width: 100%;
-    height: 500px;
+    height: 80vh;
+    min-height: 600px;
+    max-height: 1000px;
     border: none;
     border-radius: 12px;
 }
