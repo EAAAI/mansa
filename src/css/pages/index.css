@@ -1,4 +1,5 @@
 * { font-family: 'Cairo', sans-serif; }
+html { scroll-behavior: smooth; }
 html, body { margin: 0; padding: 0; min-height: 100vh; }
 html.dark body { background: #111827; }
 html:not(.dark) body { background: #fff; }
@@ -49,17 +50,37 @@ html:not(.dark) body { background: #fff; }
 	display: block;
 	text-decoration: none;
 	color: #e2e8f0;
-	border-radius: 18px;
-	border: 1px solid rgba(148, 163, 184, 0.24);
-	padding: 0.9rem;
-	background: rgba(15, 23, 42, 0.72);
-	transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+	border-radius: 20px;
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	padding: 1.25rem;
+	background: linear-gradient(145deg, rgba(30, 41, 59, 0.6), rgba(15, 23, 42, 0.8));
+	backdrop-filter: blur(12px);
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.subject-catalog-card::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: var(--subject-accent, #6366f1);
+	opacity: 0.6;
+	transition: opacity 0.3s ease;
 }
 
 .subject-catalog-card:hover {
-	transform: translateY(-2px);
-	border-color: var(--subject-accent, #6366f1);
-	box-shadow: 0 12px 28px rgba(15, 23, 42, 0.35);
+	transform: translateY(-5px);
+	border-color: rgba(255, 255, 255, 0.15);
+	box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px color-mix(in srgb, var(--subject-accent) 25%, transparent);
+}
+
+.subject-catalog-card:hover::before {
+	opacity: 1;
+	height: 4px;
 }
 
 .subject-catalog-card-head {
@@ -67,32 +88,44 @@ html:not(.dark) body { background: #fff; }
 	align-items: center;
 	justify-content: space-between;
 	gap: 0.5rem;
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.8rem;
 }
 
 .subject-catalog-title {
 	margin: 0;
-	font-size: 1.05rem;
+	font-size: 1.15rem;
+	font-weight: 700;
 	color: #f8fafc;
+	letter-spacing: -0.01em;
 }
 
 .subject-catalog-icon {
-	font-size: 1.35rem;
+	font-size: 1.6rem;
+	background: color-mix(in srgb, var(--subject-accent) 15%, transparent);
+	padding: 0.7rem;
+	border-radius: 14px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .subject-catalog-description {
 	margin: 0;
-	font-size: 0.86rem;
-	color: #cbd5e1;
+	font-size: 0.9rem;
+	color: #94a3b8;
 	line-height: 1.6;
 }
 
 .subject-catalog-meta {
-	margin-top: 0.7rem;
+	margin-top: 1rem;
 	display: flex;
 	justify-content: space-between;
-	font-size: 0.78rem;
-	color: #94a3b8;
+	align-items: center;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #64748b;
+	padding-top: 0.8rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 @media (max-width: 640px) {

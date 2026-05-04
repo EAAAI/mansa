@@ -4,6 +4,7 @@
  */
 
 import { SUMMARIES_COLLECTION, CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '../config/subjects-config.js';
+import { updateCacheVersion } from '../utils/cache-manager.js';
 
 // ---------------------------------------------------------------------------
 // Firestore Helper
@@ -478,6 +479,7 @@ async function asHandleAdd(event) {
     try {
         await _db.collection(SUMMARIES_COLLECTION).add(data);
         if (statusEl) { statusEl.textContent = `✅ تمت إضافة "${title}"!`; statusEl.style.color = '#8effbf'; }
+        await updateCacheVersion(_db, 'summaries_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) {
         if (statusEl) { statusEl.textContent = `❌ ${err.message}`; statusEl.style.color = '#ff8f8f'; }
@@ -527,6 +529,7 @@ async function asHandleSaveEdit(blockId) {
 
     try {
         await _db.collection(SUMMARIES_COLLECTION).doc(blockId).update(data);
+        await updateCacheVersion(_db, 'summaries_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) {
         if (statusEl) { statusEl.textContent = `❌ ${err.message}`; statusEl.style.color = '#ff8f8f'; }
@@ -537,6 +540,7 @@ async function asHandleDelete(blockId, blockTitle) {
     if (!confirm(`هل أنت متأكد من حذف "${blockTitle}"؟ لا يمكن التراجع.`)) return;
     try {
         await _db.collection(SUMMARIES_COLLECTION).doc(blockId).delete();
+        await updateCacheVersion(_db, 'summaries_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) { alert(`خطأ في الحذف: ${err.message}`); }
 }
@@ -557,6 +561,7 @@ async function asHandleMove(blockId, direction) {
             _db.collection(SUMMARIES_COLLECTION).doc(blockA.id).update({ order: orderB }),
             _db.collection(SUMMARIES_COLLECTION).doc(blockB.id).update({ order: orderA }),
         ]);
+        await updateCacheVersion(_db, 'summaries_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) { alert(`خطأ في إعادة الترتيب: ${err.message}`); }
 }

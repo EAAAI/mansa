@@ -16,8 +16,9 @@
  * Progress storage: delegates to roadmap-progress.js (localStorage in V0.2).
  */
 
-import { ROADMAP_BLOCKS_COLLECTION } from '../config/subjects-config.js';
-import { loadProgress, saveProgress } from './roadmap-progress.js';
+import { ROADMAP_BLOCKS_COLLECTION } from "../config/subjects-config.js";
+import { fetchWithCache } from "../utils/cache-manager.js";
+import { loadProgress, saveProgress } from "./roadmap-progress.js";
 
 // ---------------------------------------------------------------------------
 // YouTube URL Parsing
@@ -34,20 +35,20 @@ import { loadProgress, saveProgress } from './roadmap-progress.js';
  * @returns {string|null}  11-character video ID, or null if not recognised.
  */
 function extractYouTubeId(url) {
-    if (!url || typeof url !== 'string') return null;
+  if (!url || typeof url !== "string") return null;
 
-    const patterns = [
-        /[?&]v=([a-zA-Z0-9_-]{11})/,
-        /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-        /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-    ];
+  const patterns = [
+    /[?&]v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+  ];
 
-    for (const pattern of patterns) {
-        const match = url.match(pattern);
-        if (match) return match[1];
-    }
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
 
-    return null;
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -66,41 +67,43 @@ function extractYouTubeId(url) {
  * @returns {Promise<Array>}  Array of block objects with id merged in.
  */
 async function fetchRoadmapBlocks(subjectId, db) {
-    if (!db || !subjectId) return [];
+  if (!db || !subjectId) return [];
 
+  return fetchWithCache(db, `mansa_roadmap_${subjectId}`, `roadmap_${subjectId}`, async () => {
     let snapshot;
 
     try {
-        snapshot = await db
-            .collection(ROADMAP_BLOCKS_COLLECTION)
-            .where('subjectId', '==', subjectId)
-            .orderBy('order')
-            .get();
+      snapshot = await db
+        .collection(ROADMAP_BLOCKS_COLLECTION)
+        .where("subjectId", "==", subjectId)
+        .orderBy("order")
+        .get();
     } catch {
-        // Composite index not deployed — fall back to unordered fetch.
-        try {
-            snapshot = await db
-                .collection(ROADMAP_BLOCKS_COLLECTION)
-                .where('subjectId', '==', subjectId)
-                .get();
-        } catch {
-            return [];
-        }
+      // Composite index not deployed — fall back to unordered fetch.
+      try {
+        snapshot = await db
+          .collection(ROADMAP_BLOCKS_COLLECTION)
+          .where("subjectId", "==", subjectId)
+          .get();
+      } catch {
+        return [];
+      }
     }
 
     if (!snapshot || snapshot.empty) return [];
 
     const blocks = [];
     snapshot.forEach((doc) => {
-        const data = doc.data() || {};
-        if (data.isActive === false) return; // filter inactive blocks
-        blocks.push({ id: doc.id, ...data });
+      const data = doc.data() || {};
+      if (data.isActive === false) return; // filter inactive blocks
+      blocks.push({ id: doc.id, ...data });
     });
 
     // Client-side sort (no-op when Firestore already returned ordered results).
     blocks.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
 
     return blocks;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -120,20 +123,20 @@ async function fetchRoadmapBlocks(subjectId, db) {
  * @returns {Array}  New array with `state` field added to each block.
  */
 function computeBlockStates(blocks, progressMap) {
-    let activeAssigned = false;
+  let activeAssigned = false;
 
-    return blocks.map((block) => {
-        if (progressMap.has(block.id)) {
-            return { ...block, state: 'done' };
-        }
+  return blocks.map((block) => {
+    if (progressMap.has(block.id)) {
+      return { ...block, state: "done" };
+    }
 
-        if (!activeAssigned) {
-            activeAssigned = true;
-            return { ...block, state: 'active' };
-        }
+    if (!activeAssigned) {
+      activeAssigned = true;
+      return { ...block, state: "active" };
+    }
 
-        return { ...block, state: 'locked' };
-    });
+    return { ...block, state: "locked" };
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -148,9 +151,9 @@ function computeBlockStates(blocks, progressMap) {
  * @returns {HTMLElement}
  */
 function renderRoadmapConnector(isLit) {
-    const connector = document.createElement('div');
-    connector.className = 'roadmap-connector' + (isLit ? ' is-lit' : '');
-    return connector;
+  const connector = document.createElement("div");
+  connector.className = "roadmap-connector" + (isLit ? " is-lit" : "");
+  return connector;
 }
 
 // ---------------------------------------------------------------------------
@@ -163,40 +166,40 @@ function renderRoadmapConnector(isLit) {
  * @returns {HTMLElement}
  */
 function renderVideoContent(block) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'roadmap-embed roadmap-embed--video';
+  const wrapper = document.createElement("div");
+  wrapper.className = "roadmap-embed roadmap-embed--video";
 
-    const videoId = extractYouTubeId(block.youtubeUrl || '');
+  const videoId = extractYouTubeId(block.youtubeUrl || "");
 
-    if (videoId) {
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${videoId}`;
-        iframe.allow =
-            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-        iframe.allowFullscreen = true;
-        iframe.loading = 'lazy';
-        iframe.setAttribute('frameborder', '0');
-        iframe.title = block.title || 'فيديو تعليمي';
-        wrapper.appendChild(iframe);
-    } else {
-        const error = document.createElement('p');
-        error.className = 'roadmap-embed-error';
-        error.textContent = 'تعذر تحميل الفيديو — رابط يوتيوب غير صالح.';
-        wrapper.appendChild(error);
-    }
+  if (videoId) {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
+    iframe.loading = "lazy";
+    iframe.setAttribute("frameborder", "0");
+    iframe.title = block.title || "فيديو تعليمي";
+    wrapper.appendChild(iframe);
+  } else {
+    const error = document.createElement("p");
+    error.className = "roadmap-embed-error";
+    error.textContent = "تعذر تحميل الفيديو — رابط يوتيوب غير صالح.";
+    wrapper.appendChild(error);
+  }
 
-    // Always show a direct link alongside the embed as a fallback.
-    if (block.youtubeUrl) {
-        const link = document.createElement('a');
-        link.href = block.youtubeUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.className = 'roadmap-fallback-link';
-        link.textContent = 'افتح الفيديو في يوتيوب ↗';
-        wrapper.appendChild(link);
-    }
+  // Always show a direct link alongside the embed as a fallback.
+  if (block.youtubeUrl) {
+    const link = document.createElement("a");
+    link.href = block.youtubeUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.className = "roadmap-fallback-link";
+    link.textContent = "افتح الفيديو في يوتيوب ↗";
+    wrapper.appendChild(link);
+  }
 
-    return wrapper;
+  return wrapper;
 }
 
 /**
@@ -206,35 +209,35 @@ function renderVideoContent(block) {
  * @returns {HTMLElement}
  */
 function renderPdfContent(block) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'roadmap-embed roadmap-embed--pdf';
+  const wrapper = document.createElement("div");
+  wrapper.className = "roadmap-embed roadmap-embed--pdf";
 
-    if (block.pdfUrl) {
-        const iframe = document.createElement('iframe');
-        iframe.src = block.pdfUrl;
-        iframe.type = 'application/pdf';
-        iframe.setAttribute('frameborder', '0');
-        iframe.title = block.title || 'ملف PDF';
-        wrapper.appendChild(iframe);
-    } else {
-        const error = document.createElement('p');
-        error.className = 'roadmap-embed-error';
-        error.textContent = 'لا يوجد رابط PDF متاح لهذه المادة.';
-        wrapper.appendChild(error);
-    }
+  if (block.pdfUrl) {
+    const iframe = document.createElement("iframe");
+    iframe.src = block.pdfUrl;
+    iframe.type = "application/pdf";
+    iframe.setAttribute("frameborder", "0");
+    iframe.title = block.title || "ملف PDF";
+    wrapper.appendChild(iframe);
+  } else {
+    const error = document.createElement("p");
+    error.className = "roadmap-embed-error";
+    error.textContent = "لا يوجد رابط PDF متاح لهذه المادة.";
+    wrapper.appendChild(error);
+  }
 
-    // Mandatory fallback — always rendered for PDF blocks.
-    if (block.pdfUrl) {
-        const fallback = document.createElement('a');
-        fallback.href = block.pdfUrl;
-        fallback.target = '_blank';
-        fallback.rel = 'noopener noreferrer';
-        fallback.className = 'roadmap-pdf-fallback';
-        fallback.textContent = 'فتح PDF في تبويب جديد ↗';
-        wrapper.appendChild(fallback);
-    }
+  // Mandatory fallback — always rendered for PDF blocks.
+  if (block.pdfUrl) {
+    const fallback = document.createElement("a");
+    fallback.href = block.pdfUrl;
+    fallback.target = "_blank";
+    fallback.rel = "noopener noreferrer";
+    fallback.className = "roadmap-pdf-fallback";
+    fallback.textContent = "فتح PDF في تبويب جديد ↗";
+    wrapper.appendChild(fallback);
+  }
 
-    return wrapper;
+  return wrapper;
 }
 
 /**
@@ -244,20 +247,20 @@ function renderPdfContent(block) {
  * @returns {HTMLElement}
  */
 function renderTextContent(block) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'roadmap-text-content';
+  const wrapper = document.createElement("div");
+  wrapper.className = "roadmap-text-content";
 
-    const raw = block.content || '';
+  const raw = block.content || "";
 
-    if (window.DOMPurify) {
-        // DOMPurify loaded via CDN in subject.html — safe innerHTML assignment.
-        wrapper.innerHTML = window.DOMPurify.sanitize(raw);
-    } else {
-        // Graceful degradation: no sanitizer available — render as plain text.
-        wrapper.textContent = raw;
-    }
+  if (window.DOMPurify) {
+    // DOMPurify loaded via CDN in subject.html — safe innerHTML assignment.
+    wrapper.innerHTML = window.DOMPurify.sanitize(raw);
+  } else {
+    // Graceful degradation: no sanitizer available — render as plain text.
+    wrapper.textContent = raw;
+  }
 
-    return wrapper;
+  return wrapper;
 }
 
 /**
@@ -267,37 +270,37 @@ function renderTextContent(block) {
  * @returns {HTMLElement}
  */
 function renderImageContent(block) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'roadmap-embed roadmap-embed--image';
+  const wrapper = document.createElement("div");
+  wrapper.className = "roadmap-embed roadmap-embed--image";
 
-    if (block.imageUrl) {
-        const img = document.createElement('img');
-        img.src     = block.imageUrl;
-        img.alt     = block.caption || block.title || 'صورة';
-        img.loading = 'lazy';
-        img.onerror = () => {
-            img.style.display = 'none';
-            const err = document.createElement('p');
-            err.className = 'roadmap-embed-error';
-            err.textContent = 'تعذر تحميل الصورة — تحقق من الرابط.';
-            wrapper.appendChild(err);
-        };
-        wrapper.appendChild(img);
+  if (block.imageUrl) {
+    const img = document.createElement("img");
+    img.src = block.imageUrl;
+    img.alt = block.caption || block.title || "صورة";
+    img.loading = "lazy";
+    img.onerror = () => {
+      img.style.display = "none";
+      const err = document.createElement("p");
+      err.className = "roadmap-embed-error";
+      err.textContent = "تعذر تحميل الصورة — تحقق من الرابط.";
+      wrapper.appendChild(err);
+    };
+    wrapper.appendChild(img);
 
-        if (block.caption) {
-            const cap = document.createElement('p');
-            cap.className = 'roadmap-image-caption';
-            cap.textContent = block.caption;
-            wrapper.appendChild(cap);
-        }
-    } else {
-        const error = document.createElement('p');
-        error.className = 'roadmap-embed-error';
-        error.textContent = 'لا يوجد رابط صورة متاح.';
-        wrapper.appendChild(error);
+    if (block.caption) {
+      const cap = document.createElement("p");
+      cap.className = "roadmap-image-caption";
+      cap.textContent = block.caption;
+      wrapper.appendChild(cap);
     }
+  } else {
+    const error = document.createElement("p");
+    error.className = "roadmap-embed-error";
+    error.textContent = "لا يوجد رابط صورة متاح.";
+    wrapper.appendChild(error);
+  }
 
-    return wrapper;
+  return wrapper;
 }
 
 /**
@@ -307,10 +310,10 @@ function renderImageContent(block) {
  * @returns {HTMLElement}
  */
 function renderBlockContent(block) {
-    if (block.type === 'video') return renderVideoContent(block);
-    if (block.type === 'pdf')   return renderPdfContent(block);
-    if (block.type === 'image') return renderImageContent(block);
-    return renderTextContent(block);
+  if (block.type === "video") return renderVideoContent(block);
+  if (block.type === "pdf") return renderPdfContent(block);
+  if (block.type === "image") return renderImageContent(block);
+  return renderTextContent(block);
 }
 
 // ---------------------------------------------------------------------------
@@ -333,77 +336,81 @@ function renderBlockContent(block) {
  * @returns {HTMLElement}
  */
 function renderRoadmapBlock(block, index, subjectId, progressMap, containerEl) {
-    const isDone   = block.state === 'done';
-    const isActive = block.state === 'active';
-    const isLocked = block.state === 'locked';
+  const isDone = block.state === "done";
+  const isActive = block.state === "active";
+  const isLocked = block.state === "locked";
 
-    // --- Step wrapper ---
-    const step = document.createElement('div');
-    step.className = [
-        'roadmap-step',
-        isDone   ? 'is-done'   : '',
-        isActive ? 'is-active' : '',
-        isLocked ? 'is-locked' : '',
-    ].filter(Boolean).join(' ');
-    step.dataset.blockId = block.id;
+  // --- Step wrapper ---
+  const step = document.createElement("div");
+  step.className = [
+    "roadmap-step",
+    isDone ? "is-done" : "",
+    isActive ? "is-active" : "",
+    isLocked ? "is-locked" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  step.dataset.blockId = block.id;
 
-    // --- Node (step number or checkmark) ---
-    const node = document.createElement('div');
-    node.className = [
-        'roadmap-node',
-        isDone   ? 'is-done'   : '',
-        isActive ? 'is-active' : '',
-    ].filter(Boolean).join(' ');
-    node.setAttribute('aria-hidden', 'true');
-    node.textContent = isDone ? '✓' : String(index + 1);
-    step.appendChild(node);
+  // --- Node (step number or checkmark) ---
+  const node = document.createElement("div");
+  node.className = [
+    "roadmap-node",
+    isDone ? "is-done" : "",
+    isActive ? "is-active" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  node.setAttribute("aria-hidden", "true");
+  node.textContent = isDone ? "✓" : String(index + 1);
+  step.appendChild(node);
 
-    // --- Card ---
-    const card = document.createElement('div');
-    card.className = 'roadmap-card';
+  // --- Card ---
+  const card = document.createElement("div");
+  card.className = "roadmap-card";
 
-    const titleEl = document.createElement('h3');
-    titleEl.className = 'roadmap-card-title';
-    titleEl.textContent = block.title || 'بدون عنوان';
-    card.appendChild(titleEl);
+  const titleEl = document.createElement("h3");
+  titleEl.className = "roadmap-card-title";
+  titleEl.textContent = block.title || "بدون عنوان";
+  card.appendChild(titleEl);
 
-    const body = document.createElement('div');
-    body.className = 'roadmap-card-body';
-    body.appendChild(renderBlockContent(block));
-    card.appendChild(body);
+  const body = document.createElement("div");
+  body.className = "roadmap-card-body";
+  body.appendChild(renderBlockContent(block));
+  card.appendChild(body);
 
-    // --- Actions row ---
-    const actions = document.createElement('div');
-    actions.className = 'roadmap-card-actions';
+  // --- Actions row ---
+  const actions = document.createElement("div");
+  actions.className = "roadmap-card-actions";
 
-    const doneBtn = document.createElement('button');
-    doneBtn.className = 'roadmap-done-btn';
-    doneBtn.type = 'button';
+  const doneBtn = document.createElement("button");
+  doneBtn.className = "roadmap-done-btn";
+  doneBtn.type = "button";
 
-    if (isDone) {
-        doneBtn.textContent = '✓ تم';
-        doneBtn.disabled = true;
-        doneBtn.classList.add('is-done');
-    } else if (isLocked) {
-        doneBtn.textContent = '🔒 مقفول';
-        doneBtn.disabled = true;
-        doneBtn.title = 'أكمل الخطوة السابقة أولاً';
-        doneBtn.style.cursor = 'not-allowed';
-        doneBtn.classList.add('is-locked');
-    } else {
-        // Active block — wire the click handler.
-        doneBtn.textContent = 'تم ✓';
-        doneBtn.classList.add('is-active');
-        doneBtn.addEventListener('click', () => {
-            handleDoneClick(subjectId, block.id, containerEl, progressMap);
-        });
-    }
+  if (isDone) {
+    doneBtn.textContent = "✓ تم";
+    doneBtn.disabled = true;
+    doneBtn.classList.add("is-done");
+  } else if (isLocked) {
+    doneBtn.textContent = "🔒 مقفول";
+    doneBtn.disabled = true;
+    doneBtn.title = "أكمل الخطوة السابقة أولاً";
+    doneBtn.style.cursor = "not-allowed";
+    doneBtn.classList.add("is-locked");
+  } else {
+    // Active block — wire the click handler.
+    doneBtn.textContent = "تم ✓";
+    doneBtn.classList.add("is-active");
+    doneBtn.addEventListener("click", () => {
+      handleDoneClick(subjectId, block.id, containerEl, progressMap);
+    });
+  }
 
-    actions.appendChild(doneBtn);
-    card.appendChild(actions);
-    step.appendChild(card);
+  actions.appendChild(doneBtn);
+  card.appendChild(actions);
+  step.appendChild(card);
 
-    return step;
+  return step;
 }
 
 // ---------------------------------------------------------------------------
@@ -419,19 +426,25 @@ function renderRoadmapBlock(block, index, subjectId, progressMap, containerEl) {
  * @param {string}      subjectId
  */
 function renderRoadmapTimeline(blocks, progressMap, containerEl, subjectId) {
-    containerEl.innerHTML = '';
+  containerEl.innerHTML = "";
 
-    const annotated = computeBlockStates(blocks, progressMap);
+  const annotated = computeBlockStates(blocks, progressMap);
 
-    annotated.forEach((block, index) => {
-        const stepEl = renderRoadmapBlock(block, index, subjectId, progressMap, containerEl);
-        containerEl.appendChild(stepEl);
+  annotated.forEach((block, index) => {
+    const stepEl = renderRoadmapBlock(
+      block,
+      index,
+      subjectId,
+      progressMap,
+      containerEl,
+    );
+    containerEl.appendChild(stepEl);
 
-        // Add a connector after every block except the last.
-        if (index < annotated.length - 1) {
-            containerEl.appendChild(renderRoadmapConnector(block.state === 'done'));
-        }
-    });
+    // Add a connector after every block except the last.
+    if (index < annotated.length - 1) {
+      containerEl.appendChild(renderRoadmapConnector(block.state === "done"));
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -456,38 +469,38 @@ function renderRoadmapTimeline(blocks, progressMap, containerEl, subjectId) {
  * @param {Map}         progressMap  Mutated in place for the re-render.
  */
 function handleDoneClick(subjectId, blockId, containerEl, progressMap) {
-    // Briefly show loading state while we save.
-    const stepEl = containerEl.querySelector(`[data-block-id="${blockId}"]`);
-    const btn = stepEl ? stepEl.querySelector('.roadmap-done-btn') : null;
-    if (btn) {
-        btn.disabled = true;
-        btn.textContent = '...';
-        btn.classList.add('loading');
-    }
+  // Briefly show loading state while we save.
+  const stepEl = containerEl.querySelector(`[data-block-id="${blockId}"]`);
+  const btn = stepEl ? stepEl.querySelector(".roadmap-done-btn") : null;
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "...";
+    btn.classList.add("loading");
+  }
 
-    // Persist and update in-memory state.
-    saveProgress(subjectId, blockId);
-    progressMap.set(blockId, { completedAt: new Date().toISOString() });
+  // Persist and update in-memory state.
+  saveProgress(subjectId, blockId);
+  progressMap.set(blockId, { completedAt: new Date().toISOString() });
 
-    // Retrieve raw blocks stored during initial render.
-    const rawBlocksJson = containerEl.dataset.rawBlocks;
-    if (!rawBlocksJson) return;
+  // Retrieve raw blocks stored during initial render.
+  const rawBlocksJson = containerEl.dataset.rawBlocks;
+  if (!rawBlocksJson) return;
 
-    let rawBlocks;
-    try {
-        rawBlocks = JSON.parse(rawBlocksJson);
-    } catch {
-        return;
-    }
+  let rawBlocks;
+  try {
+    rawBlocks = JSON.parse(rawBlocksJson);
+  } catch {
+    return;
+  }
 
-    // Re-render the full timeline with updated progress.
-    renderRoadmapTimeline(rawBlocks, progressMap, containerEl, subjectId);
+  // Re-render the full timeline with updated progress.
+  renderRoadmapTimeline(rawBlocks, progressMap, containerEl, subjectId);
 
-    // Scroll the new active block into view.
-    const activeStep = containerEl.querySelector('.roadmap-step.is-active');
-    if (activeStep) {
-        activeStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+  // Scroll the new active block into view.
+  const activeStep = containerEl.querySelector(".roadmap-step.is-active");
+  if (activeStep) {
+    activeStep.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -504,30 +517,30 @@ function handleDoneClick(subjectId, blockId, containerEl, progressMap) {
  * @param {object|null} db  Firestore compat instance (may be null if Firebase failed).
  */
 async function initRoadmapViewer(subjectId, db) {
-    const section   = document.getElementById('roadmapSection');
-    const container = document.getElementById('roadmapTimeline');
+  const section = document.getElementById("roadmapSection");
+  const container = document.getElementById("roadmapTimeline");
 
-    if (!section || !container) return false;
+  if (!section || !container) return false;
 
-    const blocks = await fetchRoadmapBlocks(subjectId, db);
+  const blocks = await fetchRoadmapBlocks(subjectId, db);
 
-    if (!blocks.length) {
-        return false;
-    }
+  if (!blocks.length) {
+    return false;
+  }
 
-    // Cache raw blocks on the container for Done-button re-renders.
-    container.dataset.rawBlocks = JSON.stringify(blocks);
+  // Cache raw blocks on the container for Done-button re-renders.
+  container.dataset.rawBlocks = JSON.stringify(blocks);
 
-    const progressMap = loadProgress(subjectId);
-    renderRoadmapTimeline(blocks, progressMap, container, subjectId);
+  const progressMap = loadProgress(subjectId);
+  renderRoadmapTimeline(blocks, progressMap, container, subjectId);
 
-    // Scroll the active block into view on initial load.
-    const activeStep = container.querySelector('.roadmap-step.is-active');
-    if (activeStep) {
-        activeStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
+  // Scroll the active block into view on initial load.
+  const activeStep = container.querySelector(".roadmap-step.is-active");
+  if (activeStep) {
+    activeStep.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 
-    return true;
+  return true;
 }
 
 export { initRoadmapViewer };

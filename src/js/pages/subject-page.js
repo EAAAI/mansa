@@ -51,6 +51,7 @@ function renderNotFound() {
     setText('subjectDescription', 'يمكنك الرجوع للرئيسية واختيار المادة من القائمة.');
 
     renderAnnouncement('');
+    document.body.classList.add('fouc-loaded');
 }
 
 async function initSubjectPageEntry() {
@@ -77,6 +78,9 @@ async function initSubjectPageEntry() {
     };
 
     setSubjectAccent(finalData.accentColor);
+    
+    // Reveal the page ONLY AFTER the color is applied to prevent flashing
+    document.body.classList.add('fouc-loaded');
 
     const iconText = String(subject.icon || '📚');
     const titleText = finalData.nameAr || finalData.nameEn;

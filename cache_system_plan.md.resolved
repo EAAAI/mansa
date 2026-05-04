@@ -1,0 +1,183 @@
+# Version Control Caching System Implementation Plan (Detailed)
+
+This is a foolproof plan to implement a highly efficient caching system that reduces Firebase Firestore reads by up to 99%.
+
+## Architecture Overview
+1. **The Server Truth:** A single tiny document `system/versions` holds timestamps for every content section (e.g., `{"subjectsCatalog": 1712000, "roadmap_os": 1712050}`).
+2. **The Session Truth:** When a user opens the site, we fetch `system/versions` exactly once per browsing session and save it in `sessionStorage`.
+3. **The Local Cache:** Content (Roadmaps, Subjects, etc.) is saved in `localStorage`. When a page loads, we compare the server's timestamp with the local timestamp. If they match, we load from memory (0 reads).
+
+---
+
+## 1. Create `src/js/utils/cache-manager.js`
+This will be a new utility handling the core logic.
+
+```javascript
+/**
+ * cache-manager.js
+ * Centralized caching utility relying on a Firestore version document.
+ */
+
+const VERSIONS_DOC_PATH = 'system/versions';
+const SESSION_CACHE_KEY = 'mansa_server_versions';
+
+/**
+ * Fetches the system versions document.
+ * Caches it in sessionStorage so it only costs 1 read per browsing session.
+ */
+export async function fetchSystemVersions(db) {
+    // 1. Check sessionStorage
+    const sessionCached = sessionStorage.getItem(SESSION_CACHE_KEY);
+    if (sessionCached) return JSON.parse(sessionCached);
+
+    // 2. Fetch from Firestore (costs 1 read)
+    try {
+        const doc = await db.doc(VERSIONS_DOC_PATH).get();
+        const versions = doc.exists ? doc.data() : {};
+        sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(versions));
+        return versions;
+    } catch (err) {
+        console.error("Failed to fetch system versions", err);
+        return {};
+    }
+}
+
+/**
+ * The core wrapper. Returns cached data if versions match, otherwise executes the fetcher.
+ */
+export async function fetchWithCache(db, cacheKey, versionKey, fetcherFn) {
+    const versions = await fetchSystemVersions(db);
+    const serverVersion = versions[versionKey] || 0;
+    
+    const localData = localStorage.getItem(cacheKey);
+    const localVersion = parseInt(localStorage.getItem(cacheKey + '_version') || '0', 10);
+
+    // If we have local data and the versions match exactly, use Cache!
+    if (localData && localVersion === serverVersion && serverVersion !== 0) {
+        try {
+            return JSON.parse(localData);
+        } catch (e) {
+            // JSON parse error? Fallback to fetch.
+        }
+    }
+
+    // Cache miss or outdated -> Fetch fresh data
+    const freshData = await fetcherFn();
+
+    // Only cache if we got actual data
+    if (freshData) {
+        localStorage.setItem(cacheKey, JSON.stringify(freshData));
+        localStorage.setItem(cacheKey + '_version', serverVersion.toString());
+    }
+
+    return freshData;
+}
+
+/**
+ * Used by Admin files to bump the timestamp and force all users to fetch fresh data.
+ */
+export async function updateCacheVersion(db, versionKey) {
+    try {
+        await db.doc(VERSIONS_DOC_PATH).set({
+            [versionKey]: Date.now()
+        }, { merge: true });
+        
+        // Clear admin's session cache so they immediately see their own updates
+        sessionStorage.removeItem(SESSION_CACHE_KEY);
+    } catch (err) {
+        console.error("Failed to update cache version", err);
+    }
+}
+```
+
+---
+
+## 2. Update Student Viewers (The "Readers")
+We will replace direct Firestore fetches with `fetchWithCache` in 4 files.
+
+### A. `src/js/features/subjects-catalog.js`
+Inside `loadSubjectsCatalog()`:
+```javascript
+import { fetchWithCache } from '../utils/cache-manager.js';
+
+export async function loadSubjectsCatalog() {
+    const db = firebase.firestore();
+    return fetchWithCache(db, 'mansa_subjects_catalog', 'subjectsCatalog', async () => {
+        const snapshot = await db.collection(SUBJECTS_COLLECTION).orderBy('order').get();
+        const subjects = [];
+        snapshot.forEach(doc => {
+            if (doc.data().isActive !== false) subjects.push({ id: doc.id, ...doc.data() });
+        });
+        return subjects;
+    });
+}
+```
+
+### B. `src/js/features/roadmap-viewer.js`
+Inside `fetchRoadmapBlocks(subjectId, db)`:
+```javascript
+import { fetchWithCache } from '../utils/cache-manager.js';
+
+async function fetchRoadmapBlocks(subjectId, db) {
+    if (!db || !subjectId) return [];
+    
+    return fetchWithCache(db, `mansa_roadmap_${subjectId}`, `roadmap_${subjectId}`, async () => {
+        // ... existing snapshot logic returning blocks ...
+    });
+}
+```
+
+### C. `src/js/features/questions-viewer.js`
+Inside `fetchQuestions(subjectId, db)`:
+```javascript
+import { fetchWithCache } from '../utils/cache-manager.js';
+// wrap existing logic
+```
+
+### D. `src/js/features/summaries-viewer.js`
+Inside `fetchSummaries(subjectId, db)`:
+```javascript
+import { fetchWithCache } from '../utils/cache-manager.js';
+// wrap existing logic
+```
+
+---
+
+## 3. Update Admin Features (The "Invalidators")
+We will import `updateCacheVersion` and call it whenever data is modified.
+
+### A. `src/js/features/admin-roadmap.js`
+```javascript
+import { updateCacheVersion } from '../utils/cache-manager.js';
+
+// Inside rmHandleAdd (after success):
+await updateCacheVersion(db, 'roadmap_' + subjectId);
+
+// Inside rmHandleEdit (after success):
+await updateCacheVersion(db, 'roadmap_' + subjectId);
+
+// Inside rmDeleteBlock (after success):
+await updateCacheVersion(db, 'roadmap_' + subjectId);
+
+// Inside rmSaveOrder (after batch commit):
+await updateCacheVersion(db, 'roadmap_' + subjectId);
+```
+
+### B. `src/js/features/admin-questions.js`
+Add `updateCacheVersion(db, 'questions_' + subjectId)` inside `aqHandleAdd` and `aqDeleteQuestion`.
+
+### C. `src/js/features/admin-summaries.js`
+Add `updateCacheVersion(db, 'summaries_' + subjectId)` inside `asHandleAdd` and `asDeleteSummary`.
+
+---
+
+## Edge Cases Handled
+1. **Firestore Timestamps in Cache:** `JSON.stringify` converts dates to strings. Luckily, V0.2's display modules (`renderBlockContent`, `renderQuestionCard`, etc.) do not render any `createdAt` or raw Date fields, meaning stringified objects will render perfectly without throwing `.toDate() is not a function` errors.
+2. **First Time Setup:** If `system/versions` doesn't exist, `fetchSystemVersions` returns an empty object `{}`. The `serverVersion` becomes `0`. The cache bypasses and fetches fresh data from Firestore.
+3. **Admin Viewing Own Edits:** When an Admin makes an edit, `updateCacheVersion` deliberately clears their `sessionStorage` so their next reload instantly fetches the new version document and sees the update.
+
+## User Review Required
+> [!IMPORTANT]
+> The plan has been heavily revised for safety and efficiency. It guarantees only **1 read per browsing session** to check versions, meaning your database reads will drop tremendously.
+> 
+> If you are satisfied with this detailed logic, say **"Proceed"** and I will start writing the code!

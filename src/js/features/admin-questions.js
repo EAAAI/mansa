@@ -4,6 +4,7 @@
  */
 
 import { QUESTIONS_COLLECTION } from '../config/subjects-config.js';
+import { updateCacheVersion } from '../utils/cache-manager.js';
 
 // ---------------------------------------------------------------------------
 // Firestore Helper
@@ -367,6 +368,7 @@ async function aqHandleAdd(event) {
     try {
         await _db.collection(QUESTIONS_COLLECTION).add(data);
         if (statusEl) { statusEl.textContent = `✅ تمت إضافة السؤال!`; statusEl.style.color = '#8effbf'; }
+        await updateCacheVersion(_db, 'questions_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) {
         if (statusEl) { statusEl.textContent = `❌ ${err.message}`; statusEl.style.color = '#ff8f8f'; }
@@ -421,6 +423,7 @@ async function aqHandleSaveEdit(questionId) {
 
     try {
         await _db.collection(QUESTIONS_COLLECTION).doc(questionId).update(data);
+        await updateCacheVersion(_db, 'questions_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) {
         if (statusEl) { statusEl.textContent = `❌ ${err.message}`; statusEl.style.color = '#ff8f8f'; }
@@ -431,6 +434,7 @@ async function aqHandleDelete(questionId) {
     if (!confirm(`هل أنت متأكد من حذف هذا السؤال؟ لا يمكن التراجع.`)) return;
     try {
         await _db.collection(QUESTIONS_COLLECTION).doc(questionId).delete();
+        await updateCacheVersion(_db, 'questions_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) { alert(`خطأ في الحذف: ${err.message}`); }
 }
@@ -451,6 +455,7 @@ async function aqHandleMove(questionId, direction) {
             _db.collection(QUESTIONS_COLLECTION).doc(qA.id).update({ order: orderB }),
             _db.collection(QUESTIONS_COLLECTION).doc(qB.id).update({ order: orderA }),
         ]);
+        await updateCacheVersion(_db, 'questions_' + _selectedSubjectId);
         await reloadAndRender();
     } catch (err) { alert(`خطأ في إعادة الترتيب: ${err.message}`); }
 }
