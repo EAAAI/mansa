@@ -9,10 +9,14 @@ const firebaseConfig = {
 };
 
 let db;
+let storage;
 
 try {
   const app = firebase.initializeApp(firebaseConfig);
   db = firebase.firestore(app);
+  if (firebase.storage) {
+    storage = firebase.storage(app);
+  }
 } catch (error) {
   console.error("Firebase initialization error:", error);
 }
@@ -68,4 +72,5 @@ function onAuthStateChanged(callback) {
   firebaseAuth.onAuthStateChanged(callback);
 }
 
-export { db, initAuth, signInWithGoogle, hasAdminClaim, adminSignOut, onAuthStateChanged };
+export { db, storage, initAuth, signInWithGoogle, hasAdminClaim, adminSignOut, onAuthStateChanged };
+

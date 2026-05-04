@@ -50,3 +50,50 @@ Use this checklist before publishing any production update.
 3. Run `npm run verify:ci` and ensure it passes.
 4. Confirm documentation updates are included for new features.
 5. Validate Arabic text rendering and mobile layout.
+
+## 7. Roadmap Feature (V0.2)
+
+### Firestore Index
+
+1. Confirm `firestore.indexes.json` is committed to the repo.
+2. Deploy index with:
+   ```bash
+   firebase deploy --only firestore
+   ```
+3. Verify the composite index `(subjectId ASC, order ASC)` appears as **Enabled**
+   in the Firebase Console → Firestore → Indexes.
+
+> **Risk:** If the index is not deployed, `fetchRoadmapBlocks` silently falls back
+> to an unordered query. Blocks may appear out of order for subjects with many steps.
+
+### Firestore Rules
+
+1. Verify `firestore.rules` includes the `roadmap_blocks` match block **before**
+   the catch-all `/{document=**}` deny rule.
+2. Deploy rules with:
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+3. Test: open `subject.html?subject=<id>` and confirm no `PERMISSION_DENIED` errors
+   in the browser console.
+
+### Content Seeding
+
+1. Log in to the admin dashboard with an account that has the `admin: true` custom claim.
+2. Switch to the **🗺️ خرائط المذاكرة** tab.
+3. Select a subject and add at least one block of each type (video, PDF, text).
+4. Open `subject.html?subject=<id>` and confirm the roadmap section appears.
+
+### Student Progress (localStorage)
+
+1. Mark a block as Done — confirm the block transitions to green ✓ state.
+2. Hard-refresh the page — confirm the Done state persists from localStorage.
+3. Open browser DevTools → Application → Local Storage → confirm key
+   `mansa_roadmap_progress_<subjectId>` exists with the correct structure.
+
+### Mobile Smoke Test
+
+1. Open `subject.html` at 390px viewport width.
+2. Confirm video embeds maintain 16:9 ratio (no horizontal overflow).
+3. Confirm PDF "open in new tab" fallback link is visible.
+4. Confirm the Done button is full-width and easily tappable.

@@ -19,8 +19,28 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // Roadmap blocks — public read so any student can load the learning path.
+    // Write is restricted to admins who manage content via the dashboard.
+    match /roadmap_blocks/{blockId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Questions — public read, admin write.
+    match /subject_questions/{questionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Summaries — public read, admin write.
+    match /subject_summaries/{summaryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }
+
   }
 }

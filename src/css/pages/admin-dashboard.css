@@ -361,3 +361,225 @@ body {
     gap: 10px;
 }
 
+/* ==========================================================================
+   TAB BAR
+   ========================================================================== */
+
+.admin-tab-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.12);
+    padding-bottom: 0;
+    flex-wrap: wrap;
+}
+
+.admin-tab-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: rgba(255, 255, 255, 0.45);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    margin-bottom: -1px;
+}
+
+.admin-tab-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 217, 255, 0.06);
+}
+
+.admin-tab-btn.active {
+    color: #00d9ff;
+    border-bottom-color: #00d9ff;
+    background: rgba(0, 217, 255, 0.08);
+}
+
+/* ==========================================================================
+   ROADMAP ADMIN PANEL
+   ========================================================================== */
+
+.roadmap-admin-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.roadmap-subject-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 360px;
+}
+
+.roadmap-subject-select {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(0, 217, 255, 0.25);
+    border-radius: 12px;
+    padding: 10px 14px;
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    width: 100%;
+}
+
+.roadmap-subject-select:focus {
+    border-color: rgba(0, 217, 255, 0.6);
+}
+
+.roadmap-subject-select option {
+    background: #1a1a2e;
+}
+
+/* Add block form */
+.roadmap-add-form {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 217, 255, 0.18);
+    border-radius: 20px;
+    padding: 24px;
+}
+
+.roadmap-add-form h3 {
+    font-size: 1rem;
+    color: #c9f4ff;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Dynamic type fields — shared wrapper */
+.roadmap-type-fields {
+    margin-top: 12px;
+}
+
+.roadmap-type-fields .subject-form-field {
+    margin-top: 0;
+}
+
+/* Block list */
+.roadmap-blocks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+/* Individual block row */
+.roadmap-block-row {
+    margin-bottom: 12px;
+    transition: border-color 0.2s ease;
+}
+
+.roadmap-block-row:hover {
+    border-color: rgba(0, 217, 255, 0.25);
+}
+
+/* Move up/down button cluster */
+.roadmap-block-move-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.roadmap-block-move-btns .admin-tool-btn:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Inline edit form */
+.roadmap-edit-form {
+    border-color: rgba(0, 217, 255, 0.35);
+    background: rgba(0, 217, 255, 0.04);
+}
+
+.roadmap-edit-form h4 {
+    font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   IMAGE SOURCE TABS (URL vs Upload)
+   ========================================================================== */
+
+.img-source-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.12);
+    padding-bottom: 0;
+}
+
+.img-tab-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.83rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    margin-bottom: -1px;
+}
+
+.img-tab-btn:hover {
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(0, 217, 255, 0.05);
+}
+
+.img-tab-btn.active {
+    color: #00d9ff;
+    border-bottom-color: #00d9ff;
+    background: rgba(0, 217, 255, 0.07);
+}
+
+/* File input */
+.subject-form-field input[type="file"] {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(0, 217, 255, 0.3);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+.subject-form-field input[type="file"]:hover {
+    border-color: rgba(0, 217, 255, 0.55);
+}
+
+/* Image preview */
+.rm-img-preview {
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 220px;
+    border: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+.rm-img-preview img {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+}
+
+/* Upload status text */
+.rm-upload-status {
+    margin: 6px 0 0;
+    font-size: 0.83rem;
+    color: #94a3b8;
+    min-height: 1.2em;
+}

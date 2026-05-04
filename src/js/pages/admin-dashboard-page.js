@@ -4,12 +4,18 @@
  */
 
 import { db, initAuth, signInWithGoogle, hasAdminClaim, adminSignOut, onAuthStateChanged } from '../config/firebase.js';
+import { initAdminRoadmap } from '../features/admin-roadmap.js';
+import { initAdminQuestions } from '../features/admin-questions.js';
+import { initAdminSummaries } from '../features/admin-summaries.js';
 
 const PAGE_ID = 'admin-dashboard';
 
 let adminDataCache = {
     subjects: [],
 };
+
+// Currently active tab key — tracks state for tab bar rendering.
+let activeTabKey = 'subjects';
 
 const GOOGLE_BUTTON_HTML = `<svg width="20" height="20" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -274,6 +280,69 @@ function renderSubjectsView() {
     content.innerHTML = renderSubjectsTab();
 }
 
+// ============================================
+// TAB BAR
+// ============================================
+
+const TABS = [
+    { key: 'subjects', label: '📚 المواد' },
+    { key: 'roadmap',  label: '🗺️ خرائط المذاكرة' },
+    { key: 'questions', label: '❓ الأسئلة' },
+    { key: 'summaries', label: '📋 الملخصات' },
+];
+
+/**
+ * Renders the tab button bar into #adminTabBar.
+ * @param {string} activeKey  The currently active tab key.
+ */
+function renderTabBar(activeKey) {
+    activeTabKey = activeKey;
+    const bar = document.getElementById('adminTabBar');
+    if (!bar) return;
+
+    bar.innerHTML = TABS.map((tab) => `
+        <button
+            class="admin-tab-btn${tab.key === activeKey ? ' active' : ''}"
+            onclick="switchAdminTab('${tab.key}')"
+        >${tab.label}</button>
+    `).join('');
+}
+
+/**
+ * Switches the active tab: updates the tab bar and re-renders the content area.
+ * Exposed on window for onclick use in JS-generated HTML.
+ * @param {string} tabKey
+ */
+async function switchAdminTab(tabKey) {
+    renderTabBar(tabKey);
+
+    const content = document.getElementById('adminTabContent');
+    if (!content) return;
+
+    if (tabKey === 'subjects') {
+        renderSubjectsView();
+        return;
+    }
+
+    if (tabKey === 'roadmap') {
+        content.innerHTML = '<p style="color:rgba(255,255,255,0.4);padding:20px;">جاري تحميل خرائط المذاكرة...</p>';
+        await initAdminRoadmap(adminDataCache.subjects, db, content);
+        return;
+    }
+
+    if (tabKey === 'questions') {
+        content.innerHTML = '<p style="color:rgba(255,255,255,0.4);padding:20px;">جاري تحميل الأسئلة...</p>';
+        await initAdminQuestions(adminDataCache.subjects, db, content);
+        return;
+    }
+
+    if (tabKey === 'summaries') {
+        content.innerHTML = '<p style="color:rgba(255,255,255,0.4);padding:20px;">جاري تحميل الملخصات...</p>';
+        await initAdminSummaries(adminDataCache.subjects, db, content);
+        return;
+    }
+}
+
 async function showDashboard(user) {
     const login = document.getElementById('loginScreen');
     const dashboard = document.getElementById('dashboardScreen');
@@ -291,6 +360,9 @@ async function showDashboard(user) {
 
     await refreshSubjectsData();
     loadStats();
+
+    // Render tab bar then activate the default subjects tab.
+    renderTabBar('subjects');
     renderSubjectsView();
 }
 
@@ -337,6 +409,7 @@ function exposeGlobalHandlers() {
     window.handleAddSubject = handleAddSubject;
     window.handleDeleteSubject = handleDeleteSubject;
     window.handleToggleSubject = handleToggleSubject;
+    window.switchAdminTab = switchAdminTab;
 }
 
 function initAdminDashboardPageEntry() {
@@ -356,4 +429,5 @@ export {
     handleGoogleLogin,
     handleSignOut,
     renderSubjectsView,
+    switchAdminTab,
 };

@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="src/css/pages/subject.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- DOMPurify: sanitizes admin-authored HTML in text roadmap blocks -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.5/purify.min.js"></script>
 </head>
 <body>
     <main class="subject-shell">
@@ -25,21 +27,50 @@
             <p class="subject-description" id="subjectDescription"></p>
         </section>
 
-        <section class="subject-grid">
-            <article class="subject-panel" aria-labelledby="subjectModulesHeading">
-                <h2 id="subjectModulesHeading">الوحدات المقترحة للمذاكرة</h2>
-                <ul class="subject-list" id="subjectModulesList"></ul>
-            </article>
 
-            <article class="subject-panel" aria-labelledby="subjectResourcesHeading">
-                <h2 id="subjectResourcesHeading">روابط مفيدة</h2>
-                <ul class="subject-resource-list" id="subjectResourcesList"></ul>
-            </article>
-        </section>
 
         <section class="subject-announcement" id="subjectAnnouncement" style="display: none;">
             <strong>تنبيه مهم</strong>
             <p id="subjectAnnouncementText"></p>
+        </section>
+
+        <!-- TAB NAVIGATION -->
+        <div class="subject-tabs-nav" id="subjectTabsNav" style="display:none;">
+            <button class="subject-tab-btn" data-target="roadmapSection" id="tab-roadmap" style="display:none;">🗺️ مسار التعلم</button>
+            <button class="subject-tab-btn" data-target="questionsSection" id="tab-questions" style="display:none;">❓ الأسئلة</button>
+            <button class="subject-tab-btn" data-target="summariesSection" id="tab-summaries" style="display:none;">📋 الملخصات</button>
+        </div>
+
+        <!-- ROADMAP SECTION — populated by roadmap-viewer.js; hidden until blocks load -->
+        <section class="roadmap-section" id="roadmapSection" aria-labelledby="roadmapHeading" style="display:none;">
+            <div class="roadmap-header">
+                <p class="roadmap-kicker">مسار التعلم</p>
+                <h2 id="roadmapHeading">🗺️ خريطة المذاكرة</h2>
+                <p class="roadmap-subtitle">اتبع الخطوات بالترتيب لأفضل نتيجة</p>
+            </div>
+            <div class="roadmap-timeline" id="roadmapTimeline"></div>
+        </section>
+
+        <!-- QUESTIONS SECTION — populated by questions-viewer.js; hidden until questions load -->
+        <section class="subject-feature-section" id="questionsSection"
+                 aria-labelledby="questionsHeading" style="display:none;">
+            <div class="feature-section-header">
+                <p class="feature-kicker">اختبر نفسك</p>
+                <h2 id="questionsHeading">❓ بنك الأسئلة</h2>
+                <p class="feature-subtitle">راجع المادة بالأسئلة وتأكد من فهمك</p>
+            </div>
+            <div id="questionsList" class="questions-list"></div>
+        </section>
+
+        <!-- SUMMARIES SECTION — populated by summaries-viewer.js; hidden until summaries load -->
+        <section class="subject-feature-section" id="summariesSection"
+                 aria-labelledby="summariesHeading" style="display:none;">
+            <div class="feature-section-header">
+                <p class="feature-kicker">المراجعة السريعة</p>
+                <h2 id="summariesHeading">📋 الملخصات</h2>
+                <p class="feature-subtitle">ملخصات موجزة لأهم نقاط المادة</p>
+            </div>
+            <div id="summariesList" class="summaries-list"></div>
         </section>
     </main>
 

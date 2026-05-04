@@ -1,0 +1,633 @@
+# Subject Page Redesign — Implementation Plan
+
+## Goal
+
+Redesign `subject.html` to remove legacy sections and replace them with three
+modern content sections, each fully managed from the admin dashboard.
+
+### Remove
+- `الوحدات المقترحة للمذاكرة` (Modules grid panel)
+- `روابط مفيدة` (Resources grid panel)
+- The entire `.subject-grid` wrapper that holds both panels
+
+### Add
+1. **Roadmap** — already implemented (`#roadmapSection`). No changes needed here.
+2. **Questions** (`#questionsSection`) — MCQ or short-answer questions per subject.
+   **Behavior (locked):** Stateless — answers reset on every page visit, no progress saved.
+   MCQ: selecting a wrong answer immediately reveals the correct one (no retry).
+3. **Summaries** (`#summariesSection`) — Summary cards (PDF / text / image) per subject.
+
+### Admin panel — two new tabs
+- `❓ الأسئلة` — Add / edit / delete / reorder questions per subject
+- `📋 الملخصات` — Add / edit / delete / reorder summaries per subject
+
+---
+
+## Firestore Schema
+
+### Collection: `subject_questions`
+
+Each document represents one question for a subject.
+
+```
+subject_questions/{questionId}
+  subjectId    : string   (required)
+  type         : 'mcq' | 'short'
+  question     : string   (required) — the question text
+  options      : string[] (MCQ only) — array of 4 answer strings
+  answer       : string   (required) — correct answer text (MCQ: must match one option)
+  explanation  : string   (optional) — explanation shown after answering
+  order        : number   (required) — display order
+  isActive     : boolean  (default: true)
+```
+
+### Collection: `subject_summaries`
+
+Each document represents one summary card for a subject.
+
+```
+subject_summaries/{summaryId}
+  subjectId  : string   (required)
+  type       : 'pdf' | 'text' | 'image'
+  title      : string   (required)
+  order      : number   (required)
+  isActive   : boolean  (default: true)
+  pdfUrl     : string   (type='pdf' only)
+  content    : string   (type='text' only, HTML allowed)
+  imageUrl   : string   (type='image' only)
+  caption    : string   (type='image' optional)
+```
+
+---
+
+## Composite Indexes Required
+
+Add to `firestore.indexes.json`:
+
+```json
+{
+  "collectionGroup": "subject_questions",
+  "queryScope": "COLLECTION",
+  "fields": [
+    { "fieldPath": "subjectId", "order": "ASCENDING" },
+    { "fieldPath": "order",     "order": "ASCENDING" }
+  ]
+},
+{
+  "collectionGroup": "subject_summaries",
+  "queryScope": "COLLECTION",
+  "fields": [
+    { "fieldPath": "subjectId", "order": "ASCENDING" },
+    { "fieldPath": "order",     "order": "ASCENDING" }
+  ]
+}
+```
+
+---
+
+## Firestore Rules
+
+Add to `firestore.rules` **before** the catch-all deny rule:
+
+```
+match /subject_questions/{questionId} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+
+match /subject_summaries/{summaryId} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+```
+
+---
+
+## Execution Order
+
+Execute tasks in this exact order. Each task is independently testable.
+
+---
+
+## PHASE 1 — Infrastructure
+
+### T-01 · `firestore.rules`
+**File:** `firestore.rules`
+
+Add two new match blocks for `subject_questions` and `subject_summaries` **before**
+the existing `match /{document=**}` deny rule (line 29).
+
+```
+match /subject_questions/{questionId} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+match /subject_summaries/{summaryId} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+```
+
+### T-02 · `firestore.indexes.json`
+**File:** `firestore.indexes.json`
+
+Append two new composite index objects to the `"indexes"` array:
+- `(subjectId ASC, order ASC)` on `subject_questions`
+- `(subjectId ASC, order ASC)` on `subject_summaries`
+
+### T-03 · `subjects-config.js`
+**File:** `src/js/config/subjects-config.js`
+
+Add and export two new collection name constants:
+
+```js
+const QUESTIONS_COLLECTION = 'subject_questions';
+const SUMMARIES_COLLECTION = 'subject_summaries';
+```
+
+Export both from the `export {}` block at the bottom.
+
+### T-04 · Deploy
+Run `firebase deploy --only firestore` to push updated rules and indexes.
+
+---
+
+## PHASE 2 — Subject Page HTML
+
+### T-05 · `subject.html`
+**File:** `subject.html`
+
+**Remove** lines 30–40 entirely (the `.subject-grid` section containing the two panels):
+```html
+<section class="subject-grid">
+    <article class="subject-panel" aria-labelledby="subjectModulesHeading">
+        <h2 id="subjectModulesHeading">الوحدات المقترحة للمذاكرة</h2>
+        <ul class="subject-list" id="subjectModulesList"></ul>
+    </article>
+    <article class="subject-panel" aria-labelledby="subjectResourcesHeading">
+        <h2 id="subjectResourcesHeading">روابط مفيدة</h2>
+        <ul class="subject-resource-list" id="subjectResourcesList"></ul>
+    </article>
+</section>
+```
+
+**Add** two new sections after `#roadmapSection` (before `</main>`):
+
+```html
+<!-- QUESTIONS SECTION -->
+<section class="subject-feature-section" id="questionsSection"
+         aria-labelledby="questionsHeading" style="display:none;">
+    <div class="feature-section-header">
+        <p class="feature-kicker">اختبر نفسك</p>
+        <h2 id="questionsHeading">❓ بنك الأسئلة</h2>
+        <p class="feature-subtitle">راجع المادة بالأسئلة وتأكد من فهمك</p>
+    </div>
+    <div id="questionsList" class="questions-list"></div>
+</section>
+
+<!-- SUMMARIES SECTION -->
+<section class="subject-feature-section" id="summariesSection"
+         aria-labelledby="summariesHeading" style="display:none;">
+    <div class="feature-section-header">
+        <p class="feature-kicker">المراجعة السريعة</p>
+        <h2 id="summariesHeading">📋 الملخصات</h2>
+        <p class="feature-subtitle">ملخصات موجزة لأهم نقاط المادة</p>
+    </div>
+    <div id="summariesList" class="summaries-list"></div>
+</section>
+```
+
+---
+
+## PHASE 3 — Subject Page JS Cleanup
+
+### T-06 · `subject-page.js`
+**File:** `src/js/pages/subject-page.js`
+
+1. **Remove** the `renderModules()` function (lines 26–56).
+2. **Remove** the `renderResources()` function (lines 58–91).
+3. **Remove** the `buildFallbackModules()` function (lines 93–100).
+4. **Remove** the call to `renderModules(...)` in `initSubjectPageEntry` (line 165).
+5. **Remove** the call to `renderResources(...)` in `initSubjectPageEntry` (line 166).
+6. **Remove** the call to `setText('subjectStatDifficulty', ...)` in `initSubjectPageEntry` (line 163) — the stat element no longer exists.
+7. **Add** imports at top:
+   ```js
+   import { initQuestionsViewer } from '../features/questions-viewer.js';
+   import { initSummariesViewer } from '../features/summaries-viewer.js';
+   ```
+8. **Add** calls at the end of `initSubjectPageEntry()` after `initRoadmapViewer`:
+   ```js
+   initQuestionsViewer(subjectId, db);
+   initSummariesViewer(subjectId, db);
+   ```
+9. Update `renderNotFound()` — remove the two calls to `renderModules([])` and `renderResources([])`.
+
+---
+
+## PHASE 4 — Questions Feature (Student)
+
+### T-07 · Create `src/js/features/questions-viewer.js`
+
+This module fetches and renders question cards on the subject page.
+
+**Key functions to implement:**
+
+```
+fetchQuestions(subjectId, db) → Array
+  - Query: subject_questions WHERE subjectId == X ORDER BY order
+  - Fallback: unordered query if index not ready, sort client-side
+  - Filter out isActive === false
+
+renderMcqQuestion(question, index) → HTMLElement
+  - Card with question text
+  - 4 option buttons (A/B/C/D)
+  - On click: reveal correct/wrong with color highlight
+  - Show explanation if present
+  - "إجابة صحيحة ✓" / "إجابة خاطئة ✗" state
+
+renderShortQuestion(question, index) → HTMLElement
+  - Card with question text
+  - "إظهار الإجابة" toggle button
+  - Answer revealed on click
+  - Show explanation if present
+
+initQuestionsViewer(subjectId, db)
+  - Fetch questions
+  - If empty: section stays hidden (style="display:none")
+  - If has content: render into #questionsList, set section display to ''
+```
+
+**No progress tracking.** Questions are stateless — every page visit starts fresh.
+This avoids a login gate and keeps the feature simple.
+
+**MCQ answer flow (locked):**
+- Student clicks an option → it is immediately highlighted **correct (green)** or **wrong (red)**
+- If wrong: the correct option is also highlighted green simultaneously
+- All option buttons become disabled (no retry on the same question)
+- Explanation text is revealed below (if present)
+
+**Short-answer flow:**
+- Student taps **"إظهار الإجابة"** toggle button
+- Answer text slides/fades in below the question
+- Explanation revealed below answer (if present)
+
+**`initQuestionsViewer(subjectId, db)`**
+  - Fetch questions
+  - If empty: section stays hidden (`style="display:none"`)
+  - If has content: render into `#questionsList`, set section `display` to `''`
+
+---
+
+## PHASE 5 — Summaries Feature (Student)
+
+### T-08 · Create `src/js/features/summaries-viewer.js`
+
+This module fetches and renders summary cards on the subject page.
+
+**Key functions to implement:**
+
+```
+fetchSummaries(subjectId, db) → Array
+  - Query: subject_summaries WHERE subjectId == X ORDER BY order
+  - Fallback: unordered query, sort client-side
+  - Filter out isActive === false
+
+renderSummaryCard(summary) → HTMLElement
+  - type='pdf'   → same PDF embed pattern as roadmap-viewer.js
+                    (iframe + "فتح PDF ↗" fallback link)
+  - type='text'  → DOMPurify sanitize innerHTML (same guard as roadmap-viewer.js)
+  - type='image' → <img> with caption (same pattern as roadmap-viewer.js)
+
+initSummariesViewer(subjectId, db)
+  - Fetch summaries
+  - If empty: section stays hidden
+  - If has content: render into #summariesList, reveal section
+```
+
+---
+
+## PHASE 6 — CSS
+
+### T-09 · `src/css/pages/subject.css`
+
+**Remove** the following rule blocks (they are no longer used):
+- `.subject-grid` and `.subject-panel`
+- `.subject-list`, `.subject-resource-list`
+- `.subject-list-item`, `.subject-list-item h3`, `.subject-list-item p`
+- `.subject-resource-item a`, `.subject-resource-item a:hover`
+- `.subject-list-empty`
+- `.subject-stats`, `.subject-stat`, `.subject-stat span`, `.subject-stat small`
+- The `@media (max-width: 860px)` block for `.subject-stats` and `.subject-grid`
+
+**Add** new styles for the shared section layout and the two new features:
+
+```css
+/* ---- Shared feature section layout ---- */
+.subject-feature-section { margin-top: 2rem; padding-bottom: 2rem; }
+.feature-section-header { text-align: center; margin-bottom: 2rem; }
+.feature-kicker { /* same style as .roadmap-kicker */ }
+.feature-section-header h2 { /* same style as .roadmap-header h2 */ }
+.feature-subtitle { /* same style as .roadmap-subtitle */ }
+
+/* ---- Questions ---- */
+.questions-list { display: flex; flex-direction: column; gap: 1.25rem; max-width: 760px; margin: 0 auto; }
+.question-card { background: rgba(2,6,23,0.68); border: 1px solid rgba(148,163,184,0.18); border-radius: 20px; padding: 1.4rem; }
+.question-text { font-size: 1rem; font-weight: 700; color: #f8fafc; margin: 0 0 1.1rem; }
+.question-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+.question-option-btn { ... glass button style, hover glow ... }
+.question-option-btn.correct { border-color: #38ef7d; background: rgba(56,239,125,0.12); color: #38ef7d; }
+.question-option-btn.wrong   { border-color: #ff6b6b; background: rgba(255,107,107,0.12); color: #ff6b6b; }
+.question-explanation { margin-top: 0.9rem; font-size: 0.9rem; color: #94a3b8; }
+.question-reveal-btn { ... same glass button style ... }
+.question-answer { ... revealed answer block ... }
+
+/* ---- Summaries ---- */
+.summaries-list { display: flex; flex-direction: column; gap: 1.25rem; max-width: 760px; margin: 0 auto; }
+.summary-card { background: rgba(2,6,23,0.68); border: 1px solid rgba(148,163,184,0.18); border-radius: 20px; padding: 1.2rem 1.3rem; }
+.summary-card-title { font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin: 0 0 1rem; }
+
+/* Reuse existing: .roadmap-embed--pdf, .roadmap-text-content, .roadmap-embed--image */
+/* No new embed styles needed — use same classes already in subject.css */
+
+/* Mobile */
+@media (max-width: 600px) {
+  .question-options { grid-template-columns: 1fr; }
+}
+```
+
+---
+
+## PHASE 7 — Admin Panel: Questions Tab
+
+### T-10 · `admin-dashboard-page.js`
+
+1. Add to the `TABS` array:
+   ```js
+   { key: 'questions', label: '❓ الأسئلة' },
+   ```
+2. Import `initAdminQuestions` from `../features/admin-questions.js`.
+3. Add a branch in `switchAdminTab`:
+   ```js
+   if (tabKey === 'questions') {
+       content.innerHTML = '<p ...>جاري تحميل الأسئلة...</p>';
+       await initAdminQuestions(adminDataCache.subjects, db, content);
+       return;
+   }
+   ```
+4. Expose `initAdminQuestions` result handlers on `window` (handled inside admin-questions.js itself).
+
+### T-11 · Create `src/js/features/admin-questions.js`
+
+**Mirrors `admin-roadmap.js` architecture exactly.** Module-level state: `_db`, `_subjects`, `_selectedSubjectId`, `_questions`, `_containerEl`.
+
+**Firestore helpers:**
+- `loadQuestionsForSubject(subjectId, db)` — query with index fallback, sort client-side
+
+**HTML builders:**
+- `renderQuestionRow(question, isFirst, isLast)` — shows type badge, question text truncated, order, active status; edit/delete/move buttons
+- `renderAddForm(nextOrder)` — type selector (`mcq` / `short`), question input, dynamic fields:
+  - MCQ: 4 option inputs (A/B/C/D) + correct answer selector
+  - short: answer textarea
+  - explanation textarea (both types)
+- `renderEditForm(question)` — inline edit, same dynamic fields
+- `renderAdminQuestionsPanel(subjects, selectedSubjectId, questions)` — full panel
+
+**Handlers (all prefixed `aqHandle*` or `aq*`):**
+- `aqHandleSubjectChange(subjectId)`
+- `aqSwitchTypeFields(type)`
+- `aqSwitchEditTypeFields(questionId, type)`
+- `aqHandleAdd(event)`
+- `aqHandleEdit(questionId)`
+- `aqHandleCancelEdit(questionId)`
+- `aqHandleSaveEdit(questionId)`
+- `aqHandleDelete(questionId, text)`
+- `aqHandleMove(questionId, direction)`
+
+**Entry point:**
+```js
+async function initAdminQuestions(subjects, db, containerEl)
+```
+Stores state, renders panel, exposes all handlers on `window.*`.
+
+---
+
+## PHASE 8 — Admin Panel: Summaries Tab
+
+### T-12 · `admin-dashboard-page.js`
+
+1. Add to `TABS` array:
+   ```js
+   { key: 'summaries', label: '📋 الملخصات' },
+   ```
+2. Import `initAdminSummaries` from `../features/admin-summaries.js`.
+3. Add branch in `switchAdminTab`:
+   ```js
+   if (tabKey === 'summaries') {
+       content.innerHTML = '<p ...>جاري تحميل الملخصات...</p>';
+       await initAdminSummaries(adminDataCache.subjects, db, content);
+       return;
+   }
+   ```
+
+### T-13 · Create `src/js/features/admin-summaries.js`
+
+**Mirrors `admin-roadmap.js` exactly** — same architecture, same patterns, same CSS classes.
+
+Only difference is the content types are `pdf`, `text`, `image` (same as roadmap) with the same field groups. The prefix for all handlers is `as*` (e.g. `asHandleAdd`, `asHandleEdit`).
+
+**Entry point:**
+```js
+async function initAdminSummaries(subjects, db, containerEl)
+```
+
+> **Implementation shortcut:** `admin-summaries.js` can be derived almost entirely by copying `admin-roadmap.js` and making these substitutions:
+> - Collection constant: `ROADMAP_BLOCKS_COLLECTION` → `SUMMARIES_COLLECTION`
+> - Handler prefix: `rm` → `as`
+> - Types: `pdf`, `text`, `image` only — **no `video` type**
+> - Module-level vars: `_blocks` → `_summaries`
+
+---
+
+## PHASE 9 — CSS (Admin Panel additions)
+
+### T-14 · `src/css/pages/admin-dashboard.css`
+
+No new CSS is needed for the admin summaries or questions panels — they reuse the
+existing classes:
+- `.admin-card`, `.admin-card-header`, `.admin-card-type`
+- `.subject-form-grid`, `.subject-form-field`
+- `.admin-tool-btn`, `.admin-empty`
+- `.roadmap-add-form`, `.roadmap-block-row`, `.roadmap-edit-form`
+- `.roadmap-block-move-btns`, `.roadmap-type-fields`
+
+Only add a `question-type-badge` variant if a visual distinction is needed.
+
+---
+
+## File Change Summary
+
+| File | Action |
+|---|---|
+| `firestore.rules` | Add 2 new match blocks |
+| `firestore.indexes.json` | Add 2 new composite indexes |
+| `src/js/config/subjects-config.js` | Add 2 new collection constants |
+| `subject.html` | Remove `.subject-grid`, add `#questionsSection`, `#summariesSection` |
+| `src/js/pages/subject-page.js` | Remove modules/resources functions, add 2 new viewer imports + calls |
+| `src/css/pages/subject.css` | Remove dead styles, add questions/summaries styles |
+| `src/js/features/questions-viewer.js` | **[NEW]** Student questions renderer |
+| `src/js/features/summaries-viewer.js` | **[NEW]** Student summaries renderer |
+| `src/js/features/admin-questions.js` | **[NEW]** Admin questions CRUD panel |
+| `src/js/features/admin-summaries.js` | **[NEW]** Admin summaries CRUD panel |
+| `src/js/pages/admin-dashboard-page.js` | Add 2 tabs, 2 imports, 2 switchAdminTab branches |
+
+---
+
+## PHASE 10 — Subject Page Tabbed Navigation
+
+The user requested that the three main feature sections (Roadmap, Questions, Summaries) be organized into tabs rather than stacked vertically.
+
+### T-15 · `subject.html`
+
+**Action:** Add a tab navigation container just below the subject card (specifically, right after the `#subjectAnnouncement` section and before the feature sections).
+
+```html
+<!-- TAB NAVIGATION -->
+<div class="subject-tabs-nav" id="subjectTabsNav" style="display:none;">
+    <button class="subject-tab-btn" data-target="roadmapSection" id="tab-roadmap" style="display:none;">🗺️ مسار التعلم</button>
+    <button class="subject-tab-btn" data-target="questionsSection" id="tab-questions" style="display:none;">❓ الأسئلة</button>
+    <button class="subject-tab-btn" data-target="summariesSection" id="tab-summaries" style="display:none;">📋 الملخصات</button>
+</div>
+```
+*Note: All tabs start hidden. They will only be revealed if their corresponding content exists.*
+
+### T-16 · `src/css/pages/subject.css`
+
+**Action:** Add styles for the tab bar.
+
+```css
+/* ---- Tab Navigation ---- */
+.subject-tabs-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 2rem auto 1rem;
+    max-width: 760px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 0.4rem;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    flex-wrap: wrap;
+}
+
+.subject-tab-btn {
+    flex: 1;
+    min-width: 120px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subject-tab-btn:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.subject-tab-btn.active {
+    color: #f8fafc;
+    background: color-mix(in srgb, var(--subject-accent) 40%, rgba(15, 23, 42, 0.9));
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--subject-accent) 20%, transparent);
+}
+
+/* Hide sections by default when tabbed */
+.subject-tab-content {
+    display: none;
+}
+
+.subject-tab-content.active {
+    display: block;
+    animation: fadeInTab 0.3s ease;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+```
+
+### T-17 · Feature Viewer Modifications
+
+The feature viewers (`roadmap-viewer.js`, `questions-viewer.js`, `summaries-viewer.js`) currently reveal their own sections directly by doing `section.style.display = ''`. 
+
+**Action:** Update all three viewers so they return a boolean (`true` if content was rendered, `false` if empty). Remove their `section.style.display = ''` logic (let the tab manager handle visibility).
+
+### T-18 · `src/js/pages/subject-page.js`
+
+**Action:** Implement the tab manager.
+
+```javascript
+// Wait for all viewers to load their data
+const [hasRoadmap, hasQuestions, hasSummaries] = await Promise.all([
+    initRoadmapViewer(subjectId, db),
+    initQuestionsViewer(subjectId, db),
+    initSummariesViewer(subjectId, db)
+]);
+
+// Tab Manager Logic
+const tabsNav = document.getElementById('subjectTabsNav');
+const tabs = {
+    roadmap: { hasContent: hasRoadmap, btnId: 'tab-roadmap', sectionId: 'roadmapSection' },
+    questions: { hasContent: hasQuestions, btnId: 'tab-questions', sectionId: 'questionsSection' },
+    summaries: { hasContent: hasSummaries, btnId: 'tab-summaries', sectionId: 'summariesSection' }
+};
+
+let activeTabSet = false;
+
+Object.values(tabs).forEach(tab => {
+    const btn = document.getElementById(tab.btnId);
+    const section = document.getElementById(tab.sectionId);
+    
+    // Add the tab content class for styling
+    if (section) section.classList.add('subject-tab-content');
+
+    if (tab.hasContent && btn) {
+        tabsNav.style.display = 'flex'; // Show nav if at least one tab exists
+        btn.style.display = ''; // Show this button
+        
+        // Setup click handler
+        btn.addEventListener('click', () => {
+            // Deactivate all
+            Object.values(tabs).forEach(t => {
+                document.getElementById(t.btnId)?.classList.remove('active');
+                document.getElementById(t.sectionId)?.classList.remove('active');
+            });
+            // Activate selected
+            btn.classList.add('active');
+            section.classList.add('active');
+        });
+
+        // Set the first available tab as active by default
+        if (!activeTabSet) {
+            btn.classList.add('active');
+            section.classList.add('active');
+            activeTabSet = true;
+        }
+    }
+});
+```
+
+---
+
+## Design Decisions (Locked)
+
+| Decision | Choice |
+|---|---|
+| Question progress persistence | **Stateless — resets every visit.** No localStorage, no Firestore writes. |
+| MCQ wrong answer behavior | **Reveal correct immediately.** Wrong = red, correct = green, all buttons disabled. |
+| Summaries video type | **Not included.** Types: `pdf`, `text`, `image` only. |

@@ -93,104 +93,6 @@ body {
     line-height: 1.8;
 }
 
-.subject-stats {
-    margin-top: 1.4rem;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.8rem;
-}
-
-.subject-stat {
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    border-radius: 16px;
-    padding: 0.85rem;
-    text-align: center;
-}
-
-.subject-stat span {
-    display: block;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #f8fafc;
-}
-
-.subject-stat small {
-    color: #94a3b8;
-    font-size: 0.82rem;
-}
-
-.subject-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 1rem;
-}
-
-.subject-panel {
-    background: rgba(2, 6, 23, 0.62);
-    border: 1px solid rgba(148, 163, 184, 0.17);
-    border-radius: 20px;
-    padding: 1.1rem;
-}
-
-.subject-panel h2 {
-    margin: 0 0 0.8rem;
-    font-size: 1.05rem;
-    color: #f8fafc;
-}
-
-.subject-list,
-.subject-resource-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.65rem;
-}
-
-.subject-list-item {
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 14px;
-    padding: 0.7rem;
-    background: rgba(15, 23, 42, 0.75);
-}
-
-.subject-list-item h3 {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #f8fafc;
-}
-
-.subject-list-item p {
-    margin: 0.35rem 0 0;
-    color: #cbd5e1;
-    font-size: 0.88rem;
-    line-height: 1.6;
-}
-
-.subject-resource-item a {
-    color: #e2e8f0;
-    text-decoration: none;
-    display: block;
-    border: 1px solid rgba(148, 163, 184, 0.25);
-    border-radius: 12px;
-    padding: 0.66rem 0.7rem;
-    background: rgba(15, 23, 42, 0.72);
-    transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.subject-resource-item a:hover {
-    border-color: color-mix(in srgb, var(--subject-accent) 70%, white);
-    transform: translateY(-1px);
-}
-
-.subject-list-empty {
-    color: #94a3b8;
-    font-size: 0.9rem;
-    border: 1px dashed rgba(148, 163, 184, 0.35);
-    border-radius: 12px;
-    padding: 0.75rem;
-}
 
 .subject-announcement {
     margin-top: 1rem;
@@ -213,16 +115,596 @@ body {
 }
 
 @media (max-width: 860px) {
-    .subject-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .subject-grid {
-        grid-template-columns: 1fr;
-    }
 
     .subject-topbar {
         flex-direction: column;
         align-items: flex-start;
     }
 }
+
+/* ==========================================================================
+   ROADMAP SECTION — Vertical Learning Timeline
+   ========================================================================== */
+
+/* --- Section wrapper ---------------------------------------------------- */
+
+.roadmap-section {
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.roadmap-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.roadmap-kicker {
+    margin: 0 0 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--subject-accent) 80%, white);
+}
+
+.roadmap-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    color: #f8fafc;
+}
+
+.roadmap-subtitle {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+/* --- Timeline container ------------------------------------------------- */
+
+.roadmap-timeline {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    max-width: 760px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* --- Connector line between steps --------------------------------------- */
+
+.roadmap-connector {
+    width: 3px;
+    height: 40px;
+    background: rgba(148, 163, 184, 0.18);
+    margin: 0 auto;
+    border-radius: 999px;
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+    flex-shrink: 0;
+}
+
+.roadmap-connector.is-lit {
+    background: var(--subject-accent);
+    box-shadow:
+        0 0 6px color-mix(in srgb, var(--subject-accent) 80%, transparent),
+        0 0 18px color-mix(in srgb, var(--subject-accent) 40%, transparent);
+}
+
+/* --- Step wrapper ------------------------------------------------------- */
+
+.roadmap-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.1rem;
+    transition: opacity 0.3s ease;
+}
+
+.roadmap-step.is-locked {
+    opacity: 0.42;
+}
+
+.roadmap-step.is-done {
+    opacity: 0.68;
+}
+
+/* --- Step node (numbered circle / checkmark) ---------------------------- */
+
+.roadmap-node {
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.9);
+    border: 2px solid rgba(148, 163, 184, 0.3);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    z-index: 1;
+    margin-top: 0.4rem;
+}
+
+.roadmap-node.is-done {
+    background: color-mix(in srgb, #38ef7d 20%, rgba(15, 23, 42, 0.9));
+    border-color: #38ef7d;
+    color: #38ef7d;
+}
+
+.roadmap-node.is-active {
+    background: color-mix(in srgb, var(--subject-accent) 28%, rgba(15, 23, 42, 0.9));
+    border-color: var(--subject-accent);
+    box-shadow:
+        0 0 0 0 color-mix(in srgb, var(--subject-accent) 55%, transparent);
+    animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0   color-mix(in srgb, var(--subject-accent) 55%, transparent); }
+    50%  { box-shadow: 0 0 0 10px color-mix(in srgb, var(--subject-accent) 0%,  transparent); }
+    100% { box-shadow: 0 0 0 0   color-mix(in srgb, var(--subject-accent) 0%,  transparent); }
+}
+
+/* --- Card --------------------------------------------------------------- */
+
+.roadmap-card {
+    flex: 1;
+    background: rgba(2, 6, 23, 0.68);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 20px;
+    padding: 1.2rem 1.3rem;
+    box-shadow: 0 8px 32px rgba(2, 6, 23, 0.25);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+}
+
+.roadmap-step.is-active .roadmap-card {
+    border-color: color-mix(in srgb, var(--subject-accent) 55%, transparent);
+    box-shadow:
+        0 8px 32px rgba(2, 6, 23, 0.3),
+        0 0 0 1px color-mix(in srgb, var(--subject-accent) 20%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--subject-accent) 18%, transparent);
+}
+
+.roadmap-card-title {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.roadmap-step.is-active .roadmap-card-title {
+    color: color-mix(in srgb, var(--subject-accent) 70%, white);
+}
+
+/* --- Card body — shared ------------------------------------------------- */
+
+.roadmap-card-body {
+    margin-bottom: 1rem;
+}
+
+/* --- Video embed -------------------------------------------------------- */
+
+.roadmap-embed--video {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.roadmap-embed--video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+}
+
+/* --- PDF embed ---------------------------------------------------------- */
+
+.roadmap-embed--pdf {
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.roadmap-embed--pdf iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 12px;
+}
+
+.roadmap-pdf-fallback {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: color-mix(in srgb, var(--subject-accent) 75%, white);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.4rem 0;
+    transition: color 0.2s ease;
+}
+
+.roadmap-pdf-fallback:hover {
+    color: white;
+}
+
+/* --- Image embed -------------------------------------------------------- */
+
+.roadmap-embed--image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 0.5rem;
+}
+
+.roadmap-embed--image img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: contain;
+    border-radius: 10px;
+    display: block;
+}
+
+.roadmap-image-caption {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-style: italic;
+    text-align: center;
+    padding: 0 0.5rem 0.25rem;
+}
+
+/* --- Fallback link (video / embed errors) ------------------------------- */
+
+.roadmap-fallback-link {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: color-mix(in srgb, var(--subject-accent) 75%, white);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.roadmap-fallback-link:hover {
+    color: white;
+}
+
+.roadmap-embed-error {
+    margin: 0;
+    padding: 1rem;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* --- Text content ------------------------------------------------------- */
+
+.roadmap-text-content {
+    color: #cbd5e1;
+    line-height: 1.85;
+    font-size: 0.97rem;
+}
+
+.roadmap-text-content h3,
+.roadmap-text-content h4 {
+    color: #f8fafc;
+    margin: 1rem 0 0.4rem;
+}
+
+.roadmap-text-content p    { margin: 0 0 0.75rem; }
+.roadmap-text-content ul,
+.roadmap-text-content ol   { padding-inline-start: 1.4rem; margin: 0 0 0.75rem; }
+.roadmap-text-content li   { margin-bottom: 0.3rem; }
+.roadmap-text-content a    {
+    color: color-mix(in srgb, var(--subject-accent) 75%, white);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.roadmap-text-content strong { color: #f8fafc; }
+
+/* --- Card actions row --------------------------------------------------- */
+
+.roadmap-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+/* --- Done button -------------------------------------------------------- */
+
+.roadmap-done-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 1.4rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--subject-accent) 55%, transparent);
+    background: color-mix(in srgb, var(--subject-accent) 22%, rgba(15, 23, 42, 0.85));
+    color: color-mix(in srgb, var(--subject-accent) 70%, white);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.roadmap-done-btn.is-active:hover {
+    background: color-mix(in srgb, var(--subject-accent) 38%, rgba(15, 23, 42, 0.85));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--subject-accent) 45%, transparent);
+    transform: translateY(-1px);
+}
+
+.roadmap-done-btn.is-done {
+    border-color: rgba(56, 239, 125, 0.4);
+    background: rgba(56, 239, 125, 0.1);
+    color: #38ef7d;
+    cursor: default;
+}
+
+.roadmap-done-btn.is-locked {
+    border-color: rgba(148, 163, 184, 0.2);
+    background: rgba(148, 163, 184, 0.06);
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.roadmap-done-btn.loading {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* --- Responsive --------------------------------------------------------- */
+
+@media (max-width: 600px) {
+    .roadmap-step {
+        gap: 0.75rem;
+    }
+
+    .roadmap-node {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
+    }
+
+    .roadmap-card {
+        padding: 1rem;
+    }
+
+    .roadmap-embed--pdf iframe {
+        height: 360px;
+    }
+
+    .roadmap-card-actions {
+        justify-content: stretch;
+    }
+
+    .roadmap-done-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .question-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   TAB NAVIGATION
+   ========================================================================== */
+
+.subject-tabs-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 2rem auto 1rem;
+    max-width: 760px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 0.4rem;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    flex-wrap: wrap;
+}
+
+.subject-tab-btn {
+    flex: 1;
+    min-width: 120px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subject-tab-btn:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.subject-tab-btn.active {
+    color: #f8fafc;
+    background: color-mix(in srgb, var(--subject-accent) 40%, rgba(15, 23, 42, 0.9));
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--subject-accent) 20%, transparent);
+}
+
+/* Hide sections by default when tabbed */
+.subject-tab-content {
+    display: none !important;
+}
+
+.subject-tab-content.active {
+    display: block !important;
+    animation: fadeInTab 0.3s ease;
+}
+
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   NEW FEATURE SECTIONS (Questions & Summaries)
+   ========================================================================== */
+
+/* ---- Shared feature section layout ---- */
+.subject-feature-section {
+    margin-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.feature-section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.feature-kicker {
+    margin: 0 0 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--subject-accent) 80%, white);
+}
+
+.feature-section-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.4rem, 2.4vw, 2rem);
+    color: #f8fafc;
+}
+
+.feature-subtitle {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+/* ---- Questions ---- */
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.question-card {
+    background: rgba(2, 6, 23, 0.68);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 20px;
+    padding: 1.4rem;
+    box-shadow: 0 8px 32px rgba(2, 6, 23, 0.25);
+}
+
+.question-text {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 1.2rem;
+    line-height: 1.5;
+}
+
+.question-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.question-option-btn {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    color: #e2e8f0;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: right;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.question-option-btn:hover:not(:disabled) {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: color-mix(in srgb, var(--subject-accent) 50%, transparent);
+}
+
+.question-option-btn.correct {
+    border-color: rgba(56, 239, 125, 0.5);
+    background: rgba(56, 239, 125, 0.15);
+    color: #38ef7d;
+}
+
+.question-option-btn.wrong {
+    border-color: rgba(255, 107, 107, 0.5);
+    background: rgba(255, 107, 107, 0.15);
+    color: #ff6b6b;
+}
+
+.question-option-btn:disabled {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.question-reveal-btn {
+    display: inline-block;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    padding: 0.6rem 1.2rem;
+    color: #cbd5e1;
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.question-reveal-btn:hover {
+    background: rgba(15, 23, 42, 0.9);
+    color: #f8fafc;
+}
+
+/* ---- Summaries ---- */
+.summaries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.summary-card {
+    background: rgba(2, 6, 23, 0.68);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 20px;
+    padding: 1.4rem;
+    box-shadow: 0 8px 32px rgba(2, 6, 23, 0.25);
+}
+
+.summary-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 1.2rem;
+}
+

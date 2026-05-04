@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Roadmap images uploaded by admins.
+    // Public read (students view images on subject pages).
+    // Write restricted to authenticated admins (custom claim).
+    match /roadmap-images/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null
+                   && request.auth.token.admin == true;
+    }
+
+    // Deny all other paths by default.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+
+  }
+}

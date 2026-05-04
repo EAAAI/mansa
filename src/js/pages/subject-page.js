@@ -1,4 +1,8 @@
 import { loadSingleSubject, loadSubjectPageData } from '../features/subjects-catalog.js';
+import { initRoadmapViewer } from '../features/roadmap-viewer.js';
+import { initQuestionsViewer } from '../features/questions-viewer.js';
+import { initSummariesViewer } from '../features/summaries-viewer.js';
+import { db } from '../config/firebase.js';
 
 const PAGE_ID = 'subject';
 
@@ -21,81 +25,7 @@ function setText(id, value, fallback = '') {
     element.textContent = value || fallback;
 }
 
-function renderModules(modules) {
-    const list = document.getElementById('subjectModulesList');
-    if (!list) {
-        return;
-    }
 
-    list.innerHTML = '';
-
-    if (!modules.length) {
-        const item = document.createElement('li');
-        item.className = 'subject-list-empty';
-        item.textContent = 'سيتم إضافة وحدات تعليمية مفصلة قريباً.';
-        list.appendChild(item);
-        return;
-    }
-
-    modules.forEach((moduleItem) => {
-        const item = document.createElement('li');
-        item.className = 'subject-list-item';
-
-        const title = document.createElement('h3');
-        title.textContent = moduleItem.title;
-
-        const description = document.createElement('p');
-        description.textContent = moduleItem.description || 'وصف غير متاح.';
-
-        item.appendChild(title);
-        item.appendChild(description);
-        list.appendChild(item);
-    });
-}
-
-function renderResources(resources) {
-    const list = document.getElementById('subjectResourcesList');
-    if (!list) {
-        return;
-    }
-
-    list.innerHTML = '';
-
-    if (!resources.length) {
-        const item = document.createElement('li');
-        item.className = 'subject-list-empty';
-        item.textContent = 'لا توجد روابط إضافية حالياً.';
-        list.appendChild(item);
-        return;
-    }
-
-    resources.forEach((resource) => {
-        const item = document.createElement('li');
-        item.className = 'subject-resource-item';
-
-        const link = document.createElement('a');
-        const href = resource.href || '#';
-        link.href = href;
-        link.textContent = resource.title;
-
-        if (/^https?:\/\//i.test(href)) {
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-        }
-
-        item.appendChild(link);
-        list.appendChild(item);
-    });
-}
-
-function buildFallbackModules(subject) {
-    return [
-        {
-            title: 'الوحدات التعليمية',
-            description: 'سيتم إضافة الوحدات قريباً.',
-        }
-    ];
-}
 
 function renderAnnouncement(text) {
     const card = document.getElementById('subjectAnnouncement');
@@ -120,8 +50,6 @@ function renderNotFound() {
     setText('subjectSubtitle', 'تحقق من الرابط ثم أعد المحاولة.');
     setText('subjectDescription', 'يمكنك الرجوع للرئيسية واختيار المادة من القائمة.');
 
-    renderModules([]);
-    renderResources([]);
     renderAnnouncement('');
 }
 
@@ -158,13 +86,54 @@ async function initSubjectPageEntry() {
     setText('subjectSubtitle', finalData.headline || finalData.nameEn || 'Subject Overview');
     setText('subjectDescription', finalData.description || subject.description);
 
-    setText('subjectStatDifficulty', finalData.difficulty || 'متوسط');
-
-    renderModules(finalData.modules && finalData.modules.length ? finalData.modules : buildFallbackModules(finalData));
-    renderResources(finalData.resources || []);
     renderAnnouncement(finalData.announcement || '');
 
     document.title = `${titleText} - ليالي الامتحان`;
+
+    // Feature Viewers (Tabs)
+    const [hasRoadmap, hasQuestions, hasSummaries] = await Promise.all([
+        initRoadmapViewer(subjectId, db),
+        initQuestionsViewer(subjectId, db),
+        initSummariesViewer(subjectId, db)
+    ]);
+
+    const tabsNav = document.getElementById('subjectTabsNav');
+    if (tabsNav) {
+        const tabs = {
+            roadmap: { hasContent: hasRoadmap, btnId: 'tab-roadmap', sectionId: 'roadmapSection' },
+            questions: { hasContent: hasQuestions, btnId: 'tab-questions', sectionId: 'questionsSection' },
+            summaries: { hasContent: hasSummaries, btnId: 'tab-summaries', sectionId: 'summariesSection' }
+        };
+
+        let activeTabSet = false;
+
+        Object.values(tabs).forEach(tab => {
+            const btn = document.getElementById(tab.btnId);
+            const section = document.getElementById(tab.sectionId);
+            
+            if (section) section.classList.add('subject-tab-content');
+
+            if (tab.hasContent && btn) {
+                tabsNav.style.display = 'flex';
+                btn.style.display = '';
+                
+                btn.addEventListener('click', () => {
+                    Object.values(tabs).forEach(t => {
+                        document.getElementById(t.btnId)?.classList.remove('active');
+                        document.getElementById(t.sectionId)?.classList.remove('active');
+                    });
+                    btn.classList.add('active');
+                    if (section) section.classList.add('active');
+                });
+
+                if (!activeTabSet) {
+                    btn.classList.add('active');
+                    if (section) section.classList.add('active');
+                    activeTabSet = true;
+                }
+            }
+        });
+    }
 }
 
 if (document.readyState === 'loading') {
