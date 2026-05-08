@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموقع تحت الصيانة - Under Construction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            font-family: 'Cairo', sans-serif;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            padding: 50px 0;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 193, 7, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        .construction-image {
+            max-width: 100%;
+            width: 450px;
+            height: auto;
+            margin-bottom: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 25px 80px rgba(255, 193, 7, 0.3);
+            }
+        }
+
+        h1 {
+            color: #ffc107;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 193, 7, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
+            }
+
+            to {
+                text-shadow: 0 0 40px rgba(255, 193, 7, 0.7), 0 0 60px rgba(255, 193, 7, 0.4);
+            }
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .subtitle-en {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        .construction-icon {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+
+
+        /* Progress bar animation */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 5px;
+            margin: 30px auto;
+            max-width: 400px;
+        }
+
+        .progress-bar {
+            height: 15px;
+            background: linear-gradient(90deg, #ffc107, #ff9800, #ffc107);
+            background-size: 200% 100%;
+            border-radius: 15px;
+            animation: progress 3s ease-in-out infinite;
+            width: 60%;
+        }
+
+        @keyframes progress {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .status-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        /* Game Button */
+        .game-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 40px;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+            animation: float-btn 3s ease-in-out infinite;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 193, 7, 0.5);
+        }
+
+        .game-btn .emoji {
+            font-size: 1.5rem;
+        }
+
+        @keyframes float-btn {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .construction-image {
+                width: 300px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated particles -->
+    <div class="particles">
+        <script>
+            for (let i = 0; i < 50; i++) {
+                document.write(`<div class="particle" style="
+                    left: ${Math.random() * 100}%;
+                    animation-delay: ${Math.random() * 15}s;
+                    animation-duration: ${10 + Math.random() * 10}s;
+                    width: ${2 + Math.random() * 4}px;
+                    height: ${2 + Math.random() * 4}px;
+                "></div>`);
+            }
+        </script>
+    </div>
+
+    <div class="container">
+        <div class="construction-icon">🚧</div>
+
+        <img src="under construction/acaa27dffeeeb4d9dccba5fa94c8a841.png" alt="Under Construction"
+            class="construction-image">
+
+        <h1>الموقع تحت الصيانة</h1>
+
+        <p class="subtitle">
+            نحن نعمل على تحسين الموقع ليكون أفضل لكم 💪
+            <br>
+            سنعود قريباً بإذن الله!
+        </p>
+
+        <p class="subtitle-en">
+            We're working hard to improve our website. <br>
+            We'll be back soon, InshaAllah!
+        </p>
+
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+
+        <p class="status-text">جاري العمل على التحديثات...</p>
+
+        <a href="tower-bloxx.html" class="game-btn">
+            <span class="emoji">🎮</span>
+            العب Tower Bloxx
+        </a>
+    </div>
+
+
+
+    <!-- Background audio -->
+    <audio id="constructionAudio" loop autoplay>
+        <source
+            src="under construction/YTDown.com_YouTube_Construction-Site-Sounds-No-Copyright-Fr_Media_zSmvREud2z8_006_128k.m4a"
+            type="audio/mp4">
+    </audio>
+
+    <script>
+        const audio = document.getElementById('constructionAudio');
+        let audioStarted = false;
+
+        // Set volume
+        audio.volume = 0.3;
+
+        // Try to play immediately
+        function tryPlayAudio() {
+            audio.play().then(() => {
+                audioStarted = true;
+            }).catch(() => {
+                // Autoplay blocked - wait for user interaction
+                audioStarted = false;
+            });
+        }
+
+        // Try to play on page load
+        tryPlayAudio();
+
+        // Also try when user interacts with page (clicks anywhere)
+        document.addEventListener('click', function () {
+            if (!audioStarted) {
+                audio.play().then(() => {
+                    audioStarted = true;
+                });
+            }
+        }, { once: false });
+    </script>
+</body>
+
+</html>

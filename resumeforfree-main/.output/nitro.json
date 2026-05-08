@@ -1,0 +1,18 @@
+{
+  "date": "2026-04-26T12:37:10.179Z",
+  "preset": "cloudflare-module",
+  "framework": {
+    "name": "nuxt",
+    "version": "4.2.1"
+  },
+  "versions": {
+    "nitro": "2.12.8"
+  },
+  "commands": {
+    "preview": "npx wrangler dev server/index.mjs --assets public",
+    "deploy": "npx wrangler deploy server/index.mjs --assets public"
+  },
+  "config": {
+    "cloudflare": {}
+  }
+}

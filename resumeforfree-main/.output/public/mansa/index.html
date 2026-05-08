@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ليالي الامتحان - كلية الحاسبات والمعلومات</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" type="module"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+  <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <style>
+    * {
+      font-family: 'Cairo', sans-serif;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    html.dark body {
+      background: #111827;
+    }
+
+    html:not(.dark) body {
+      background: #fff;
+    }
+
+    /* Popup styles */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(6px)
+    }
+
+    .popup-overlay.active {
+      display: flex
+    }
+
+    .popup-box {
+      background: rgba(26, 26, 46, 0.97);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      border-radius: 24px;
+      padding: 35px 30px;
+      max-width: 520px;
+      width: 92%;
+      max-height: 88vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+      animation: popupSlideUp .35s ease
+    }
+
+    @keyframes popupSlideUp {
+      from {
+        transform: translateY(40px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .popup-close {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.8rem;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .popup-close:hover {
+      color: #ff6b6b
+    }
+
+    .popup-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 25px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 5px
+    }
+
+    .popup-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.5);
+      font-family: 'Cairo', sans-serif;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px
+    }
+
+    .popup-tab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: white
+    }
+
+    .popup-header {
+      text-align: center;
+      margin-bottom: 25px
+    }
+
+    .popup-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 1.8rem;
+      color: white
+    }
+
+    .popup-header h2 {
+      font-size: 1.5rem;
+      background: linear-gradient(90deg, #6366f1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px
+    }
+
+    .popup-header p {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: .9rem
+    }
+
+    .popup-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px
+    }
+
+    .popup-field label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #818cf8;
+      font-size: .88rem
+    }
+
+    .popup-field input,
+    .popup-field textarea,
+    .popup-field select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid rgba(99, 102, 241, 0.2);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      font-size: .9rem;
+      resize: vertical
+    }
+
+    .popup-field input:focus,
+    .popup-field textarea:focus,
+    .popup-field select:focus {
+      outline: none;
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.08)
+    }
+
+    .popup-field select option {
+      background: #1a1a2e
+    }
+
+    .popup-field input::placeholder,
+    .popup-field textarea::placeholder {
+      color: rgba(255, 255, 255, 0.3)
+    }
+
+    .popup-submit {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px
+    }
+
+    .popup-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3)
+    }
+
+    .popup-success {
+      display: none;
+      text-align: center;
+      padding: 20px 0
+    }
+
+    .popup-success.show {
+      display: block
+    }
+
+    .popup-success-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #34d399, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 1.6rem;
+      color: white
+    }
+
+    .popup-success h3 {
+      color: #34d399;
+      margin-bottom: 8px
+    }
+
+    .popup-success p {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: .9rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-white dark:bg-gray-900 min-h-screen">
+    <header class="absolute inset-x-0 top-0 z-50">
+      <nav aria-label="Global" class="flex items-center justify-between p-6 lg:px-8">
+        <div class="flex lg:flex-1">
+          <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+            <span class="text-2xl">🌙</span>
+            <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">ليالي الامتحان</span>
+          </a>
+        </div>
+        <div class="flex lg:hidden">
+          <button type="button" command="show-modal" commandfor="mobile-menu"
+            class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-200">
+            <span class="sr-only">فتح القائمة</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"
+              class="size-6">
+              <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
+        <div class="hidden lg:flex lg:gap-x-12">
+          <a href="index.html" class="text-sm/6 font-semibold text-gray-900 dark:text-white">الرئيسية</a>
+          <a href="#" onclick="openSuggestPopup(); return false;"
+            class="text-sm/6 font-semibold text-gray-900 dark:text-white">اقتراح</a>
+          <a href="#" onclick="openJoinPopup(); return false;"
+            class="text-sm/6 font-semibold text-gray-900 dark:text-white">انضم إلينا</a>
+        </div>
+        <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+          <button id="navThemeBtn" onclick="toggleTheme()" class="text-xl cursor-pointer bg-transparent border-none"
+            title="تبديل الوضع">☀️</button>
+        </div>
+      </nav>
+      <el-dialog>
+        <dialog id="mobile-menu" class="backdrop:bg-transparent lg:hidden">
+          <div tabindex="0" class="fixed inset-0 focus:outline-none">
+            <el-dialog-panel
+              class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white p-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 dark:bg-gray-900 dark:sm:ring-gray-100/10">
+              <div class="flex items-center justify-between">
+                <a href="#" class="-m-1.5 p-1.5 flex items-center gap-2">
+                  <span class="text-2xl">🌙</span>
+                  <span class="text-lg font-bold text-indigo-600 dark:text-indigo-400">ليالي الامتحان</span>
+                </a>
+                <button type="button" command="close" commandfor="mobile-menu"
+                  class="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-200">
+                  <span class="sr-only">إغلاق القائمة</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"
+                    class="size-6">
+                    <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+              <div class="mt-6 flow-root">
+                <div class="-my-6 divide-y divide-gray-500/10 dark:divide-white/10">
+                  <div class="space-y-2 py-6">
+                    <a href="index.html"
+                      class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">الرئيسية</a>
+                    <a href="#"
+                      onclick="openSuggestPopup(); document.getElementById('mobile-menu').close(); return false;"
+                      class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">اقتراح</a>
+                    <a href="#" onclick="openJoinPopup(); document.getElementById('mobile-menu').close(); return false;"
+                      class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5">انضم
+                      إلينا</a>
+                  </div>
+                  <div class="py-6">
+                    <button onclick="toggleTheme(); document.getElementById('mobile-menu').close();"
+                      class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 dark:text-white dark:hover:bg-white/5 w-full text-right bg-transparent border-none cursor-pointer">تبديل
+                      الوضع 🌓</button>
+                  </div>
+                </div>
+              </div>
+            </el-dialog-panel>
+          </div>
+        </dialog>
+      </el-dialog>
+    </header>
+
+    <div class="relative isolate px-6 pt-14 lg:px-8">
+      <div aria-hidden="true"
+        class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+        <div
+          style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
+          class="relative left-[calc(50%-11rem)] aspect-1155/678 w-144.5 -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-288.75">
+        </div>
+      </div>
+      <div class="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div class="hidden sm:mb-8 sm:flex sm:justify-center">
+          <div
+            class="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20 dark:text-gray-400 dark:ring-white/10 dark:hover:ring-white/20">
+            🚀 قريباً... محتوى ومميزات جديدة <a href="#" onclick="openJoinPopup(); return false;"
+              class="font-semibold text-indigo-600 dark:text-indigo-400"><span aria-hidden="true"
+                class="absolute inset-0"></span>انضم إلينا <span aria-hidden="true">&larr;</span></a>
+          </div>
+        </div>
+        <div class="text-center">
+          <h1 class="text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl dark:text-white">🌙
+            ليالي الامتحان</h1>
+          <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8 dark:text-gray-400">منصة تعليمية
+            لطلاب كلية الحاسبات والمعلومات</p>
+          <p class="mt-3 text-sm text-gray-400 dark:text-gray-500">Designed & Developed by <a href="ibrahim.html"
+              class="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Ibrahim</a> · <a
+              href="ahmed.html" class="text-purple-600 dark:text-purple-400 font-semibold hover:underline">Ahmed</a> ·
+            <span class="text-pink-600 dark:text-pink-400 font-semibold">Claude</span></p>
+          <div class="mt-10 flex items-center justify-center gap-x-6">
+            <a href="#" onclick="openSuggestPopup(); return false;"
+              class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400">اقتراح
+              فكرة</a>
+            <a href="#" onclick="openJoinPopup(); return false;"
+              class="text-sm/6 font-semibold text-gray-900 dark:text-white">انضم إلينا <span
+                aria-hidden="true">←</span></a>
+          </div>
+        </div>
+      </div>
+      <div aria-hidden="true"
+        class="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]">
+        <div
+          style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
+          class="relative left-[calc(50%+3rem)] aspect-1155/678 w-144.5 -translate-x-1/2 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-288.75">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUGGEST POPUP -->
+  <div class="popup-overlay" id="suggestPopup">
+    <div class="popup-box">
+      <button class="popup-close" onclick="closeSuggestPopup()">&times;</button>
+      <div class="popup-tabs">
+        <button class="popup-tab active" onclick="switchPopupTab('suggest',this)">💡 اقتراح فكرة</button>
+        <button class="popup-tab" onclick="switchPopupTab('report',this)">⚠️ بلاغ عن خطأ</button>
+      </div>
+      <div id="popupSuggestTab">
+        <div class="popup-header">
+          <div class="popup-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">💡</div>
+          <h2>اقتراح فكرة</h2>
+          <p>فكرتك ممكن تفرق لآلاف الطلاب</p>
+        </div>
+        <div class="popup-form" id="popupSuggestForm">
+          <div class="popup-field"><label>👤 اسمك (اختياري)</label><input type="text" id="popupSuggestName"
+              placeholder="أدخل اسمك..."></div>
+          <div class="popup-field"><label>🏷️ نوع الاقتراح</label><select id="popupSuggestType">
+              <option value="">اختر...</option>
+              <option value="feature">فيتشر جديد</option>
+              <option value="content">إضافة محتوى</option>
+              <option value="design">تحسين التصميم</option>
+              <option value="other">أخرى</option>
+            </select></div>
+          <div class="popup-field"><label>💬 التفاصيل</label><textarea id="popupSuggestText"
+              placeholder="اكتب اقتراحك بالتفصيل..." rows="4"></textarea></div>
+          <button class="popup-submit" onclick="submitPopupSuggest()">📤 إرسال</button>
+        </div>
+        <div class="popup-success" id="popupSuggestSuccess">
+          <div class="popup-success-icon">✓</div>
+          <h3>شكراً!</h3>
+          <p>هنراجعه ونحاول نطبقه 💪</p><button class="popup-submit" onclick="resetPopupSuggest()"
+            style="width:auto;padding:10px 30px;margin-top:10px">اقتراح تاني</button>
+        </div>
+      </div>
+      <div id="popupReportTab" style="display:none">
+        <div class="popup-header">
+          <div class="popup-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">⚠️</div>
+          <h2>بلاغ عن خطأ</h2>
+          <p>ساعدنا نوصل للمعلومة الصح</p>
+        </div>
+        <div class="popup-form" id="popupReportForm">
+          <div class="popup-field"><label>❓ الجزء الغلط</label><textarea id="popupReportQuestion"
+              placeholder="اكتب نص السؤال أو الجزء اللي فيه خطأ..." rows="3"></textarea></div>
+          <div class="popup-field"><label>❌ وصف الخطأ</label><textarea id="popupReportError"
+              placeholder="وصف الخطأ والإجابة الصح..." rows="3"></textarea></div>
+          <button class="popup-submit" style="background:linear-gradient(135deg,#ef4444,#dc2626)"
+            onclick="submitPopupReport()">🚩 إرسال</button>
+        </div>
+        <div class="popup-success" id="popupReportSuccess">
+          <div class="popup-success-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626)">✓</div>
+          <h3>استلمنا البلاغ!</h3>
+          <p>هنراجعه ونصلحه 🙏</p><button class="popup-submit" onclick="resetPopupReport()"
+            style="width:auto;padding:10px 30px;margin-top:10px">بلاغ تاني</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JOIN POPUP -->
+  <div class="popup-overlay" id="joinPopup">
+    <div class="popup-box">
+      <button class="popup-close" onclick="closeJoinPopup()">&times;</button>
+      <div class="popup-header">
+        <div class="popup-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">👥</div>
+        <h2>انضم الينا</h2>
+        <p>كن جزءاً من مجتمع ليالي الامتحان</p>
+      </div>
+      <form class="popup-form" id="popupJoinForm" onsubmit="submitPopupJoin(event)">
+        <div class="popup-field"><label>👤 الاسم</label><input type="text" id="popupJoinName" placeholder="أدخل اسمك..."
+            required></div>
+        <div class="popup-field"><label>📧 الإيميل</label><input type="email" id="popupJoinEmail"
+            placeholder="example@email.com" required></div>
+        <div class="popup-field"><label>📱 الهاتف</label><input type="tel" id="popupJoinPhone"
+            placeholder="رقم هاتفك..." required></div>
+        <div class="popup-field"><label>🎓 المستوى</label><select id="popupJoinLevel" required>
+            <option value="">اختر...</option>
+            <option value="level1">الأول</option>
+            <option value="level2">الثاني</option>
+            <option value="level3">الثالث</option>
+            <option value="level4">الرابع</option>
+            <option value="graduate">خريج</option>
+          </select></div>
+        <div class="popup-field"><label>💬 المساهمة</label><textarea id="popupJoinContrib"
+            placeholder="كيف تريد المساهمة؟" rows="3" required></textarea></div>
+        <button type="submit" class="popup-submit">📤 إرسال</button>
+      </form>
+      <div class="popup-success" id="popupJoinSuccess">
+        <div class="popup-success-icon">✓</div>
+        <h3>تم الإرسال!</h3>
+        <p>سنتواصل معك قريباً.</p><button class="popup-submit" onclick="closeJoinPopup()"
+          style="width:auto;padding:10px 30px;margin-top:10px">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/mansa/src/js/config/firebase.js"></script>
+  <script>
+    function openSuggestPopup() { document.getElementById('suggestPopup').classList.add('active') }
+    function closeSuggestPopup() { document.getElementById('suggestPopup').classList.remove('active') }
+    function openJoinPopup() { document.getElementById('joinPopup').classList.add('active') }
+    function closeJoinPopup() { document.getElementById('joinPopup').classList.remove('active'); var f = document.getElementById('popupJoinForm'); if (f) { f.style.display = 'flex'; f.reset() } var s = document.getElementById('popupJoinSuccess'); if (s) s.classList.remove('show') }
+    document.getElementById('suggestPopup').addEventListener('click', function (e) { if (e.target === this) closeSuggestPopup() });
+    document.getElementById('joinPopup').addEventListener('click', function (e) { if (e.target === this) closeJoinPopup() });
+    function switchPopupTab(tab, btn) { document.querySelectorAll('.popup-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); document.getElementById('popupSuggestTab').style.display = tab === 'suggest' ? 'block' : 'none'; document.getElementById('popupReportTab').style.display = tab === 'report' ? 'block' : 'none' }
+    async function submitPopupSuggest() { var type = document.getElementById('popupSuggestType').value; var text = document.getElementById('popupSuggestText').value.trim(); if (!type || !text) { alert('من فضلك اختر النوع واكتب الاقتراح'); return } var data = { formType: 'اقتراح', name: document.getElementById('popupSuggestName').value.trim() || 'مجهول', suggestType: type, text: text }; try { var r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) throw new Error() } catch (e) { console.warn('API failed'); var all = JSON.parse(localStorage.getItem('suggestions') || '[]'); all.push({ ...data, submittedAt: new Date().toISOString() }); localStorage.setItem('suggestions', JSON.stringify(all)) } document.getElementById('popupSuggestForm').style.display = 'none'; document.getElementById('popupSuggestSuccess').classList.add('show') }
+    function resetPopupSuggest() { document.getElementById('popupSuggestForm').style.display = 'flex'; document.getElementById('popupSuggestSuccess').classList.remove('show'); document.getElementById('popupSuggestType').value = ''; document.getElementById('popupSuggestText').value = '' }
+    async function submitPopupReport() { var q = document.getElementById('popupReportQuestion').value.trim(); var err = document.getElementById('popupReportError').value.trim(); if (!q || !err) { alert('من فضلك املأ كل الحقول'); return } var data = { formType: 'بلاغ', question: q, error: err }; try { var r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) throw new Error() } catch (e) { console.warn('API failed'); var all = JSON.parse(localStorage.getItem('reports') || '[]'); all.push({ ...data, submittedAt: new Date().toISOString() }); localStorage.setItem('reports', JSON.stringify(all)) } document.getElementById('popupReportForm').style.display = 'none'; document.getElementById('popupReportSuccess').classList.add('show') }
+    function resetPopupReport() { document.getElementById('popupReportForm').style.display = 'flex'; document.getElementById('popupReportSuccess').classList.remove('show'); document.getElementById('popupReportQuestion').value = ''; document.getElementById('popupReportError').value = '' }
+    async function submitPopupJoin(e) { e.preventDefault(); var data = { formType: 'انضمام', name: document.getElementById('popupJoinName').value, email: document.getElementById('popupJoinEmail').value, phone: document.getElementById('popupJoinPhone').value, level: document.getElementById('popupJoinLevel').value, contribution: document.getElementById('popupJoinContrib').value }; try { var r = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) throw new Error() } catch (e) { console.warn('API failed'); var subs = JSON.parse(localStorage.getItem('joinSubmissions') || '[]'); subs.push({ ...data, submittedAt: new Date().toISOString() }); localStorage.setItem('joinSubmissions', JSON.stringify(subs)) } document.getElementById('popupJoinForm').style.display = 'none'; document.getElementById('popupJoinSuccess').classList.add('show') }
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeSuggestPopup(); closeJoinPopup() } });
+
+    // Dark/Light toggle
+    function toggleTheme() {
+      var h = document.documentElement, b = document.getElementById('navThemeBtn');
+      if (h.classList.contains('dark')) { h.classList.remove('dark'); localStorage.setItem('theme', 'light'); if (b) b.textContent = '🌙' }
+      else { h.classList.add('dark'); localStorage.setItem('theme', 'dark'); if (b) b.textContent = '☀️' }
+    }
+    (function () { var s = localStorage.getItem('theme'); if (s === 'light') { document.documentElement.classList.remove('dark'); var b = document.getElementById('navThemeBtn'); if (b) b.textContent = '🌙' } })();
+  </script>
+</body>
+
+</html>
